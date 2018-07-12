@@ -7,7 +7,7 @@ conda install pandas
 pip install gspread
 pip install pydrive
 
-2) request from admin client_secrets.json key or access it on the SD2 google drive.  Do not distribute this key!
+2) Request from admin client_secrets.json key or access it on the SD2 google drive.  Do not distribute this key! (https://goo.gl/NmNBY4)
 
 
 Preparing the relevant files and directories:
