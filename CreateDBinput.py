@@ -23,7 +23,7 @@ parser.add_argument('Debugging', default=1, type=int, help='') #Default, debuggi
 args = parser.parse_args()
 
 ## Set the workflow of the code used to generate the experimental data and to process the data
-WFSet=1.0
+WorkupVersion=1.0
 
 ### Simple Starting Points ### 
 Debug = args.Debugging #Prevents editing the working directory and provides a dev mode as default
@@ -38,7 +38,7 @@ def Expdata(DatFile):
     with open(ExpEntry, "r") as file1:
         file1out=json.load(file1)
         lines=(json.dumps(file1out, indent=4, sort_keys=True))
-    lines=lines[:-4]
+    lines=lines[:-8]
     return(lines)
     ## File processing for the experimental JSON to convert to the final form (header of the script)
 
@@ -54,16 +54,18 @@ def Robo(robotfile):
 
 def Crys(crysfile):
     ##Gather the crystal datafile information and return JSON object
-    crys_df=pd.read_csv(open(crysfile, 'r'), usecols=(3,4))
-    crys_list=crys_df.values.tolist()
+    headers=crysfile.pop(0)
+    crys_df=pd.DataFrame(crysfile, columns=headers)
+    crys_df_curated=crys_df[['Concatenated Vial site', 'Crystal Score']]
+    crys_list=crys_df_curated.values.tolist()
     crys_dump=json.dumps(crys_list)
     return(crys_dump)
 
-def genthejson(Outfile, workdir, opfolder):
+def genthejson(Outfile, workdir, opfolder, drive_data):
     ## Do all of the file handling for a particular run and assemble the JSON, return the completed JSON file object
     ## and location for sorting and final comparison
 
-    Crysfile=workdir+opfolder+'_CrystalScoring.csv'
+    Crysfile=drive_data
     Expdatafile=workdir+opfolder+'_ExpDataEntry.json'
     Robofile=workdir+opfolder+'_RobotInput.xls'
     exp_return=Expdata(Expdatafile)
@@ -95,14 +97,13 @@ def ExpDirOps():
     for folder in dir_dict:
         exp_json=Path("FinalizedJSON/%s.json" %folder)
         if exp_json.is_file():
-            print(folder)
-            print('exists')
+            print(folder, 'exists')
         else:
             Outfile=open(exp_json, 'w')
             workdir='datafiles/'
-            rxnfileUIDs=Google_IO_DBsetup.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
-            print(folder)
-            genthejson(Outfile, workdir, folder)
+            print('%s Created' %folder)
+            data_from_drive=Google_IO_DBsetup.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
+            genthejson(Outfile, workdir, folder, data_from_drive)
             Outfile.close()
 #            with open(exp_json, 'r') as the_json:
 #                theOut=json.load(the_json)
