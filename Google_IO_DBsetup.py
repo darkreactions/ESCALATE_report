@@ -45,6 +45,19 @@ scope= ['https://spreadsheets.google.com/feeds']
 credentials = ServiceAccountCredentials.from_json_keyfile_dict(credsjson, scope)
 gc =gspread.authorize(credentials)
 
+def ChemicalData():
+    print('Obtaining chemical information from Google Drive..', end='')
+    chemsheetid = "1JgRKUH_ie87KAXsC-fRYEw_5SepjOgVt7njjQBETxEg"
+    ChemicalBook = gc.open_by_key(chemsheetid)
+    chemicalsheet = ChemicalBook.get_worksheet(0)
+    chemical_list = chemicalsheet.get_all_values()
+    print('...', end='')
+    chemdf=pd.DataFrame(chemical_list, columns=chemical_list[0])
+    chemdf=chemdf.iloc[1:]
+    chemdf=chemdf.reset_index(drop=True)
+    chemdf=chemdf.set_index(['Chemical Abbreviation'])
+    print('.done')
+    return(chemdf)
 
 ###Returns a referenced dictionary of processed files as dictionaries {folder title SD2 ID, Gdrive UID}
 def drivedatfold(opdir):
