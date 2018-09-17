@@ -8,8 +8,11 @@ from operator import itemgetter
 
 parser = ap.ArgumentParser(description='Target Folder')
 parser.add_argument('Filename', type=str, help='Please include target folder') 
+parser.add_argument('--Debug', type=int, help='Debug=1 prints raw to csv, debug=0 prints only data for learning (default=0)', default=0)
 args = parser.parse_args()
 myjsonfol = args.Filename
+debug = args.Debug
+finalvol_entries=2 ## Hard coded number of formic acid entries at the end of the run
 
 ## Big security no no here... this will need to be fixed! ## 
 credsjson={
@@ -126,11 +129,12 @@ def reag_info(reagentdf,chemdf):
                 if InChIKey == "BDAGIHXWWSANSR-UHFFFAOYSA-N":
                     mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
-                    m_type='other' #Assigns an object type for later analysis and calculation of concentrations
+                    m_type='pureliquid' #Assigns an object type for later analysis and calculation of concentrations
                     try:
                         density=(float(chemdf.loc[InChIKey,"Density            (g/mL)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     except:
-                        pass
+                        print("Error with the configuration of reference sheet.  Abort run and check formic acid details in google sheets (2018-08-11)")
+                        break
                 #GBL
                 elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N': 
                     mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
@@ -151,12 +155,12 @@ def reag_info(reagentdf,chemdf):
                 #Organic
                 else:
                     mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
+                    name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     m_type='org'
                     try:
                         density=(float(chemdf.loc[InChIKey,"Density            (g/mL)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     except:
                         pass
-                    name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                 for (item) in list(reagentdf):
                     if (parse_chemical_name in item) and ("actual_amount" in item) and not ("units" in item):
                         amount=(reagentdf.loc[0,item])
@@ -169,6 +173,7 @@ def ReagentConc(one_reagent_df, reagent):
     index=0
     conc={}
     reagent=reagent[5:]
+    #Calculateds the concentration of the REAGENTS being used in each experiment (signified largely by a single runID_vial combination)
     for m_type in df['m_type']:
         if m_type == 'null':
             pass
@@ -178,12 +183,21 @@ def ReagentConc(one_reagent_df, reagent):
             solv_A=float(df.loc[(index,'amount')])
         index+=1
     index=0
+    #calculates the values for the reagent concentrations in terms of the total solvent used in the preparation (for inorganic and organic components)
     for m_type in df['m_type']:
         if (m_type == 'inorg') or (m_type == 'org'):
             mm=float(df.loc[(index,'molecularmass')])
             A=float(df.loc[(index,'amount')])
             calculated_concentration=(A / mm ) / ( solv_A / 1000) ## Returns the value in mmolarity
 #            name_space=('_rxn_' + reagent + "_chemical_" + str(index) + "_conc_" + (df.loc[(index,'InChiKey')]))
+            name_space=('_raw_' + reagent + "_conc_" + (df.loc[(index,'InChiKey')]))
+            conc[name_space]=calculated_concentration
+        #Calculates the pure "density" of the compound and uses that in place of the solvated concentration using the amounts from the experiment
+        if (m_type == 'pureliquid'):
+            mm=float(df.loc[(index,'molecularmass')])
+            A=float(df.loc[(index,'amount')])
+            d=float(df.loc[(index,'density')])
+            calculated_concentration=(d/mm*1000)
             name_space=('_raw_' + reagent + "_conc_" + (df.loc[(index,'InChiKey')]))
             conc[name_space]=calculated_concentration
         index+=1
@@ -224,20 +238,20 @@ def calcConc(reagentdf, reagent_spc):
             conc_df=pd.concat([conc_df,conc_cells_df], axis=1)
     return(conc_df)
 
-#Calls support functions which parse experiments (rows of tempdf)
-def clean_df(JsonParsed_df):
-    # Builds the namespace for further operation, a unique identifier for each experiment
-    runID_df=pd.DataFrame(data=[JsonParsed_df['_raw_jobserial'] + '_' + JsonParsed_df['_raw_vialsite']]).transpose()
-    runID_df.columns=['RunID']
-    # Finds inchi keys associated with organic reagents added to a particular experiment
-#    og_df=organic_gather(JsonParsed_df, runID_df)
-    descriptor_df=descriptor_calc_prep(JsonParsed_df)
-#    for item in list(tempdf):
-#        itemlist.append(item)
-#    temp_df=pd.concat([runID_df, og_df], axis=1)
-#    cleaned_df=temp_df.reindex(sorted(temp_df.columns), axis=1)s
-#    return(og_df)
-#    return(og_df)
+##Calls support functions which parse experiments (rows of tempdf)
+#def clean_df(JsonParsed_df):
+#    # Builds the namespace for further operation, a unique identifier for each experiment
+#    runID_df=pd.DataFrame(data=[JsonParsed_df['_raw_jobserial'] + '_' + JsonParsed_df['_raw_vialsite']]).transpose()
+#    runID_df.columns=['RunID']
+#    # Finds inchi keys associated with organic reagents added to a particular experiment
+##    og_df=organic_gather(JsonParsed_df, runID_df)
+#    descriptor_df=descriptor_calc_prep(JsonParsed_df)
+##    for item in list(tempdf):
+##        itemlist.append(item)
+##    temp_df=pd.concat([runID_df, og_df], axis=1)
+##    cleaned_df=temp_df.reindex(sorted(temp_df.columns), axis=1)s
+##    return(og_df)
+##    return(og_df)
 
 #parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information
 def reagentparse(firstlevel, myjson, chem_df):
@@ -260,7 +274,7 @@ def reagentparse(firstlevel, myjson, chem_df):
         ### rxn reagent_4 and 5 assume that the input chemicals are formic acid, the volume of which can be learned on directly 
         ### this assumtion might not be valid in all future cases
         if reg_key == 'well_volumes':
-            well_volumes_df=pd.DataFrame(reg_value, columns=['_raw_vialsite', '_raw_reagent_0_volume', '_raw_reagent_1_volume', '_raw_reagent_2_volume', '_raw_reagent_3_volume', '_rxn_reagent_4_volume', '_rxn_reagent_5_volume', '_raw_labwareID'])
+            well_volumes_df=pd.DataFrame(reg_value, columns=['_raw_vialsite', '_raw_reagent_0_volume', '_raw_reagent_1_volume', '_raw_reagent_2_volume', '_raw_reagent_3_volume', '_raw_reagent_4_volume', '_raw_reagent_5_volume', '_raw_labwareID'])
         if reg_key == 'crys_file_data':
             crys_file_data_df=pd.DataFrame(reg_value, columns=['_raw_vialsite', '_out_crystalscore'])
     #The following code aligns and normalizes the data frames
@@ -288,9 +302,10 @@ def calc_mmol(vol, index, reagent_name, JsonParsed_df):
     mmol_cell={}
     for header in list(JsonParsed_df):
         if ('conc' in header) and (reagent_name in header):
-            mmol_name=('_rxn_mmol_' + header[20:])
+            mmol_name=('_raw_mmol_' + header[20:])
 #            print(((vol*JsonParsed_df.loc[index, header]/1000)), header)
             mmol_cell[mmol_name]=((vol*JsonParsed_df.loc[index, header]/1000))
+    #Returns a dictionary with the key set to the _raw_mmol + inchi string taken from the parsed mmol name above. 
     return(mmol_cell)
 
 
@@ -300,6 +315,8 @@ def volcheck(vol_series, reagent_name, JsonParsed_df,runID_df):
     mmol_df_out=pd.DataFrame()
     for volume in vol_series:
             runID=runID_df.loc[index,'RunID_vial']
+            #calculates the mmol of the reagent and returns to a list (order is important as the indexes are not maintained through this step)
+            #The calculation is done indpendently to better handle different chemicals (and thereby be more flexible moving forward) using the index
             mmol_index_list.append(calc_mmol(volume, index, reagent_name, JsonParsed_df))
             index+=1
     mmol_df_out=pd.DataFrame(mmol_index_list)
@@ -390,22 +407,78 @@ def GrabInchi(rxn_mmol_df, labels_df):
                     inchi_list.append(InChIKey)
                     index+=1
             row_index+=1
-    keylist_df=pd.DataFrame(inchi_list, columns=['_raw_inchikey'])
+    keylist_df=pd.DataFrame(inchi_list, columns=['_rxn_organic-inchikey'])
     out_df=pd.concat([keylist_df, label_list_df], axis=1)
     out_df.set_index('RunID_vial', inplace=True)
     return(out_df)
 
+def nameCleaner(sub_dirty_df):
+    inorganic_list=[]
+    organic_df=pd.DataFrame()
+    cleaned_M=pd.DataFrame()
+    for header in sub_dirty_df.columns:
+        #GBl handling -- > Solvent labeled
+        if 'YEJRWHAVMIAJKC-UHFFFAOYSA-N' in header:
+            print("1")
+            pass
+        #Acid handling --> Acid labeld --> will need to declare type in the future or something
+        elif "BDAGIHXWWSANSR-UHFFFAOYSA-N" in header:
+            cleaned_M['_rxn_M_acid']=sub_dirty_df[header]
+#            molarity_df['_rxn_M_acid'] = mmol_reagent_df[header] / (calculated_volumes_df['_raw_final_volume']/1000)
+        #PBI2 handling --> inorganic label
+        elif 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' in header:
+            cleaned_M['_rxn_M_inorganic']=sub_dirty_df[header]
+#            molarity_df['_rxn_M_inorganic'] = mmol_reagent_df[header] / (calculated_volumes_df['_raw_final_volume']/1000)
+        else:
+            organic_df[header]=sub_dirty_df[header]
+    cleaned_M['_rxn_M_organic']=organic_df.sum(axis=1)
+    return(cleaned_M)
+
+
+#cleans up the name space and the csv output for distribution
 def Cleaner(dirty_df):
+    rxn_M_clean = nameCleaner(dirty_df.filter(like='_raw_M_'))
     rxn_df=dirty_df.filter(like='_rxn_') 
     feat_df=dirty_df.filter(like='_feat_') 
     out_df=dirty_df.filter(like='_out_') 
-    squeaky_clean_df=pd.concat([rxn_df,feat_df,out_df], axis=1) 
+    if debug == 1: 
+        raw_df=dirty_df.filter(like='_raw_')
+        squeaky_clean_df=pd.concat([out_df,rxn_M_clean,rxn_df,feat_df, raw_df], axis=1) 
+    else:
+        squeaky_clean_df=pd.concat([out_df,rxn_M_clean,rxn_df,feat_df], axis=1) 
     return(squeaky_clean_df)
+
+#hard coded around the notion that the last two entries are formic acid.  This will have to be changed!
+def molarity_calc(raw_df, finalvol_entries):
+    ##Calculate Reagent volumes
+    reagent_list=[]
+    for header in raw_df.columns:
+        if "volume" in header:
+            reagent_list.append(header)
+    total_list=reagent_list[:-finalvol_entries]
+    df_total_list=raw_df[total_list]
+    total_vol_df = df_total_list.sum(axis=1)
+    df_final_vols=raw_df[reagent_list]
+    final_vol_df = df_final_vols.sum(axis=1)
+    calculated_volumes_df=pd.concat([total_vol_df, final_vol_df],axis=1)
+    calculated_volumes_df.columns=['_raw_total_volume', '_raw_final_volume']
+    ## Calculate molarity (grab reagent mmols and then use the volumes caclualted above to detrmine the "nomial molarity")
+    mmol_reagent_list=[]
+    for header in raw_df.columns:
+        if '_raw_mmol_' in header and 'final' in header:
+            mmol_reagent_list.append(header)
+    mmol_reagent_df = raw_df[mmol_reagent_list]    
+    molarity_df = pd.DataFrame()
+    for header in mmol_reagent_df:
+        newheader='_raw_M_'+header[10:-6]+'_final'
+        molarity_df[newheader] = mmol_reagent_df[header] / (calculated_volumes_df['_raw_final_volume']/1000)
+    return(molarity_df)
 
 ## Unpack logic
     #most granular data for each row of the final CSV is the well information.
     #Each well will need all associated information of chemicals, run, etc. 
     #Unpack those values first and then copy the generated array to each of the invidual wells
+    ### developed enough now that it should be broken up into smaller pieces!
 def unpackJSON(myjson_fol):
     chem_df=(ChemicalData())  #Grabs relevant chemical data frame from google sheets (only once no matter how many runs)
     concat_df_final=pd.DataFrame()  
@@ -431,16 +504,20 @@ def unpackJSON(myjson_fol):
         concat_df_final=concat_df_final.fillna(0)
     final_id=concat_df_final['RunID_vial']
     concat_df_final.set_index('RunID_vial', inplace=True)
-    rxn_mmol_df=concat_df_final.filter(like='_rxn_mmol_')
+    #grabs all of the raw mmol data from the column header and creates a column which uniquely identifies which organic will be needed for the features in the next step
+    rxn_mmol_df=concat_df_final.filter(like='_raw_mmol_')
     #Sends off the final mmol list to generate inchi list and  for the chemical features calculations
     OrganicInchi_df=GrabInchi(rxn_mmol_df, final_id)
-    #Combines the new Organic inchi file with the main dataframe
-    concat_df_final=pd.concat([concat_df_final,OrganicInchi_df], axis=1, join_axes=[concat_df_final.index])
+    #takes all of the volume data from the robot run and reduces it into two total volumes, the total prior to FAH and the total after.  Returns a 3 column array "totalvol and finalvol in title"
+    molarity_df=molarity_calc(concat_df_final, finalvol_entries)
+    #Combines the new Organic inchi file and the sum volume with the main dataframe
+    concat_df_final=pd.concat([OrganicInchi_df, concat_df_final, molarity_df], axis=1, join_axes=[concat_df_final.index])
     #Cleans the file in different ways for post-processing analysis
+###    ### Insert concentration calculation here!! 
     #bring in the inchi key based features for a left merge
     with open('perov_desc.csv', 'r') as my_descriptors:
        descriptor_df=pd.read_csv(my_descriptors) 
-    dirty_full_df=concat_df_final.merge(descriptor_df, left_on='_raw_inchikey', right_on='_raw_inchikey', how='outer')
+    dirty_full_df=concat_df_final.merge(descriptor_df, left_on='_rxn_organic-inchikey', right_on='_raw_inchikey', how='inner')
     runID_df_big=pd.DataFrame(data=[dirty_full_df['_raw_jobserial'] + '_' + dirty_full_df['_raw_vialsite']]).transpose()
     runID_df_big.columns=['RunID_vial']
     dirty_full_df=pd.concat([runID_df_big, dirty_full_df], axis=1)

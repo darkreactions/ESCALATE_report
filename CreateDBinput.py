@@ -9,6 +9,7 @@ import argparse as ap
 import pandas as pd
 import numpy as np
 import pprint
+import time
 
 ##########################################################
 #  _        ___           _                              #
@@ -19,7 +20,7 @@ import pprint
 
 ### Command line parsing for taking data from shell script
 parser = ap.ArgumentParser(description='Requires Debug to be manually toggled on')
-parser.add_argument('Debugging', default=1, type=int, help='') #Default, debugging on and real code off == "1"
+parser.add_argument('--Debugging', default=1, type=int, help='no current function, placeholder variable') 
 args = parser.parse_args()
 
 ## Set the workflow of the code used to generate the experimental data and to process the data
@@ -105,6 +106,7 @@ def ExpDirOps():
             data_from_drive=Google_IO_DBsetup.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
             genthejson(Outfile, workdir, folder, data_from_drive)
             Outfile.close()
+            time.sleep(5)
 #            with open(exp_json, 'r') as the_json:
 #                theOut=json.load(the_json)
 #                print(exp_json, "Successfully Generated")
