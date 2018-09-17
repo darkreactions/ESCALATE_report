@@ -1,19 +1,19 @@
 import json
 import pandas as pd
-import argparse as ap
+#import argparse as ap
 import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from operator import itemgetter
 
-parser = ap.ArgumentParser(description='Target Folder')
-parser.add_argument('Filename', type=str, help='Please include target folder') 
-parser.add_argument('--Debug', type=int, help='Debug=1 prints raw to csv, debug=0 prints only data for learning (default=0)', default=0)
-args = parser.parse_args()
-myjsonfol = args.Filename
-debug = args.Debug
+#parser = ap.ArgumentParser(description='Target Folder')
+#parser.add_argument('Filename', type=str, help='Please include target folder') 
+#parser.add_argument('--Debug', type=int, help='Debug=1 prints raw to csv, debug=0 prints only data for learning (default=0)', default=0)
+#args = parser.parse_args()
+#myjsonfol = args.Filename
+debug = 0 #args.Debug
 finalvol_entries=2 ## Hard coded number of formic acid entries at the end of the run
-
+#
 ## Big security no no here... this will need to be fixed! ## 
 credsjson={
   "type": "service_account",
@@ -530,5 +530,6 @@ def printfinal(myjsonfolder):
     with open('Final.csv', 'w') as outfile:
         print('Complete')
         cleaned_df.to_csv(outfile)
+        
 
-printfinal(myjsonfol)
+#printfinal(myjsonfol)

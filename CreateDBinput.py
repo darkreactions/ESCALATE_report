@@ -19,15 +19,15 @@ import time
 ##########################################################
 
 ### Command line parsing for taking data from shell script
-parser = ap.ArgumentParser(description='Requires Debug to be manually toggled on')
-parser.add_argument('--Debugging', default=1, type=int, help='no current function, placeholder variable') 
-args = parser.parse_args()
+#parser = ap.ArgumentParser(description='Requires Debug to be manually toggled on')
+#parser.add_argument('--Debugging', default=1, type=int, help='no current function, placeholder variable') 
+#args = parser.parse_args()
 
 ## Set the workflow of the code used to generate the experimental data and to process the data
 WorkupVersion=1.0
 
 ### Simple Starting Points ### 
-Debug = args.Debugging #Prevents editing the working directory and provides a dev mode as default
+#Debug = args.Debugging #Prevents editing the working directory and provides a dev mode as default
 #print("Debugging on (? - boolean) = ", Debug, end=' ;;\n', file=log)
 
 #############################################################################################################################
@@ -109,6 +109,3 @@ def ExpDirOps():
             time.sleep(5)
 #            with open(exp_json, 'r') as the_json:
 #                theOut=json.load(the_json)
-#                print(exp_json, "Successfully Generated")
-ExpDirOps()
-
