@@ -1,27 +1,78 @@
-# ExpDataWorkup
+Author: Ian Pendleton 
+Contact ipendleton .at. haverford.edu (as of September 2018)
 
-Overview of installation and operation:
-conda install xlrd
-conda install pandas
+Overview
+=================
+Project Summary:
+This code was initially designed as a temporary stop gap between the original version of 'dark reactions project' (DRP) (https://github.com/darkreactions) developed at haverford and the second generation
+database for more general distribution. The key challenges addressed were:
+  1) Constructing a common intermediate file type (JSON) which has a predictable structure for containerizing individual perovskite experiments
+  2) Allowing for flexible workflow development as well as retroactive workflow updating/importing
+  3) Process the generated JSON files (each of which describe a set of experiments) into a single final CSV file which describes the entirety of the dataset.
+ 
+#### Summmary
+This section will be updated in the next version of the code to more fully explain the underlying processes being used.  In general the workflow is as follows:
+1. PeroskiteWorkup.py (PW.py) initiates the workflow.
+2. PW.py calls CreateDBinput.py
+ * CreateDBinput gathers information from the data folder on google drive (https://drive.google.com/open?id=13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B)
+ * CreateDBinput.py generates a normalized JSON for each folder in teh data folder (i.e. each plate of experiments are combined into a single JSON)
+ * JSON files are added to FinalizedJSON folder (user created at this point)
+3. PW.py calls JSONtoCSV.py to convert the JSONs into a single dataframe
+ * dataframe is created through multiple function calls which parse, align and calculate various outputs for the final csv
+ * Final.csv is created in the working directory
 
-pip install gspread
-pip install pydrive
+#### Outside Links
+* Specific pydrive API information: https://stackoverflow.com/questions/43865016/python-copy-a-file-in-google-drive-into-a-specific-folder
+* Documentation on pydrive: https://github.com/gsuitedevs/PyDrive
+* Secure tokens and authentication: https://stackoverflow.com/questions/24419188/automating-pydrive-verification-process
 
-2) Request from admin client_secrets.json key or access it on the SD2 google drive.  Do not distribute this key! (https://goo.gl/NmNBY4)
+
+Installation
+============
+  This build process has been tested on only MacOS High Sierra.  Use at your own risk. 
+
+##### Recommended Installation
+
+If you have not installed conda please do so at the following link: (https://conda.io/docs/user-guide/install/index.html)
+
+1. Create the appropriate environment using the conda builder `conda env create --name expdataworkup -f=experdataworkup_conda_env.yml`
+
+2. Create one additional directory in the working directory:
+  * `mkdir FinalizedJSON`
+
+##### Alternative Installation
+This installation method assumes that you will be running conda and pip side by side.  Some of the packages required for this code are not available through conda alone.  
+To run this software first ensure you have conda installed:(https://conda.io/docs/user-guide/install/index.html)
+
+1. Create new python 3.7 environment in conda: `conda create -n <my_new_env> python=3.7` where "my_new_env" is your preferred environment name.
+
+2. `conda activate <my_new_env>`
+
+3. Install the latest version of the pip package manager, `conda install pip`
+
+4. Using `conda install <package>`
+    * numpy, pandas, pylint, xlrd, cython
+
+5. Using `pip install <package>`
+    * gspread, pydrive
+
+6. Add the client_secrets.json key to the working directory. Do not distribute this key! (https://goo.gl/NmNBY4)
 
 
-Preparing the relevant files and directories:
-1) This program does not write to google drive in any way, only reads files and generates local copies of "THE JSON" file (tm). If
-    files are not appropriately named or formatted in ALL relevant directories this code will not run.  This script relies on the
-    assumption that all files in the "data" directory on google drive have been appropriately generated and curated.
-2) 
+Running The Code
+================
+
+To run the code simply execute the following in the environment created during the installation process:
+
+`python PerovskiteWorkup.py FinalizedJSON/`
+
+The code will take time to gather the resources from google, assemble and process the JSON files.  Once the script is finished executing you will see 'Complete' displayed and a 'Final.csv' will be created in the working directory.  
 
 Please email me at ipendleton .at. haverford.edu for questions and to request the client_secrets.json key!!
 
-Project Summary:
-This toolset was initially designed as a temporary stop gap between the work version of 'dark reactions project' (DRP) at haverford and the addition
-of new generalized reaction workup for importing into DRP database. The key challenges addressed were:
-  1) Constructing a common intermediate file type which has a predictable structure
-  2) Allowing for flexible workflow development as well as retroactive workflow updating/importing (still not sure how to do this) 
-
-Future development:
+Future Development Ideas
+========================
+1. Organize code
+2. Update the raw versus final.csv outputs
+3. JSON schema to inform parsing
+4. class which builds the dataframe from each json
