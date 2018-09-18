@@ -1,8 +1,9 @@
+#Copyright (c) 2018 Ian Pendleton - MIT License
 import json
-fom pathlib import Path
+from pathlib import Path
 import csv
 from oauth2client.service_account import ServiceAccountCredentials
-import Google_IO_DBsetup
+from expworkup import googleio
 import gspread
 import os
 import argparse as ap
@@ -10,13 +11,6 @@ import pandas as pd
 import numpy as np
 import pprint
 import time
-
-##########################################################
-#  _        ___           _                              #
-# |_)    o   |   _. ._   |_) _  ._   _| |  _ _|_  _  ._  #
-# |_) \/ o  _|_ (_| | |  |  (/_ | | (_| | (/_ |_ (_) | | #
-#     /                                                  #
-##########################################################
 
 ### Command line parsing for taking data from shell script
 #parser = ap.ArgumentParser(description='Requires Debug to be manually toggled on')
@@ -90,7 +84,7 @@ def ExpDirOps():
     ##Cross reference with the working directory of the final Json files send the list of jobs needing processing
     ## loops of IFs for file checking
     opdir='13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
-    ExpList=Google_IO_DBsetup.drivedatfold(opdir)
+    ExpList = googleio.drivedatfold(opdir)
     crys_dict=(ExpList[0])
     robo_dict=(ExpList[1])
     Expdata=(ExpList[2])
@@ -103,7 +97,7 @@ def ExpDirOps():
             Outfile=open(exp_json, 'w')
             workdir='datafiles/'
             print('%s Created' %folder)
-            data_from_drive=Google_IO_DBsetup.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
+            data_from_drive= googleio.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
             genthejson(Outfile, workdir, folder, data_from_drive)
             Outfile.close()
             time.sleep(5)

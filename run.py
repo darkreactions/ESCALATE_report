@@ -1,7 +1,8 @@
-import JSONtoCSV
-import CreateDBinput
+#Copyright (c) 2018 Ian Pendleton - MIT License
+from expworkup import jsontocsv
+from expworkup import createjson
 import argparse as ap
-import os
+from expworkup import googleio
 
 parser = ap.ArgumentParser(description='Target Folder')
 parser.add_argument('Filename', type=str, help='Please include target folder') 
@@ -11,5 +12,5 @@ myjsonfol = args.Filename
 #debug = args.Debug
 finalvol_entries=2 ## Hard coded number of formic acid entries at the end of the run
 
-CreateDBinput.ExpDirOps()
-JSONtoCSV.printfinal(myjsonfol)
+createjson.ExpDirOps()
+jsontocsv.printfinal(myjsonfol)
