@@ -515,7 +515,7 @@ def unpackJSON(myjson_fol):
     #Cleans the file in different ways for post-processing analysis
 ###    ### Insert concentration calculation here!! 
     #bring in the inchi key based features for a left merge
-    with open('perov_desc.csv', 'r') as my_descriptors:
+    with open('perov_desc.csv1', 'r') as my_descriptors:
        descriptor_df=pd.read_csv(my_descriptors) 
     dirty_full_df=concat_df_final.merge(descriptor_df, left_on='_rxn_organic-inchikey', right_on='_raw_inchikey', how='inner')
     runID_df_big=pd.DataFrame(data=[dirty_full_df['_raw_jobserial'] + '_' + dirty_full_df['_raw_vialsite']]).transpose()
