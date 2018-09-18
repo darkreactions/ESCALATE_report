@@ -1,11 +1,4 @@
-#python
-##########################################################
-#  _        ___           _                              #
-# |_)    o   |   _. ._   |_) _  ._   _| |  _ _|_  _  ._  #
-# |_) \/ o  _|_ (_| | |  |  (/_ | | (_| | (/_ |_ (_) | | #
-#     /                                                  #
-##########################################################
-
+#Copyright (c) 2018 Ian Pendleton - MIT License
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
@@ -15,35 +8,22 @@ import json
 
 ##Authentication for pydrive, designed globally to minimally generate token (a slow process)
 gauth = GoogleAuth()
-gauth.LoadCredentialsFile("mycred.txt")
+GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = "expworkup/creds/client_secrets.json"
+gauth.LoadCredentialsFile("expworkup/creds/mycred.txt")
 if gauth.credentials is None:
     gauth.LocalWebserverAuth() #Creates local webserver and auto handles authentication.
 elif gauth.access_token_expired:
     gauth.LocalWebserverAuth() #Creates local webserver and auto handles authentication.
 else:
     gauth.Authorize() #Just run because everything is loaded properly
-gauth.SaveCredentialsFile("mycred.txt")
+gauth.SaveCredentialsFile("expworkup/creds/mycred.txt")
 drive=GoogleDrive(gauth)
 
-## Big security no no here... this will need to be fixed! ## 
-
-credsjson={
-  "type": "service_account",
-  "project_id": "sd2perovskitedrp",
-  "private_key_id": "a7592f0e9b6e7716a0414d2397063c2f066eb460",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC2F0uwdyw9TFxo\nATFz9+ykCyApChyrYKwF+9/UvwYujLsHc+87KjqmxjvkiW4aM1t+5geY8ihybZPK\ngQ+ZjVN8h3JpWQkvSzBcr3Um79ezIrrJB/bRyTFF+vetExio1Lt1ZzmyJbl9KWKB\nIp3ZStC/qxmAGdoW/QtwgBqL0VnuGUJWY/KENu1hC0oId0wm657ttjYE4N+lvu31\nyA5yM3mxJw+7+VFEa7HT6S+n4jo+kXNi0DQ8PJuKYDyM2zQ5yIRzGjNQa5rsRazM\n3f/ldUvrKGTUQ6c/qf9wOLs4phlPRZ5x8IE2mgYkOvg9TbVbsC1/8EILqW/jYraj\nLtmTqwy1AgMBAAECggEAC99O9w1+G+0LpVhWkhobGsMC8MoQ/neKH8XBXUyrKYPR\nefXsJi5lrpQEOa1gOWMZ1xdGbYl0a6mLVku96aQWSmtGYWoFuEituY1TFRvUM4DT\nLuJPDHSSut5XIbi6BeAA7PGzCFN/WZLGMmdAZXeETsroGbsVxiPviAFCOdWHiIeO\nrPrQwJQDkfiyCw6h2YRfBrKwN6eRg+P0R2+1+W2nSZ97UyNg8/A4U7qiZm8xcCrv\n2Ir4qDQxMP7bkiPXVq5Iach5UL3m6Wdu3AM+pqciDHfIqUnrpxdyXk4VUq3zUYWb\nzLYuhMI+1ACdki0m758WGKZN5qiI3ziDokJKM57awQKBgQD2tP0UZgbZGnbMHnry\nOVeF+NUYgcJssccH8lV8bDHOQN/C0I4ERAopqvI7WRNKZJhFIauQKmLjvG0nv+AZ\nd2Pzr40qINAJbGcc7uBVJIA2XTRfOofhCTREGLnYKVbrgeQCC1YGB/KaLOp+UQde\nCkauIM7MC9g9gIvL/4+A/WpusQKBgQC88zX/C6EfXDEojjiv845u7L+hS8YhREft\n9U8ja1aj/ji+xf4T08v6WoNwI9EKnC69iHLAwbLP4KOLmsAu6wkEB2CEHE2lEnN8\nMIrHGQohgC8Gy11q96rJE4eJU8VxiIw/lFETiib/RcVyvv+jqIV+MG+cpOfuZtSW\nt6MnGxJnRQKBgE2pxi3gvHEl4pX5VmzgXkwffD3dw23iPSykPgMQMFGknIxAiSSQ\nor5hQSYrsWXu6vyAT/jvTvgwPhCQV6TMr9trvT2w3KzKwl8aV+aVugLjLnR4AYR3\nGEwDmKWSxfkXh8aY+PinEdk1IJCpQ294Pq3cSB118RnTWK7cgblyjUnRAoGBAJIU\nCbvLVt6y3MJ46bSGPKjfWeuudFgFvQJoM62zb4FLqr06vwq/JKTB03ogBp4IT05y\nrhz942s5RddJZakgRpEZzvF0HEcxc50gvjnczutFeZXsJaXsIdpgwdlWrX/vzFXf\nKatMlIeoflUO+v6g68u6UJ+vEixKzbJT+Mvj7x9tAoGAVVmTin77Hc/kseUef67F\n3TIGi6xGEmPOcDaB8+Bmyl0M7KHBn79m4qrNdEbg2aiSsXRNEQqoZzq1yB6MfE2B\n8LBpqxuI1zXBXqDO1YvEVr31oCIdzGh4hq1H5+o/y8IIw9jGdVknD9Tp5AHcGcqf\nn66jpuW0+wKvrclKn2Juhuk=\n-----END PRIVATE KEY-----\n",
-  "client_email": "sd2jsonworkflow@sd2perovskitedrp.iam.gserviceaccount.com",
-  "client_id": "117462869291207799940",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://oauth2.googleapis.com/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sd2jsonworkflow%40sd2perovskitedrp.iam.gserviceaccount.com"
-}
 
 ### General Setup Information ###
 ##GSpread Authorization information
 scope= ['https://spreadsheets.google.com/feeds']
-credentials = ServiceAccountCredentials.from_json_keyfile_dict(credsjson, scope)
+credentials = ServiceAccountCredentials.from_json_keyfile_name('expworkup/creds/creds.json', scope) 
 gc =gspread.authorize(credentials)
 
 def ChemicalData():

@@ -56,7 +56,8 @@ To run this software first ensure you have conda installed:(https://conda.io/doc
 5. Using `pip install <package>`
     * gspread, pydrive
 
-6. Add the client_secrets.json key to the working directory. Do not distribute this key! (https://goo.gl/NmNBY4)
+6. Download the keys.zip file and unzip into the expworkup/creds/ folder. Do not distribute this key! (https://goo.gl/NmNBY4)
+  * Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the 'expworkup/creds/' folder
 
 
 Running The Code
@@ -68,7 +69,7 @@ To run the code simply execute the following in the environment created during t
 
 The code will take time to gather the resources from google, assemble and process the JSON files.  Once the script is finished executing you will see 'Complete' displayed and a 'Final.csv' will be created in the working directory.  
 
-Please email me at ipendleton .at. haverford.edu for questions and to request the client_secrets.json key!!
+Please email me at ipendleton .at. haverford.edu for questions and to request the keys.zip file (contains the necessary authentication to operate our software)!!
 
 Future Development Ideas
 ========================

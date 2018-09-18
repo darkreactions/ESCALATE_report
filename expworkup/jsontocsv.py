@@ -1,3 +1,4 @@
+#Copyright (c) 2018 Ian Pendleton - MIT License
 import json
 import pandas as pd
 #import argparse as ap
@@ -14,24 +15,11 @@ from operator import itemgetter
 debug = 0 #args.Debug
 finalvol_entries=2 ## Hard coded number of formic acid entries at the end of the run
 #
-## Big security no no here... this will need to be fixed! ## 
-credsjson={
-  "type": "service_account",
-  "project_id": "sd2perovskitedrp",
-  "private_key_id": "05516a110e2f053145747c432c8124a218118fca",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDPI4jqjofDw1VA\n1VE0q9adAt7T9Ad8IafQURae/yFXsakkJjIgpQficUTDq78/3OYbcjKPayeUmBUp\nn9jb2XVTjouKrUAeGeXO3rB2gZ8fEMLuLQgz1ELwoZkuAWpzxlcUySakO06DEMkw\nZD0zN7jUQqxqlim7eE1VST3tHiLWbtygdOxwxI3qD0XdzMqeEsTBO0u4W5q7G0Rg\ndds2Af3BMddvwk7O8kyiqLXez1HxDBEQcNm1ZNV+sVl1+QEnrzOUGkJ3UcP/pNCB\nAZEd+4hoIeDAhR2HiLh/jGS55tigcn781QxbDlqfoE5dz/xeJRlDO1GZDDJaeQ7J\nuGhJ27wTAgMBAAECggEAHeF0aNGyyAyvibC8DCsVxISbfFvhkIiSWry31KvdNXdN\nfQd9h7QG1SWd09Q8vIuzLhZlMMc2aHsf4mdKszxFbo5Llu+zJiR6QENjlVTRjXuv\ngwg//KoMFgZZwIc3wgfEnB0AVASyKLoNK8vqAC9znDsaAC41SvPpw/nS0xfb0q7c\n8PZhM9ER3RsnsCeNWDInVkLMl7rF+yLpeVK+zG64TlytdcID77LaPVemW4mCkh+9\nrnaAjzAKHxm+jaRkQw8m6E51p6HW1Flo64Xv969mcqHmDQoqEziT+ey33Hu3Trw8\n70B0s2oeenxxeKMZbhgvQo6xztwe8JimPLxbawY1QQKBgQDtU2jjbSkiTzEp7yPp\nRV996U6B0+59J4939zfZ3VLm/FLtWKcsO6usxTirAxGzd8hVTi4y2WN4N/Wz7Y2p\n9XBhLGM5BgpmIk7uU+zn99gN+I+xrqh4FLm49yxNFV9B2m4QEnuF4yuyHnuk0Ja0\nK75OBGPXpk/jEhu8IElONAN1MQKBgQDfcA0BbUKOsaPebbuGGUvLoAgBqN7oO/M4\nxdg9sxXAJIocAt2RHg8Po8NzyE1LaCR9eQkAR+yIWrh18g3Qahjb19ZJWGFZeQfB\nOTBLadoXi1gb7UzUT5bANairIj1Kj/sgkGlXI3yTQjAXMLVMtreq8qTiRD5mcUOh\nQqDCeeIEgwKBgQCbCVtC/yPZCvzmFRhTooMwYQJtY8KvtfFOgIzW4XPv+7Q84yZK\niiyrcCeF6DpfEIgp2inqBAOsHHqBcVWTSwiAIpwrO1v9vrnrjZ39J/bXoaJVg/EA\niSGOyMIDFUwmXAh8rWZOX8pC0REa6T0aNF1c4BdNYJNdlo3RxxG8adQ8cQKBgQCY\nlbmb9tRUBAXHOSKtkgrL1M6C66LF72LKq3lfsTOyUoGqXV6X4nIgmRI5uFjonQcG\nVKiL85IZD/MWQKWkZT/yqfPhhKR+aIOeNYLAjVntaDBUafpkprFpM3uq2qgGikrR\n0yzM4CQLoFCdFZtJ9yF4cVmeV0JRzRmFP63vATMTJwKBgEYOSJaRix+iUk8br0ks\nMLHR/1jpkAKpdylZveDNlH7hyDaI/49BhUiBVfgZpvmmsVBaCuT3zs6EYZgxaKMT\nsNQ79RpFZ37iPcSNcowWx1fA7chbWOU/KadGwajRwyXAJUxf5sqRplFK9uss/7vR\n2IoNs8hKcf097zP3W+60/Adp\n-----END PRIVATE KEY-----\n",
-  "client_email": "uploadtogooglesheets@sd2perovskitedrp.iam.gserviceaccount.com",
-  "client_id": "101584110543551066070",
-  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-  "token_uri": "https://accounts.google.com/o/oauth2/token",
-  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/uploadtogooglesheets%40sd2perovskitedrp.iam.gserviceaccount.com"
-}
 
 ### General Setup Information ###
 ##GSpread Authorization information
 scope= ['https://spreadsheets.google.com/feeds']
-credentials = ServiceAccountCredentials.from_json_keyfile_dict(credsjson, scope)
+credentials = ServiceAccountCredentials.from_json_keyfile_name('expworkup/creds/creds.json', scope) 
 gc =gspread.authorize(credentials)
 
 #Import the most recent chemical data sheet from google drive to process the inchi keys and data about chemicals
@@ -515,7 +503,7 @@ def unpackJSON(myjson_fol):
     #Cleans the file in different ways for post-processing analysis
 ###    ### Insert concentration calculation here!! 
     #bring in the inchi key based features for a left merge
-    with open('perov_desc.csv1', 'r') as my_descriptors:
+    with open('data/perov_desc.csv1', 'r') as my_descriptors:
        descriptor_df=pd.read_csv(my_descriptors) 
     dirty_full_df=concat_df_final.merge(descriptor_df, left_on='_rxn_organic-inchikey', right_on='_raw_inchikey', how='inner')
     runID_df_big=pd.DataFrame(data=[dirty_full_df['_raw_jobserial'] + '_' + dirty_full_df['_raw_vialsite']]).transpose()
