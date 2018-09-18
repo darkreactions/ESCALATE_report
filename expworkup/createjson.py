@@ -1,32 +1,14 @@
 #Copyright (c) 2018 Ian Pendleton - MIT License
 import json
 from pathlib import Path
-import csv
-from oauth2client.service_account import ServiceAccountCredentials
 from expworkup import googleio
-import gspread
 import os
-import argparse as ap
 import pandas as pd
 import numpy as np
-import pprint
 import time
-
-### Command line parsing for taking data from shell script
-#parser = ap.ArgumentParser(description='Requires Debug to be manually toggled on')
-#parser.add_argument('--Debugging', default=1, type=int, help='no current function, placeholder variable') 
-#args = parser.parse_args()
 
 ## Set the workflow of the code used to generate the experimental data and to process the data
 WorkupVersion=1.0
-
-### Simple Starting Points ### 
-#Debug = args.Debugging #Prevents editing the working directory and provides a dev mode as default
-#print("Debugging on (? - boolean) = ", Debug, end=' ;;\n', file=log)
-
-#############################################################################################################################
-#############################################################################################################################
-#############################################################################################################################
 
 def Expdata(DatFile):
     ExpEntry=DatFile
@@ -59,7 +41,6 @@ def Crys(crysfile):
 def genthejson(Outfile, workdir, opfolder, drive_data):
     ## Do all of the file handling for a particular run and assemble the JSON, return the completed JSON file object
     ## and location for sorting and final comparison
-
     Crysfile=drive_data
     Expdatafile=workdir+opfolder+'_ExpDataEntry.json'
     Robofile=workdir+opfolder+'_RobotInput.xls'
@@ -78,9 +59,8 @@ def genthejson(Outfile, workdir, opfolder, drive_data):
     print('\t', crys_return, file=Outfile)
     print('}', file=Outfile)
 
-def ExpDirOps():
+def ExpDirOps(myjsonfolder):
     ##Call code to get all of the relevant folder titles from the experimental directory and
-#    Google_IO_DBsetup.drivedatfold()
     ##Cross reference with the working directory of the final Json files send the list of jobs needing processing
     ## loops of IFs for file checking
     opdir='13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
@@ -90,16 +70,14 @@ def ExpDirOps():
     Expdata=(ExpList[2])
     dir_dict=(ExpList[3])
     for folder in dir_dict:
-        exp_json=Path("FinalizedJSON/%s.json" %folder)
+        exp_json=Path(myjsonfolder+"/%s.json" %folder)
         if exp_json.is_file():
             print(folder, 'exists')
         else:
             Outfile=open(exp_json, 'w')
-            workdir='datafiles/'
+            workdir='data/datafiles/'
             print('%s Created' %folder)
             data_from_drive= googleio.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
             genthejson(Outfile, workdir, folder, data_from_drive)
             Outfile.close()
-            time.sleep(5)
-#            with open(exp_json, 'r') as the_json:
-#                theOut=json.load(the_json)
+            time.sleep(2) #due to the limitations of the haverford googleapi we have to throttle the connection a bit to limit the number of api requests anything lower than 2 bugs it out

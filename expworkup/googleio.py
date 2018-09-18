@@ -5,7 +5,6 @@ from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 import json
 
-
 ##Authentication for pydrive, designed globally to minimally generate token (a slow process)
 gauth = GoogleAuth()
 GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = "expworkup/creds/client_secrets.json"
@@ -19,10 +18,9 @@ else:
 gauth.SaveCredentialsFile("expworkup/creds/mycred.txt")
 drive=GoogleDrive(gauth)
 
-
 ### General Setup Information ###
 ##GSpread Authorization information
-scope= ['https://spreadsheets.google.com/feeds']
+scope= ['https://www.googleapis.com/auth/spreadsheets.readonly']
 credentials = ServiceAccountCredentials.from_json_keyfile_name('expworkup/creds/creds.json', scope) 
 gc =gspread.authorize(credentials)
 
@@ -87,6 +85,3 @@ def getalldata(crysUID, roboUID, expUID, workdir, runname):
     robo_file = drive.CreateFile({'id': roboUID}) 
     robo_file.GetContentFile(workdir+robo_file['title'])
     return(Crysout) #Returns only the list of lists for the crystal file, other files are in xls or need to be processed via text for various reasons
-
-
-
