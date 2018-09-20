@@ -1,9 +1,12 @@
 #Copyright (c) 2018 Ian Pendleton - MIT License
+#version 0.2
 from expworkup import jsontocsv
 from expworkup import createjson
 import argparse as ap
 import os
 from expworkup import googleio
+
+version=0.2
 
 # Some command line interfacing to aid in script handling
 parser = ap.ArgumentParser(description='Target Folder')
