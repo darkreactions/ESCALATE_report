@@ -33,7 +33,7 @@ def Crys(crysfile):
     ##Gather the crystal datafile information and return JSON object
     headers=crysfile.pop(0)
     crys_df=pd.DataFrame(crysfile, columns=headers)
-    crys_df_curated=crys_df[['Concatenated Vial site', 'Crystal Score']]
+    crys_df_curated=crys_df[['Concatenated Vial site', 'Crystal Score', 'Actual Temp (C)']]
     crys_list=crys_df_curated.values.tolist()
     crys_dump=json.dumps(crys_list)
     return(crys_dump)
@@ -59,11 +59,14 @@ def genthejson(Outfile, workdir, opfolder, drive_data):
     print('\t', crys_return, file=Outfile)
     print('}', file=Outfile)
 
-def ExpDirOps(myjsonfolder):
+def ExpDirOps(myjsonfolder, debug):
     ##Call code to get all of the relevant folder titles from the experimental directory and
     ##Cross reference with the working directory of the final Json files send the list of jobs needing processing
     ## loops of IFs for file checking
-    opdir='13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
+    if debug == 0:
+        opdir='13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
+    elif debug == 1:
+        opdir = '1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k'
     ExpList = googleio.drivedatfold(opdir)
     crys_dict=(ExpList[0])
     robo_dict=(ExpList[1])
