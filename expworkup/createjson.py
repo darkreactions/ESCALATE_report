@@ -21,9 +21,15 @@ def Expdata(DatFile):
 
 def Robo(robotfile):
     #o the file handling for the robot.xls file and return a JSON object
-    robo_df = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=7)
-    robo_df_2 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=(8,9)).dropna()
-    robo_df_3 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=(10,11,12,13)).dropna()
+    robot_dict = pd.read_excel(open(robotfile, 'rb'), header=[0], sheet_name=0)
+    reagentlist = []
+    for header in robot_dict.columns:
+        if 'Reagent' in header and "ul" in header:
+            reagentlist.append(header)
+    rnum = len(reagentlist)
+    robo_df = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=rnum+1)
+    robo_df_2 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=(rnum+2,rnum+3)).dropna()
+    robo_df_3 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=(rnum+4,rnum+5,rnum+6,rnum+7)).dropna()
     robo_dump=json.dumps(robo_df.values.tolist())
     robo_dump2=json.dumps(robo_df_2.values.tolist())
     robo_dump3=json.dumps(robo_df_3.values.tolist())
@@ -33,7 +39,7 @@ def Crys(crysfile):
     ##Gather the crystal datafile information and return JSON object
     headers=crysfile.pop(0)
     crys_df=pd.DataFrame(crysfile, columns=headers)
-    crys_df_curated=crys_df[['Concatenated Vial site', 'Crystal Score', 'Actual Temp (C)']]
+    crys_df_curated=crys_df[['Concatenated Vial site', 'Crystal Score', 'Bulk Actual Temp (C)']]
     crys_list=crys_df_curated.values.tolist()
     crys_dump=json.dumps(crys_list)
     return(crys_dump)
