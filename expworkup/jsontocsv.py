@@ -61,12 +61,12 @@ def nameCleaner(sub_dirty_df):
     return(cleaned_M)
 
 #cleans up the name space and the csv output for distribution
-def cleaner(dirty_df, debug):
+def cleaner(dirty_df, raw):
     rxn_M_clean = nameCleaner(dirty_df.filter(like='_raw_M_'))
     rxn_df=dirty_df.filter(like='_rxn_') 
     feat_df=dirty_df.filter(like='_feat_') 
     out_df=dirty_df.filter(like='_out_') 
-    if debug == 1: 
+    if raw == 1: 
         raw_df=dirty_df.filter(like='_raw_')
         squeaky_clean_df=pd.concat([out_df,rxn_M_clean,rxn_df,feat_df, raw_df], axis=1) 
     else:
@@ -136,10 +136,10 @@ def augdescriptors(dataset_calcs_fill_df):
     dirty_full_df.set_index('RunID_vial', inplace=True)
     return(dirty_full_df)
 
-def printfinal(myjsonfolder, debug):
+def printfinal(myjsonfolder, debug,raw):
     raw_df=unpackJSON(myjsonfolder)
     augmented_raw_df = augmentdataset(raw_df)
-    cleaned_augmented_raw_df= cleaner(augmented_raw_df, debug)
+    cleaned_augmented_raw_df= cleaner(augmented_raw_df, raw)
     with open('Final.csv', 'w') as outfile:
         print('Complete')
         cleaned_augmented_raw_df.to_csv(outfile)

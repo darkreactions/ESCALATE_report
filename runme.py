@@ -10,10 +10,14 @@ if __name__ == "__main__":
     parser = ap.ArgumentParser(description='Target Folder')
     parser.add_argument('folder', type=str, help='Please include target folder') 
     parser.add_argument('-d', '--debug', type=int, default=0, help='Turns on testing for implementing new features to the front end of the code, prior to distribution through dataset')
+    parser.add_argument('--raw', type=int, default=0, help='final dataframe is printed with all raw values included')
+    
     
     args = parser.parse_args()
     myjsonfol = args.folder
     debug = args.debug
+    raw = args.raw
+    
     
     #debug = args.Debug
     
@@ -25,4 +29,4 @@ if __name__ == "__main__":
     
     #run the main body of the code.  Can be called later as a module if needed
     createjson.ExpDirOps(myjsonfol, debug) #Run Primary JSON Creator
-    jsontocsv.printfinal(myjsonfol, debug) # RUn the JSON to CSV parser
+    jsontocsv.printfinal(myjsonfol, debug,raw) # RUn the JSON to CSV parser

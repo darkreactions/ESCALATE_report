@@ -13,7 +13,7 @@ def dict_listoflists(list_lists):
         values.append(value)
     tray=pd.DataFrame(values)#, columns=['_rxn_temperatureC', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS'])
     tray_df=tray.transpose()
-    tray_df.columns =['_raw_temperatureC', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS']
+    tray_df.columns =['_raw_temperatureC_nominal', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS']
     return(tray_df)
 
 #Flattens the list and returns the heirchical naming structure 0 ... 1 ... 2  ## See the example in the faltten_json_reg definition for more details
@@ -217,7 +217,7 @@ def reagentparser(firstlevel, myjson, chem_df):
             columnnames.append('_raw_labwareID')
             well_volumes_df=pd.DataFrame(reg_value, columns=columnnames)
         if reg_key == 'crys_file_data':
-            crys_file_data_df=pd.DataFrame(reg_value, columns=['_raw_vialsite', '_out_crystalscore', '_rxn_temperatureC_bulkactual'])
+            crys_file_data_df=pd.DataFrame(reg_value, columns=['_raw_vialsite', '_out_crystalscore', '_rxn_temperatureC_actual_bulk'])
     #The following code aligns and normalizes the data frames
     experiment_df=well_volumes_df.merge(crys_file_data_df)
     wellcount=(len(experiment_df.index))-1
