@@ -18,3 +18,7 @@ RELEASE HISTORY
   * Data process for recording actual temperature was added
   * Created a folder for tests and debugging of new features for the pipeline prior to implementation
     * Still need a test kit!
+
+0.3.1 (2018-11-16)
+--------------------------
+  * Fixed headers for new temperature feature, added cli for raw data dump
