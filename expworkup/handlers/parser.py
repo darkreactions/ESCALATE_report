@@ -13,7 +13,7 @@ def dict_listoflists(list_lists):
         values.append(value)
     tray=pd.DataFrame(values)#, columns=['_rxn_temperatureC', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS'])
     tray_df=tray.transpose()
-    tray_df.columns =['_rxn_temperatureC', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS']
+    tray_df.columns =['_raw_temperatureC', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS']
     return(tray_df)
 
 #Flattens the list and returns the heirchical naming structure 0 ... 1 ... 2  ## See the example in the faltten_json_reg definition for more details
