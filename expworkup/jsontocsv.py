@@ -38,13 +38,14 @@ def ChemicalData():
 def robo_handling():
     pass
 
+#The name cleaner is hard coded at the moment for the chemicals we are using. This will need to be generalized somehow...
 def nameCleaner(sub_dirty_df):
     inorganic_list=[]
     organic_df=pd.DataFrame()
     cleaned_M=pd.DataFrame()
     for header in sub_dirty_df.columns:
-        #GBl handling -- > Solvent labeled
-        if 'YEJRWHAVMIAJKC-UHFFFAOYSA-N' in header:
+        #GBl handling -- > Solvent labeled (or other solvent such as DMF)
+        if 'YEJRWHAVMIAJKC-UHFFFAOYSA-N' in header:# or 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' in header:
             print("1")
             pass
         #Acid handling --> Acid labeld --> will need to declare type in the future or something
@@ -52,7 +53,7 @@ def nameCleaner(sub_dirty_df):
             cleaned_M['_rxn_M_acid']=sub_dirty_df[header]
 #            molarity_df['_rxn_M_acid'] = mmol_reagent_df[header] / (calculated_volumes_df['_raw_final_volume']/1000)
         #PBI2 handling --> inorganic label
-        elif 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' in header:
+        elif 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' in header:# or 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L' in header:
             cleaned_M['_rxn_M_inorganic']=sub_dirty_df[header]
 #            molarity_df['_rxn_M_inorganic'] = mmol_reagent_df[header] / (calculated_volumes_df['_raw_final_volume']/1000)
         else:
@@ -66,7 +67,11 @@ def cleaner(dirty_df, raw):
     rxn_df=dirty_df.filter(like='_rxn_') 
     feat_df=dirty_df.filter(like='_feat_') 
     out_df=dirty_df.filter(like='_out_') 
+<<<<<<< HEAD
     if raw == 1: 
+=======
+    if debug == 0: 
+>>>>>>> actualconcs
         raw_df=dirty_df.filter(like='_raw_')
         squeaky_clean_df=pd.concat([out_df,rxn_M_clean,rxn_df,feat_df, raw_df], axis=1) 
     else:

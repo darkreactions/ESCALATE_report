@@ -22,3 +22,8 @@ RELEASE HISTORY
 0.3.1 (2018-11-16)
 --------------------------
   * Fixed headers for new temperature feature, added cli for raw data dump
+
+0.4 (2019-01-10)
+--------------------------
+  * Added debugging for future developement
+  * Updated logging

@@ -10,7 +10,7 @@ database for more general distribution. The key challenges addressed were:
   2) Allowing for flexible workflow development as well as retroactive workflow updating/importing
   3) Process the generated JSON files (each of which describe a set of experiments) into a single final CSV file which describes the entirety of the dataset.
  
-#### Summmary
+#### Summary
 This section will be updated in the next version of the code to more fully explain the underlying processes being used.  In general the workflow is as follows:
 1. PeroskiteWorkup.py (PW.py) initiates the workflow.
 2. PW.py calls CreateDBinput.py
