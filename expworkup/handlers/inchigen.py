@@ -23,11 +23,14 @@ def GrabInchi(rxn_mmol_df, labels_df):
             else:
                 header=header_list[row_index]
                 InChIKey=header[10:-6]
+                #pass if formic acid
                 if InChIKey == "BDAGIHXWWSANSR-UHFFFAOYSA-N":
                     pass
-                elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N': 
+                #pass if inchi is GBL --> 12/9/18 update now solvent ## Probably can fix this generally#
+                elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N' or InChIKey=='ZMXDDKWLCZADIW-UHFFFAOYSA-N': 
                     pass
-                elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L':
+                #pass if lead iodide
+                elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or InChIKey=='ZASWJUOMEGBQCQ-UHFFFAOYSA-L':
                     pass
                 elif InChIKey == 'null':
                     pass
