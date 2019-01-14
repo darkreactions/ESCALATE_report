@@ -67,11 +67,7 @@ def cleaner(dirty_df, raw):
     rxn_df=dirty_df.filter(like='_rxn_') 
     feat_df=dirty_df.filter(like='_feat_') 
     out_df=dirty_df.filter(like='_out_') 
-<<<<<<< HEAD
     if raw == 1: 
-=======
-    if debug == 0: 
->>>>>>> actualconcs
         raw_df=dirty_df.filter(like='_raw_')
         squeaky_clean_df=pd.concat([out_df,rxn_M_clean,rxn_df,feat_df, raw_df], axis=1) 
     else:
