@@ -18,3 +18,8 @@ RELEASE HISTORY
   * Data process for recording actual temperature was added
   * Created a folder for tests and debugging of new features for the pipeline prior to implementation
     * Still need a test kit!
+
+0.4 (2019-01-10)
+--------------------------
+  * Added debugging for future developement
+  * Updated logging

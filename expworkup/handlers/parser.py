@@ -155,7 +155,7 @@ def reag_info(reagentdf,chemdf):
                         print("Error with the configuration of reference sheet.  Abort run and check formic acid details in google sheets (2018-08-11)")
                         break
                 #GBL
-                elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N': 
+                elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N' or InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N': 
                     mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     m_type='solvent'
@@ -164,7 +164,7 @@ def reag_info(reagentdf,chemdf):
                     except:
                         pass
                 #PbI2
-                elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L':
+                elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or InChIKey == 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L':
                     mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     m_type='inorg'
