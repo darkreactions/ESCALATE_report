@@ -69,7 +69,7 @@ def cleaner(dirty_df, raw):
     rxn_df=dirty_df.filter(like='_rxn_') 
     feat_df=dirty_df.filter(like='_feat_') 
     out_df=dirty_df.filter(like='_out_') 
-    if raw == 1: 
+    if raw == 0: 
         raw_df=dirty_df.filter(like='_raw_')
         squeaky_clean_df=pd.concat([out_df,rxn_M_clean,rxn_df,feat_df, raw_df], axis=1) 
     else:
@@ -122,8 +122,6 @@ def augmentdataset(raw_df):
 def augmolarity(concat_df_final):
     ''' Perform exp object molarity calculations (ideal concentrations), grab organic inchi
     '''
-    #For printing the entire dataframe of combined values (likely starting point for future database design)
-#    concat_df_final.to_csv('concat_df_final.csv')
     concat_df_final.set_index('RunID_vial', inplace=True)
     #grabs all of the raw mmol data from the column header and creates a column which uniquely identifies which organic will be needed for the features in the next step
     inchi_df = concat_df_final.filter(like='_InChIKey')
@@ -157,6 +155,6 @@ def printfinal(myjsonfolder, debug,raw):
     raw_df=unpackJSON(myjsonfolder)
     augmented_raw_df = augmentdataset(raw_df)
     cleaned_augmented_raw_df= cleaner(augmented_raw_df, raw)
-    with open('Final.csv', 'w') as outfile:
+    with open('dashboard_target.csv', 'w') as outfile:
         print('Complete')
         cleaned_augmented_raw_df.to_csv(outfile)
