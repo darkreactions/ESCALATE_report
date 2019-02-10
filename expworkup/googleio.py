@@ -1,9 +1,10 @@
 #Copyright (c) 2018 Ian Pendleton - MIT License
+import json
+
+import gspread
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
-import gspread
-import json
 
 ##Authentication for pydrive, designed globally to minimally generate token (a slow process)
 gauth = GoogleAuth()

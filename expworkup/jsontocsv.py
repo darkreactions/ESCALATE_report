@@ -2,9 +2,11 @@
 import json
 import pandas as pd
 import os
+from operator import itemgetter
+
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from operator import itemgetter
+
 from expworkup.handlers import parser
 from expworkup.handlers import calcmmol
 from expworkup.handlers import calcmolarity
@@ -102,21 +104,32 @@ def unpackJSON(myjson_fol):
         concat_df_raw = pd.concat([concat_df_raw,concat_df], sort=True)
     return(concat_df_raw) #this contains all of the raw values from the processed JSON files.  No additional data has been calculated
 
-#Processes full dataset through a series of operations to add molarity, features, calculated values, etc
 def augmentdataset(raw_df):
+    ''' Processes full dataset through a series of operations to add molarity, features, calculated values, etc
+
+    Takes the raw dataset compiled from the JSON files of each experiment and 
+    performs rudimentary operations including: calculating concentrations and
+    adding features.
+
+    *This needs to be broken out into a separate module with each task allocated
+    a single script which can be edited independently
+    '''
     rawdataset_df_filled = raw_df.fillna(0)  #ensures that all values are filled (possibly problematic as 0 has a value)
     dataset_calcs_fill_df = augmolarity(rawdataset_df_filled) 
     dataset_calcs_desc_fill_df = augdescriptors(dataset_calcs_fill_df)
     return(dataset_calcs_desc_fill_df)
 
-#Augment the dataset with molarity calculations
 def augmolarity(concat_df_final):
-    final_id=concat_df_final['RunID_vial']
+    ''' Perform exp object molarity calculations (ideal concentrations), grab organic inchi
+    '''
+    #For printing the entire dataframe of combined values (likely starting point for future database design)
+#    concat_df_final.to_csv('concat_df_final.csv')
     concat_df_final.set_index('RunID_vial', inplace=True)
     #grabs all of the raw mmol data from the column header and creates a column which uniquely identifies which organic will be needed for the features in the next step
-    rxn_mmol_df=concat_df_final.filter(like='_raw_mmol_')
-    #Sends off the final mmol list to generate inchi list and  for the chemical features calculations
-    OrganicInchi_df=inchigen.GrabInchi(rxn_mmol_df, final_id)
+    inchi_df = concat_df_final.filter(like='_InChIKey')
+    inchi_df.to_csv('rxndf.csv')
+    #Sends off the final mmol list to specifically grab the organic inchi key and expose(current version)
+    OrganicInchi_df=inchigen.GrabOrganicInchi(inchi_df)
     #takes all of the volume data from the robot run and reduces it into two total volumes, the total prior to FAH and the total after.  Returns a 3 column array "totalvol and finalvol in title"
     molarity_df=calcmolarity.molarity_calc(concat_df_final, finalvol_entries)
     #Combines the new Organic inchi file and the sum volume with the main dataframe
@@ -124,10 +137,13 @@ def augmolarity(concat_df_final):
     #Cleans the file in different ways for post-processing analysis
     return(dataset_calcs_fill_df)
 
-#Temporary holder for processing the descriptors and adding them to the complete dataset.  
-#If an amine is not present in the "perov_desc.csv1" file, the run will not be processed
 def augdescriptors(dataset_calcs_fill_df):
-    #bring in the inchi key based features for a left merge
+    ''' bring in the inchi key based features for a left merge
+
+    Temporary holder for processing the descriptors and adding them to the complete dataset.  
+    If an amine is not present in the "perov_desc.csv1" file, the run will not be processed
+    and will error out silently!  This is a feature not a bug (for now)  
+    '''
     with open('data/perov_desc.csv1', 'r') as my_descriptors:
        descriptor_df=pd.read_csv(my_descriptors) 
     dirty_full_df=dataset_calcs_fill_df.merge(descriptor_df, left_on='_rxn_organic-inchikey', right_on='_raw_inchikey', how='inner')

@@ -1,9 +1,10 @@
 #Copyright (c) 2018 Ian Pendleton - MIT License
 if __name__ == "__main__":
+    import os
+    import argparse as ap
+
     from expworkup import jsontocsv
     from expworkup import createjson
-    import argparse as ap
-    import os
     from expworkup import googleio
     
     # Some command line interfacing to aid in script handling
