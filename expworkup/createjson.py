@@ -1,11 +1,12 @@
 #Copyright (c) 2018 Ian Pendleton - MIT License
-import json
-from pathlib import Path
-from expworkup import googleio
 import os
+import time
 import pandas as pd
 import numpy as np
-import time
+import json
+from pathlib import Path
+
+from expworkup import googleio
 
 ## Set the workflow of the code used to generate the experimental data and to process the data
 WorkupVersion=1.0
