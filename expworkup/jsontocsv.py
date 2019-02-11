@@ -155,6 +155,6 @@ def printfinal(myjsonfolder, debug,raw):
     raw_df=unpackJSON(myjsonfolder)
     augmented_raw_df = augmentdataset(raw_df)
     cleaned_augmented_raw_df= cleaner(augmented_raw_df, raw)
-    with open('dashboard_target.csv', 'w') as outfile:
+    with open('%s.csv' %myjsonfolder, 'w') as outfile:
         print('Complete')
         cleaned_augmented_raw_df.to_csv(outfile)
