@@ -25,14 +25,6 @@ Installation
 ============
   This build process has been tested on MacOS High Sierra (10.13.5) and Ubuntu Bionic Beaver (18.04)
   
-### Conda Installation
-If you have not installed conda please do so at the following link: (https://conda.io/docs/user-guide/install/index.html)
-
-1. Create the appropriate environment using the conda builder `conda env create --name escalate -f escalate_environment.yml`
-
-2. Download the secure keys (https://drive.google.com/open?id=11VP8VazRwFtWHlpEuWdqH0vr_uUQUHV8) and them to expworkup/creds/ folder
-
-
 ### Pip Install
 
 1. Create new python 3.7 environment in conda: `conda create -n escalate python=3.7`
