@@ -30,7 +30,6 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name('expworkup/creds/
 gc =gspread.authorize(credentials)
 
 def ChemicalData():
-    print('Obtaining chemical information from Google Drive..', end='')
     chemsheetid = "1JgRKUH_ie87KAXsC-fRYEw_5SepjOgVt7njjQBETxEg"
     ChemicalBook = gc.open_by_key(chemsheetid)
     chemicalsheet = ChemicalBook.get_worksheet(0)
@@ -39,8 +38,7 @@ def ChemicalData():
     chemdf=chemdf.iloc[1:]
     chemdf=chemdf.reset_index(drop=True)
     chemdf=chemdf.set_index(['InChI Key (ID)'])
-    print('.done')
-    modlog.info('successfully loaded chemical data for processing')
+    modlog.info('Successfully loaded chemical data for processing')
     return(chemdf)
 
 ###Returns a referenced dictionary of processed files as dictionaries {folder title SD2 ID, Gdrive UID}
@@ -50,7 +48,7 @@ def drivedatfold(opdir):
     Crys_dict={}
     Expdata_dict={}
     Robo_dict={}
-    print('Downloading data please be patient!')
+    print('Downloading data ..', end='',flush=True)
     for f in datadir_list:
         if "Template" in f['title']:
             pass
@@ -68,7 +66,8 @@ def drivedatfold(opdir):
                     Expdata_dict[f['title']]=f_sub['id']
                 if "RobotInput" in f_sub['title']:
                     Robo_dict[f['title']]=f_sub['id']
-    print('Data download complete')
+            print('.',end='',flush=True)
+    print(' download complete')
     return(Crys_dict, Robo_dict, Expdata_dict, dir_dict) # Returns a named list of dictionaries linked to the folder (the job jun) and the specific file's UID on gdrive. Each dictionary variable is linked to folder/run
 ###Returns a referenced dictionary of processed files as dictionaries {folder title SD2 ID, Gdrive UID}, the dictionary labels are thereby callable by the same key, but have different variables.. this makes sense, but likely a better way?
 

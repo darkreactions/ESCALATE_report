@@ -96,8 +96,17 @@ def ExpDirOps(myjsonfolder, debug):
         else:
             Outfile=open(exp_json, 'w')
             workdir='data/datafiles/'
-            modlog.warn('%s Created' %folder)
+            modlog.info('%s Created' %folder)
+            print('%s Created' %folder)
             data_from_drive= googleio.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
             genthejson(Outfile, workdir, folder, data_from_drive)
             Outfile.close()
-            time.sleep(2) #due to the limitations of the haverford googleapi we have to throttle the connection a bit to limit the number of api requests anything lower than 2 bugs it out
+#            time.sleep(2)  #see note below
+            '''
+            due to the limitations of the haverford googleapi 
+            we have to throttle the connection a bit to limit the 
+            number of api requests anything lower than 2 bugs it out
+
+            This will need to be re-enabled once we open the software beyond
+            haverford college until we improve the scope of the googleio api
+            '''
