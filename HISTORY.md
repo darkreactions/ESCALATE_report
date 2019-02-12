@@ -27,3 +27,9 @@ RELEASE HISTORY
 --------------------------
   * Added debugging for future developement
   * Updated logging
+
+0.5 (2019-02-12)
+--------------------------
+  * Thorough logging and output beautification
+  * Modularized code for escalation work
+  * improved googleio interfacing --> improves performance
