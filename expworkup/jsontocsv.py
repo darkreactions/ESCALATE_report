@@ -66,9 +66,11 @@ def cleaner(dirty_df, raw):
     ### developed enough now that it should be broken up into smaller pieces!
 def unpackJSON(myjson_fol):
     chem_df=googleio.ChemicalData()  #Grabs relevant chemical data frame from google sheets (only once no matter how many runs)
-    concat_df_raw=pd.DataFrame()  
+    concat_df_raw=pd.DataFrame() 
+    print('Unpacking JSONs  ..', end='', flush=True)
     for file in sorted(os.listdir(myjson_fol)):
         if file.endswith(".json"):
+            modlog.info('Unpacking %s' %file)
             concat_df=pd.DataFrame()  
             #appends each run to the original dataframe
             myjson=(os.path.join(myjson_fol, file))
@@ -85,6 +87,8 @@ def unpackJSON(myjson_fol):
             concat_df=pd.concat([mmol_df, concat_df, runID_df], sort=True, axis=1)
         #Combines the most recent dataframe with the final dataframe which is targeted for export
         concat_df_raw = pd.concat([concat_df_raw,concat_df], sort=True)
+        print('.', end='',flush=True)
+    print(' unpacking complete!')
     return(concat_df_raw) #this contains all of the raw values from the processed JSON files.  No additional data has been calculated
 
 def augmentdataset(raw_df):
@@ -141,5 +145,5 @@ def printfinal(myjsonfolder, debug,raw):
     modlog.info('appending features and curating dataset')
     cleaned_augmented_raw_df= cleaner(augmented_raw_df, raw)
     with open('%s.csv' %myjsonfolder, 'w') as outfile:
-        print('2d Dataframe Rendered Successfully')
+        print('2d dataframe rendered successfully')
         cleaned_augmented_raw_df.to_csv(outfile)
