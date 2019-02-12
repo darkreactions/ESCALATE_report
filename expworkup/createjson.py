@@ -3,6 +3,7 @@ import os
 import time
 import pandas as pd
 import numpy as np
+import logging
 import json
 from pathlib import Path
 
@@ -10,6 +11,8 @@ from expworkup import googleio
 
 ## Set the workflow of the code used to generate the experimental data and to process the data
 WorkupVersion=1.0
+
+modlog = logging.getLogger('report.CreateJSON')
 
 def Expdata(DatFile):
     ExpEntry=DatFile
@@ -67,26 +70,33 @@ def genthejson(Outfile, workdir, opfolder, drive_data):
     print('}', file=Outfile)
 
 def ExpDirOps(myjsonfolder, debug):
+    modlog.info('starting directory parsing')
     ##Call code to get all of the relevant folder titles from the experimental directory and
     ##Cross reference with the working directory of the final Json files send the list of jobs needing processing
     ## loops of IFs for file checking
     if debug == 0:
+        modlog.info('debugging disabled, running on main data directory')
         opdir='13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
     elif debug == 1:
+        modlog.warn('debugging enabled! targeting dev folder')
         opdir = '1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k'
     ExpList = googleio.drivedatfold(opdir)
+    modlog.info('parsing EXPERIMENTAL_OBJECT')
     crys_dict=(ExpList[0])
+    modlog.info('parsing EXPERIMENTAL_MODEL')
     robo_dict=(ExpList[1])
+    modlog.info('parsing REAGENT_MODEL_OBJECT')
     Expdata=(ExpList[2])
     dir_dict=(ExpList[3])
+    modlog.info('building runs in local directory')
     for folder in dir_dict:
         exp_json=Path(myjsonfolder+"/%s.json" %folder)
         if exp_json.is_file():
-            print(folder, 'exists')
+            modlog.info('%s exists' %folder)
         else:
             Outfile=open(exp_json, 'w')
             workdir='data/datafiles/'
-            print('%s Created' %folder)
+            modlog.warn('%s Created' %folder)
             data_from_drive= googleio.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
             genthejson(Outfile, workdir, folder, data_from_drive)
             Outfile.close()

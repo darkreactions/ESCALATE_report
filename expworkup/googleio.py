@@ -1,10 +1,14 @@
 #Copyright (c) 2018 Ian Pendleton - MIT License
 import json
+import pandas as pd
+import logging
 
 import gspread
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
+
+modlog = logging.getLogger('report.googleAPI')
 
 ##Authentication for pydrive, designed globally to minimally generate token (a slow process)
 gauth = GoogleAuth()
@@ -31,12 +35,12 @@ def ChemicalData():
     ChemicalBook = gc.open_by_key(chemsheetid)
     chemicalsheet = ChemicalBook.get_worksheet(0)
     chemical_list = chemicalsheet.get_all_values()
-    print('...', end='')
     chemdf=pd.DataFrame(chemical_list, columns=chemical_list[0])
     chemdf=chemdf.iloc[1:]
     chemdf=chemdf.reset_index(drop=True)
-    chemdf=chemdf.set_index(['Chemical Abbreviation'])
+    chemdf=chemdf.set_index(['InChI Key (ID)'])
     print('.done')
+    modlog.info('successfully loaded chemical data for processing')
     return(chemdf)
 
 ###Returns a referenced dictionary of processed files as dictionaries {folder title SD2 ID, Gdrive UID}
@@ -46,10 +50,12 @@ def drivedatfold(opdir):
     Crys_dict={}
     Expdata_dict={}
     Robo_dict={}
+    print('Downloading data please be patient!')
     for f in datadir_list:
         if "Template" in f['title']:
             pass
         elif f['mimeType']=='application/vnd.google-apps.folder': # if folder
+            modlog.info('downloaded %s from google drive' %f['title'])
             dir_dict.append(f['title'])
             Exp_file_list =  drive.ListFile({'q': "'%s' in parents and trashed=false" %f['id']}).GetList()
             #Generating a set of dictionaries to easily associate the variable name with with the UID.  Most likely a very general way to do this. 
@@ -62,6 +68,7 @@ def drivedatfold(opdir):
                     Expdata_dict[f['title']]=f_sub['id']
                 if "RobotInput" in f_sub['title']:
                     Robo_dict[f['title']]=f_sub['id']
+    print('Data download complete')
     return(Crys_dict, Robo_dict, Expdata_dict, dir_dict) # Returns a named list of dictionaries linked to the folder (the job jun) and the specific file's UID on gdrive. Each dictionary variable is linked to folder/run
 ###Returns a referenced dictionary of processed files as dictionaries {folder title SD2 ID, Gdrive UID}, the dictionary labels are thereby callable by the same key, but have different variables.. this makes sense, but likely a better way?
 
