@@ -35,7 +35,11 @@ Installation
 
 4. Execute `pip install -r requirements.txt`
    
+<<<<<<< HEAD
 5. Download the keys.zip file and unzip into the expworkup/creds/ folder. Do not distribute these keys! (https://drive.google.com/file/d/11VP8VazRwFtWHlpEuWdqH0vr_uUQUHV8/view?usp=sharing)
+=======
+5. Download the securekey files and move them into the expworkup/creds/ folder. Do not distribute these keys! (https://drive.google.com/drive/u/0/folders/1yet1CdQxJb4nG0uPCco8rMjqEwpZLeJM)
+>>>>>>> 2ff7ccfde1eaa641f793411099b730b1e742c904
 6. Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the 'expworkup/creds/' folder
 
 ### Custom Environment (Package List)
