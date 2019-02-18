@@ -3,10 +3,13 @@ import json
 import pandas as pd
 import os
 from operator import itemgetter
+import logging
 
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
+from tests import logger
+from expworkup import googleio
 from expworkup.handlers import parser
 from expworkup.handlers import calcmmol
 from expworkup.handlers import calcmolarity
@@ -15,26 +18,7 @@ from expworkup.handlers import inchigen
 debug = 0 #args.Debug
 finalvol_entries=2 ## Hard coded number of formic acid entries at the end of the run (this needs fixing)
 
-### General Setup Information ###
-##GSpread Authorization information
-scope= ['https://www.googleapis.com/auth/spreadsheets.readonly']
-credentials = ServiceAccountCredentials.from_json_keyfile_name('expworkup/creds/creds.json', scope) 
-gc =gspread.authorize(credentials)
-
-#Import the most recent chemical data sheet from google drive to process the inchi keys and data about chemicals
-#Eventually needs to be linked to database import and broader database information
-def ChemicalData():
-    print('Obtaining chemical information from Google Drive..', end='')
-    chemsheetid = "1JgRKUH_ie87KAXsC-fRYEw_5SepjOgVt7njjQBETxEg"
-    ChemicalBook = gc.open_by_key(chemsheetid)
-    chemicalsheet = ChemicalBook.get_worksheet(0)
-    chemical_list = chemicalsheet.get_all_values()
-    chemdf=pd.DataFrame(chemical_list, columns=chemical_list[0])
-    chemdf=chemdf.iloc[1:]
-    chemdf=chemdf.reset_index(drop=True)
-    chemdf=chemdf.set_index(['InChI Key (ID)'])
-    print('.done')
-    return(chemdf)
+modlog = logging.getLogger('report.JSONtoCSV')
 
 #Will eventually create a dataframe from the robot handling information
 def robo_handling():
@@ -42,7 +26,6 @@ def robo_handling():
 
 #The name cleaner is hard coded at the moment for the chemicals we are using. This will need to be generalized somehow...
 def nameCleaner(sub_dirty_df):
-    inorganic_list=[]
     organic_df=pd.DataFrame()
     cleaned_M=pd.DataFrame()
     for header in sub_dirty_df.columns:
@@ -82,10 +65,12 @@ def cleaner(dirty_df, raw):
     #Unpack those values first and then copy the generated array to each of the invidual wells
     ### developed enough now that it should be broken up into smaller pieces!
 def unpackJSON(myjson_fol):
-    chem_df=(ChemicalData())  #Grabs relevant chemical data frame from google sheets (only once no matter how many runs)
-    concat_df_raw=pd.DataFrame()  
+    chem_df=googleio.ChemicalData()  #Grabs relevant chemical data frame from google sheets (only once no matter how many runs)
+    concat_df_raw=pd.DataFrame() 
+    print('Unpacking JSONs  ..', end='', flush=True)
     for file in sorted(os.listdir(myjson_fol)):
         if file.endswith(".json"):
+            modlog.info('Unpacking %s' %file)
             concat_df=pd.DataFrame()  
             #appends each run to the original dataframe
             myjson=(os.path.join(myjson_fol, file))
@@ -102,6 +87,8 @@ def unpackJSON(myjson_fol):
             concat_df=pd.concat([mmol_df, concat_df, runID_df], sort=True, axis=1)
         #Combines the most recent dataframe with the final dataframe which is targeted for export
         concat_df_raw = pd.concat([concat_df_raw,concat_df], sort=True)
+        print('.', end='',flush=True)
+    print(' unpacking complete!')
     return(concat_df_raw) #this contains all of the raw values from the processed JSON files.  No additional data has been calculated
 
 def augmentdataset(raw_df):
@@ -125,7 +112,6 @@ def augmolarity(concat_df_final):
     concat_df_final.set_index('RunID_vial', inplace=True)
     #grabs all of the raw mmol data from the column header and creates a column which uniquely identifies which organic will be needed for the features in the next step
     inchi_df = concat_df_final.filter(like='_InChIKey')
-    inchi_df.to_csv('rxndf.csv')
     #Sends off the final mmol list to specifically grab the organic inchi key and expose(current version)
     OrganicInchi_df=inchigen.GrabOrganicInchi(inchi_df)
     #takes all of the volume data from the robot run and reduces it into two total volumes, the total prior to FAH and the total after.  Returns a 3 column array "totalvol and finalvol in title"
@@ -152,9 +138,14 @@ def augdescriptors(dataset_calcs_fill_df):
     return(dirty_full_df)
 
 def printfinal(myjsonfolder, debug,raw):
+    modlog.info('%s loaded with JSONs for parsing, starting' %myjsonfolder)
     raw_df=unpackJSON(myjsonfolder)
+    modlog.info('augmenting parsed JSONs with chemical calculations (concentrations)')
     augmented_raw_df = augmentdataset(raw_df)
+    modlog.info('appending features and curating dataset')
     cleaned_augmented_raw_df= cleaner(augmented_raw_df, raw)
-    with open('dashboard_target.csv', 'w') as outfile:
-        print('Complete')
+    finaloutcsv_name = myjsonfolder+'.csv'
+    with open(finaloutcsv_name, 'w') as outfile:
+        print('2d dataframe rendered successfully')
         cleaned_augmented_raw_df.to_csv(outfile)
+    return(finaloutcsv_name)
