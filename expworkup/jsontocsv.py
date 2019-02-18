@@ -144,6 +144,8 @@ def printfinal(myjsonfolder, debug,raw):
     augmented_raw_df = augmentdataset(raw_df)
     modlog.info('appending features and curating dataset')
     cleaned_augmented_raw_df= cleaner(augmented_raw_df, raw)
-    with open('%s.csv' %myjsonfolder, 'w') as outfile:
+    finaloutcsv_name = myjsonfolder+'.csv'
+    with open(finaloutcsv_name, 'w') as outfile:
         print('2d dataframe rendered successfully')
         cleaned_augmented_raw_df.to_csv(outfile)
+    return(finaloutcsv_name)

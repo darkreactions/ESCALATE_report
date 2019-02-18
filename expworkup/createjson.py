@@ -89,7 +89,9 @@ def ExpDirOps(myjsonfolder, debug):
     Expdata=(ExpList[2])
     dir_dict=(ExpList[3])
     modlog.info('building runs in local directory')
+    print('Building folders ..', end='',flush=True)
     for folder in dir_dict:
+        print('.', end='', flush=True)
         exp_json=Path(myjsonfolder+"/%s.json" %folder)
         if exp_json.is_file():
             modlog.info('%s exists' %folder)
@@ -97,11 +99,10 @@ def ExpDirOps(myjsonfolder, debug):
             Outfile=open(exp_json, 'w')
             workdir='data/datafiles/'
             modlog.info('%s Created' %folder)
-            print('%s Created' %folder)
             data_from_drive= googleio.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
             genthejson(Outfile, workdir, folder, data_from_drive)
             Outfile.close()
-#            time.sleep(2)  #see note below
+            time.sleep(2)  #see note below
             '''
             due to the limitations of the haverford googleapi 
             we have to throttle the connection a bit to limit the 
@@ -110,3 +111,4 @@ def ExpDirOps(myjsonfolder, debug):
             This will need to be re-enabled once we open the software beyond
             haverford college until we improve the scope of the googleio api
             '''
+    print(' local directories created')
