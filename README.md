@@ -21,6 +21,12 @@ such as ChemAxon and RDKit.
 
 5. Final.csv will contain the 2d CSV of the dataset.  The `data/` folder will contain the generated JSONs.
 
+Version Data Operation
+======================
+
+1. To run this code for versioned data repo file preparation execute the following 
+    `python runme.py 2019-02-13_TrainingData -v 1 -s EtNH3Istateset.csv` 
+
 Installation
 ============
   This build process has been tested on MacOS High Sierra (10.13.5) and Ubuntu Bionic Beaver (18.04)
@@ -35,11 +41,8 @@ Installation
 
 4. Execute `pip install -r requirements.txt`
    
-<<<<<<< HEAD
-5. Download the keys.zip file and unzip into the expworkup/creds/ folder. Do not distribute these keys! (https://drive.google.com/file/d/11VP8VazRwFtWHlpEuWdqH0vr_uUQUHV8/view?usp=sharing)
-=======
 5. Download the securekey files and move them into the expworkup/creds/ folder. Do not distribute these keys! (https://drive.google.com/drive/u/0/folders/1yet1CdQxJb4nG0uPCco8rMjqEwpZLeJM)
->>>>>>> 2ff7ccfde1eaa641f793411099b730b1e742c904
+
 6. Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the 'expworkup/creds/' folder
 
 ### Custom Environment (Package List)
