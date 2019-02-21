@@ -11,6 +11,8 @@ is supplemented with chemical features (currently stored in a CSV as part of thi
 such as ChemAxon and RDKit.
  
 #### Operation Summary
+1. Make a new <directory> such as 'mydata'
+
 1. `python runme.py <directory>` 
   
 2. For debugging:  `python runme.py <directory> --debug 1` (Debug targets the 1-dev/debug folder on GDrive
