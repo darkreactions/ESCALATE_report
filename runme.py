@@ -50,6 +50,8 @@ if __name__ == "__main__":
     #kick off major sections of the code
 
     if ('state' in vars(args)):
+        templink = str(args.state)
+        link = templink.split('.')[0] + '.link.csv'
         pass
     else:
         modlog.error('User MUST specify a stateset during version data repo upload preparation!')
@@ -59,7 +61,7 @@ if __name__ == "__main__":
     createjson.ExpDirOps(args.workdir, args.debug) #Run Primary JSON Creator
     finalcsv = jsontocsv.printfinal(args.workdir, args.debug, args.raw) # RUn the JSON to CSV parser
     if args.verdata==1:
-        export_to_repo.prepareexport(finalcsv, args.state)
+        export_to_repo.prepareexport(finalcsv, args.state, link)
     elif args.verdata==0:
         modlog.info('No versioned data repository format generated')
     else:
