@@ -128,7 +128,7 @@ def augdescriptors(dataset_calcs_fill_df):
     If an amine is not present in the "perov_desc.csv1" file, the run will not be processed
     and will error out silently!  This is a feature not a bug (for now)  
     '''
-    with open('data/perov_desc.csv1', 'r') as my_descriptors:
+    with open('data/perov_desc.csv2', 'r') as my_descriptors:
        descriptor_df=pd.read_csv(my_descriptors) 
     dirty_full_df=dataset_calcs_fill_df.merge(descriptor_df, left_on='_rxn_organic-inchikey', right_on='_raw_inchikey', how='inner')
     runID_df_big=pd.DataFrame(data=[dirty_full_df['_raw_jobserial'] + '_' + dirty_full_df['_raw_vialsite']]).transpose()
