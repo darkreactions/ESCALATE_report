@@ -24,7 +24,7 @@ def GrabOrganicInchi(inchi_df):
             if InChIKey == "BDAGIHXWWSANSR-UHFFFAOYSA-N":
                 pass
             #pass if inchi is GBL --> 12/9/18 update now solvent ## Probably can fix this generally#
-            elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N' or InChIKey=='ZMXDDKWLCZADIW-UHFFFAOYSA-N': 
+            elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N' or InChIKey=='ZMXDDKWLCZADIW-UHFFFAOYSA-N' or InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N': 
                 pass
             #pass if lead iodide
             elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or InChIKey=='ZASWJUOMEGBQCQ-UHFFFAOYSA-L':
