@@ -14,7 +14,7 @@ import pandas as pd
 import csv
 from datetime import datetime
 
-index_name='0021'
+index_name='0022'
 trainingdata_name = index_name + ".perovskitedata"
 state_name = index_name + ".stateset"
 link_name = index_name + ".link"
