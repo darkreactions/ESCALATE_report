@@ -112,10 +112,10 @@ def augmolarity(concat_df_final):
     concat_df_final.set_index('RunID_vial', inplace=True)
     #grabs all of the raw mmol data from the column header and creates a column which uniquely identifies which organic will be needed for the features in the next step
     inchi_df = concat_df_final.filter(like='_InChIKey')
-    #Sends off the final mmol list to specifically grab the organic inchi key and expose(current version)
-    OrganicInchi_df=inchigen.GrabOrganicInchi(inchi_df)
     #takes all of the volume data from the robot run and reduces it into two total volumes, the total prior to FAH and the total after.  Returns a 3 column array "totalvol and finalvol in title"
     molarity_df=calcmolarity.molarity_calc(concat_df_final, finalvol_entries)
+    #Sends off the final mmol list to specifically grab the organic inchi key and expose(current version)
+    OrganicInchi_df=inchigen.GrabOrganicInchi(inchi_df, molarity_df)
     #Combines the new Organic inchi file and the sum volume with the main dataframe
     dataset_calcs_fill_df=pd.concat([OrganicInchi_df, concat_df_final, molarity_df], axis=1, join_axes=[concat_df_final.index])
     #Cleans the file in different ways for post-processing analysis

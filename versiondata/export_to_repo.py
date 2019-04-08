@@ -15,9 +15,9 @@ import csv
 from datetime import datetime
 
 index_name='0022'
-trainingdata_name = index_name + ".perovskitedata"
-state_name = index_name + ".stateset"
-link_name = index_name + ".link"
+trainingdata_name = index_name + ".v2.perovskitedata"
+state_name = index_name + ".v2.stateset"
+link_name = index_name + ".v2.link"
 
 
 modlog = logging.getLogger('report.export_to_repo')

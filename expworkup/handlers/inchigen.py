@@ -1,6 +1,6 @@
 import pandas as pd
 
-def GrabOrganicInchi(inchi_df):
+def GrabOrganicInchi(inchi_df, molaritydf):
     """ Converts dataframe of inchi keys to a single column of 'organic' Inchis
 
     Takes a dataframe of runID indexed InChIkeys and uses hard coded parameters
@@ -16,6 +16,7 @@ def GrabOrganicInchi(inchi_df):
 
     """
     inchi_dict={}
+    inchi_df.to_csv('out2.csv')
     for row_label, row in inchi_df.iterrows():
         for InChIKey in row:
 #            header=header_list[row_index]
@@ -32,7 +33,12 @@ def GrabOrganicInchi(inchi_df):
             elif InChIKey == 'null' or InChIKey == 0:
                 pass
             else:
-                orgInChIKey = InChIKey
+                molarityorganicdf = molaritydf.filter(regex=InChIKey)
+                totalmolarity_organic = (molarityorganicdf.loc[row_label].sum())
+                if totalmolarity_organic != 0:
+                    orgInChIKey = InChIKey
+                else:
+                    pass
         inchi_dict[row_label] = orgInChIKey
     keylist_df=pd.DataFrame.from_dict(inchi_dict, orient='index')#, columns=['RunID_vial', '_rxn_organic-inchikey'])
     keylist_df.rename(columns={list(keylist_df)[0]:'_rxn_organic-inchikey'}, inplace=True)

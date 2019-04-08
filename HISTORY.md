@@ -33,3 +33,9 @@ RELEASE HISTORY
   * Thorough logging and output beautification
   * Modularized code for escalation work
   * improved googleio interfacing --> improves performance
+
+0.6 (2019-04-08)
+--------------------------
+  * Support for multiple experiments / tray processing
+  * Support for versioned data repo file generation 
+  * Preliminary support for escalation state set upload / versioned data upload
