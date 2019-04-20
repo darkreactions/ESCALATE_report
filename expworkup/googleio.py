@@ -2,6 +2,7 @@
 import json
 import pandas as pd
 import logging
+import sys
 
 import gspread
 from pydrive.auth import GoogleAuth
@@ -73,13 +74,17 @@ def drivedatfold(opdir):
 
 #Converts the hacked google sheets file into a TSV type file  (should eventually store as a json object)
 def sheet_to_tsv(expUID, workdir,runname):
-    ExpDataWorkbook = gc.open_by_key(expUID)
-    tsv_ready_lists = ExpDataWorkbook.get_worksheet(1)
-    json_in_tsv_list = tsv_ready_lists.get_all_values()
-    json_file=workdir+runname+'_ExpDataEntry.json'
-    with  open(json_file, 'w') as f:
-        for i in json_in_tsv_list:
-            print('\t'.join(i), file=f) #+ '\n')
+    if 'ECL' in runname:
+        exp_file = drive.CreateFile({'id': expUID}) 
+        exp_file.GetContentFile(workdir+exp_file['title'])
+    else:
+        ExpDataWorkbook = gc.open_by_key(expUID)
+        tsv_ready_lists = ExpDataWorkbook.get_worksheet(1)
+        json_in_tsv_list = tsv_ready_lists.get_all_values()
+        json_file=workdir+runname+'_ExpDataEntry.json'
+        with  open(json_file, 'w') as f:
+            for i in json_in_tsv_list:
+                print('\t'.join(i), file=f) #+ '\n')
 
 #This function pulls the files to the datafiles directory while also setting the format
 #This code should be fed all of the relevant UIDs from dictionary assembler above.  Additional functions should be designed to flag new fields as needed
