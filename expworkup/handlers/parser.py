@@ -102,32 +102,50 @@ def calcConc(reagentdf, reagent_spc):
         else:
             conc_cells_df=pd.DataFrame(conc_cells)
             conc_df=pd.concat([conc_df,conc_cells_df], axis=1)
+    conc_df.to_csv('outdf.csv')
     return(conc_df)
 
 #parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information
 def flatten_json_reg(y):
     out = {}
-    def flatten(x, name=''):
+    def flatten(x, flatdict, name=''):
         #Flattens the dictionary type to a single column and entry
         if type(x) is dict:
             for a in x:
-                flatten(x[a], name + a + '_')
+                flatten(x[a], flatdict, name + a + '_')
         #Flattens list type to a single column and entry
         elif type(x) is list:
             i = 0
             for a in x:
-                flatten(a, name + str(i) + '_')
+                flatten(a, flatdict, name + str(i) + '_')
                 i += 1
         else:
             ## Parses the namespace if the units are contained with the value from the JSON
             if ':' in str(x):
                 x1,x2=x.split(":")
-                out[str('_raw_reagent_' + name[:-1])] = x1 #Drops to the default namespace 
-                out[str('_raw_reagent_' + name[:-1] + '_units')] = str(x2) # adds a new entry for the column with the units which is adjacent to the measurement and otherwise has an identical name
+                flatdict[str('_raw_reagent_' + name[:-1])] = x1 #Drops to the default namespace 
+                flatdict[str('_raw_reagent_' + name[:-1] + '_units')] = str(x2) # adds a new entry for the column with the units which is adjacent to the measurement and otherwise has an identical name
             else:
-                out[str('_raw_reagent_' + name[:-1])] = str(x) #If the JSON value was a not a unit based value, the key value pair is returned as a column header and entry
-    flatten(y) # Flattens the rest of the formating for pandas import
-    return(pd.io.json.json_normalize(out)) # normalizes the data and reads into a single row data frame
+                flatdict[str('_raw_reagent_' + name[:-1])] = str(x) #If the JSON value was a not a unit based value, the key value pair is returned as a column header and entry
+    flatten(y, out) # Flattens the rest of the formating for pandas import
+    namesdict = {}
+    finaldict = {}
+    # ensure reagents are correctly labeled 
+    for k,v in out.items():
+        if '_raw_reagent_' in k and '_id' in k:
+            wrongkey = k.split('_')[:-1]
+            wrongkey = ('_'.join(wrongkey))
+            namesdict[wrongkey] = '_raw_reagent_%s'% (int(v)-1) #v is the new label once the reagents are updated
+    for k,v in out.items():
+#        print(k,v)
+#        _raw_reagent_3_
+        headerendlist = k.split('_')[4:]
+        headerend = (('_'.join(headerendlist)))
+        oldkeylist = (k.split('_')[:4])
+        oldkey = (('_'.join(oldkeylist)))
+        newkey = namesdict[oldkey] + '_' + headerend
+        finaldict[newkey] = v
+    return(pd.io.json.json_normalize(finaldict)) # normalizes the data and reads into a single row data frame
 
 def reag_info(reagentdf,chemdf):
     ## ignore GBL ##
@@ -193,7 +211,6 @@ def reagentparser(firstlevel, myjson, chem_df):
             reagent_df=flatten_json_reg(reg_value)
             reagent_spec=reag_info(reagent_df,chem_df) #takes all of the infomration from the chem_df (online web information here) and puts it together with the the reagent information
             Conc_df=calcConc(reagent_df, reagent_spec) #takes the information abot the reagents and generates ... 
-
         if reg_key == 'run':
             run_df=flatten_json(reg_value)
         if reg_key == 'tray_environment':

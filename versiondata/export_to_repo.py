@@ -14,10 +14,10 @@ import pandas as pd
 import csv
 from datetime import datetime
 
-index_name='0022'
-trainingdata_name = index_name + ".v2.perovskitedata"
-state_name = index_name + ".v2.stateset"
-link_name = index_name + ".v2.link"
+index_name='0024'
+trainingdata_name = index_name + ".perovskitedata"
+state_name = index_name + ".stateset"
+link_name = index_name + ".link"
 
 
 modlog = logging.getLogger('report.export_to_repo')

@@ -31,9 +31,9 @@ def Robo(robotfile):
         if 'Reagent' in header and "ul" in header:
             reagentlist.append(header)
     rnum = len(reagentlist)
-    robo_df = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=rnum+1)
-    robo_df_2 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=(rnum+2,rnum+3)).dropna()
-    robo_df_3 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=(rnum+4,rnum+5,rnum+6,rnum+7)).dropna()
+    robo_df = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=range(0,rnum+2))
+    robo_df_2 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+2,rnum+3]).dropna()
+    robo_df_3 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+4,rnum+5,rnum+6,rnum+7]).dropna()
     robo_dump=json.dumps(robo_df.values.tolist())
     robo_dump2=json.dumps(robo_df_2.values.tolist())
     robo_dump3=json.dumps(robo_df_3.values.tolist())
