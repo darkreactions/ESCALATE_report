@@ -43,7 +43,7 @@ def Crys(crysfile):
     ##Gather the crystal datafile information and return JSON object
     headers=crysfile.pop(0)
     crys_df=pd.DataFrame(crysfile, columns=headers)
-    crys_df_curated=crys_df[['Concatenated Vial site', 'Crystal Score', 'Bulk Actual Temp (C)']]
+    crys_df_curated=crys_df[['Concatenated Vial site', 'Crystal Score', 'Bulk Actual Temp (C)', 'modelname']]
     crys_list=crys_df_curated.values.tolist()
     crys_dump=json.dumps(crys_list)
     return(crys_dump)

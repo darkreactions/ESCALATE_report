@@ -67,7 +67,7 @@ def cleaner(dirty_df, raw):
 def unpackJSON(myjson_fol):
     chem_df=googleio.ChemicalData()  #Grabs relevant chemical data frame from google sheets (only once no matter how many runs)
     concat_df_raw=pd.DataFrame() 
-    print('Unpacking JSONs  ..', end='', flush=True)
+    print('Unpacking JSONs  .', end='', flush=True)
     for file in sorted(os.listdir(myjson_fol)):
         if file.endswith(".json"):
             modlog.info('Unpacking %s' %file)

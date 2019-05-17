@@ -16,7 +16,6 @@ def GrabOrganicInchi(inchi_df, molaritydf):
 
     """
     inchi_dict={}
-    inchi_df.to_csv('out2.csv')
     for row_label, row in inchi_df.iterrows():
         for InChIKey in row:
 #            header=header_list[row_index]
@@ -25,7 +24,7 @@ def GrabOrganicInchi(inchi_df, molaritydf):
             if InChIKey == "BDAGIHXWWSANSR-UHFFFAOYSA-N":
                 pass
             #pass if inchi is GBL --> 12/9/18 update now solvent ## Probably can fix this generally#
-            elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N' or InChIKey=='ZMXDDKWLCZADIW-UHFFFAOYSA-N' or InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N': 
+            elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N' or InChIKey=='ZMXDDKWLCZADIW-UHFFFAOYSA-N' or InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' or InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N': 
                 pass
             #pass if lead iodide
             elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or InChIKey=='ZASWJUOMEGBQCQ-UHFFFAOYSA-L':
