@@ -102,7 +102,6 @@ def calcConc(reagentdf, reagent_spc):
         else:
             conc_cells_df=pd.DataFrame(conc_cells)
             conc_df=pd.concat([conc_df,conc_cells_df], axis=1)
-    conc_df.to_csv('outdf.csv')
     return(conc_df)
 
 #parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information
@@ -173,7 +172,7 @@ def reag_info(reagentdf,chemdf):
                         print("Error with the configuration of reference sheet.  Abort run and check formic acid details in google sheets (2018-08-11)")
                         break
                 #GBL
-                elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N' or InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' or InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N': 
+                elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N' or InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' or InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' or InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N': 
                     mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     m_type='solvent'
@@ -234,7 +233,7 @@ def reagentparser(firstlevel, myjson, chem_df):
             columnnames.append('_raw_labwareID')
             well_volumes_df=pd.DataFrame(reg_value, columns=columnnames)
         if reg_key == 'crys_file_data':
-            crys_file_data_df=pd.DataFrame(reg_value, columns=['_raw_vialsite', '_out_crystalscore', '_rxn_temperatureC_actual_bulk'])
+            crys_file_data_df=pd.DataFrame(reg_value, columns=['_raw_vialsite', '_out_crystalscore', '_rxn_temperatureC_actual_bulk', '_raw_modelname'])
     #The following code aligns and normalizes the data frames
     experiment_df=well_volumes_df.merge(crys_file_data_df)
     wellcount=(len(experiment_df.index))-1
