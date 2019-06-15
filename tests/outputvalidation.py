@@ -3,22 +3,22 @@
 YARPs on success. NARPs on failure.
 
 Intended to be run after a change to ensure data is still output as expected.
+"""
 
-USAGE:
-    To ensure debug output is unaffected by a change, run:
+import argparse
+import pandas as pd
+
+parser = argparse.ArgumentParser(
+    usage="""To ensure debug output is unaffected by a change, run:
     python runme.py -d 1 ref_dir before the change,
     and then
     python runme.py -d1 target_dir after the change.
 
     Then, use this script to compare the corresponding CSVs That is, run:
 
-    python outputvalidation.py ref_csv target_csv
-
-"""
-import argparse
-import pandas as pd
-
-parser = argparse.ArgumentParser()
+    python outputvalidation.py ref_csv target_csv""",
+    #formatter_class=argparse.RawTextHelpFormatter
+)
 parser.add_argument('ref_csv', type=str,
                     help='CSV of report output BEFORE making the change')
 parser.add_argument('target_csv', type=str,
