@@ -23,16 +23,31 @@ parser.add_argument('ref_csv', type=str,
                     help='CSV of report output BEFORE making the change')
 parser.add_argument('target_csv', type=str,
                     help='CSV of report output AFTER making the change')
+parser.add_argument('--ignore', type=str, nargs='*',
+                    help='columns to ignore, e.g. ones that you expect to have changed')
 args = parser.parse_args()
+
 
 ref = pd.read_csv(args.ref_csv)
 target = pd.read_csv(args.target_csv)
 
-# drop cols from target not in ref dataset: we are allowed to add columns, not modify.
-drop_cols = list((set(target.columns) - set(ref.columns)))
-target.drop(drop_cols, inplace=True)
+# validate that ignore columns are actually columns
+if args.ignore:
+    for col in args.ignore:
+        if col not in target.columns:
+            raise ValueError("--ignore argument {} not in target columns")
+        if col not in ref.columns:
+            raise ValueError("--ignore argument {} not in ref columns")
 
-# Leroy Jenkins.
+    # drop ignore columns
+    ref.drop(args.ignore, axis=1, inplace=True)
+    target.drop(args.ignore, axis=1, inplace=True)
+
+# drop any new columns
+drop_cols = list((set(target.columns) - set(ref.columns)))
+target.drop(drop_cols, axis=1, inplace=True)
+
+# Now that all columns we expect to differ are dropped, the dataframes should be equal
 print("...Everything ok?")
 output_matches = ref.equals(target)
 if output_matches:
