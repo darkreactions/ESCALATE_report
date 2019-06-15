@@ -8,6 +8,7 @@ Intended to be run after a change to ensure data is still output as expected.
 import argparse
 import pandas as pd
 
+
 parser = argparse.ArgumentParser(
     description="""detailed usage:
     To ensure debug output is unaffected by a change, run:
@@ -33,13 +34,14 @@ args = parser.parse_args()
 ref = pd.read_csv(args.ref_csv)
 target = pd.read_csv(args.target_csv)
 
+
 # validate that ignore columns are actually columns
 if args.ignore:
     for col in args.ignore:
         if col not in target.columns:
-            raise ValueError("--ignore argument {} not in target columns")
+            raise ValueError("--ignore argument {} not in target columns".format(col))
         if col not in ref.columns:
-            raise ValueError("--ignore argument {} not in ref columns")
+            raise ValueError("--ignore argument {} not in ref columns".format(col))
 
     # drop ignore columns
     ref.drop(args.ignore, axis=1, inplace=True)
@@ -48,6 +50,7 @@ if args.ignore:
 # drop any new columns
 drop_cols = list((set(target.columns) - set(ref.columns)))
 target.drop(drop_cols, axis=1, inplace=True)
+
 
 # Now that all columns we expect to differ are dropped, the dataframes should be equal
 print("...Everything ok?")
