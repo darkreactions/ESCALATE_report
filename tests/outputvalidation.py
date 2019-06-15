@@ -24,7 +24,9 @@ parser.add_argument('ref_csv', type=str,
 parser.add_argument('target_csv', type=str,
                     help='CSV of report output AFTER making the change')
 parser.add_argument('--ignore', type=str, nargs='*',
-                    help='columns to ignore, e.g. ones that you expect to have changed')
+                    help='Columns to ignore, i.e. columnts that you expect to have changed. ' +
+                         'Must appear in both ref and target. Do NOT ignore new columns, ' +
+                         'they are ignored automatically.')
 args = parser.parse_args()
 
 
