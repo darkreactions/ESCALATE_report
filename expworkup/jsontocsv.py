@@ -25,38 +25,38 @@ def robo_handling():
     pass
 
 #The name cleaner is hard coded at the moment for the chemicals we are using. This will need to be generalized somehow...
-def nameCleaner(sub_dirty_df):
+def nameCleaner(sub_dirty_df, new_prefix):
     organic_df=pd.DataFrame()
     cleaned_M=pd.DataFrame()
     for header in sub_dirty_df.columns:
         #GBl handling -- > Solvent labeled (or other solvent such as DMF)
         if 'YEJRWHAVMIAJKC-UHFFFAOYSA-N' in header:# or 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' in header:
-            print("1")
             pass
         #Acid handling --> Acid labeld --> will need to declare type in the future or something
         elif "BDAGIHXWWSANSR-UHFFFAOYSA-N" in header:
-            cleaned_M['_rxn_M_acid']=sub_dirty_df[header]
+            cleaned_M['%s_acid'%new_prefix]=sub_dirty_df[header]
 #            molarity_df['_rxn_M_acid'] = mmol_reagent_df[header] / (calculated_volumes_df['_raw_final_volume']/1000)
         #PBI2 handling --> inorganic label
         elif 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' in header:# or 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L' in header:
-            cleaned_M['_rxn_M_inorganic']=sub_dirty_df[header]
+            cleaned_M['%s_inorganic'%new_prefix]=sub_dirty_df[header]
 #            molarity_df['_rxn_M_inorganic'] = mmol_reagent_df[header] / (calculated_volumes_df['_raw_final_volume']/1000)
         else:
             organic_df[header]=sub_dirty_df[header]
-    cleaned_M['_rxn_M_organic']=organic_df.sum(axis=1)
+    cleaned_M['%s_organic'%new_prefix]=organic_df.sum(axis=1)
     return(cleaned_M)
 
 #cleans up the name space and the csv output for distribution
 def cleaner(dirty_df, raw):
-    rxn_M_clean = nameCleaner(dirty_df.filter(like='_raw_M_'))
-    rxn_df=dirty_df.filter(like='_rxn_') 
+    rxn_molarity_clean = nameCleaner(dirty_df.filter(like='_raw_M_'), '_rxn_v1-M')
+    rxn_v1molarity_clean = nameCleaner(dirty_df.filter(like='_raw_v1-M_'), '_rxn_v1-M')
+    rxn_df=dirty_df.filter(like='_rxn_')
     feat_df=dirty_df.filter(like='_feat_') 
     out_df=dirty_df.filter(like='_out_') 
-    if raw == 0: 
+    if raw == 1:
         raw_df=dirty_df.filter(like='_raw_')
-        squeaky_clean_df=pd.concat([out_df,rxn_M_clean,rxn_df,feat_df, raw_df], axis=1) 
+        squeaky_clean_df=pd.concat([out_df, rxn_molarity_clean, rxn_v1molarity_clean, feat_df, raw_df], axis=1)
     else:
-        squeaky_clean_df=pd.concat([out_df,rxn_M_clean,rxn_df,feat_df], axis=1) 
+        squeaky_clean_df=pd.concat([out_df, rxn_molarity_clean, rxn_v1molarity_clean, rxn_df, feat_df], axis=1)
     return(squeaky_clean_df)
 
 ## Unpack logic
@@ -67,7 +67,7 @@ def cleaner(dirty_df, raw):
 def unpackJSON(myjson_fol):
     chem_df=googleio.ChemicalData()  #Grabs relevant chemical data frame from google sheets (only once no matter how many runs)
     concat_df_raw=pd.DataFrame() 
-    print('Unpacking JSONs  .', end='', flush=True)
+    print('Unpacking JSONs  ..', end='', flush=True)
     for file in sorted(os.listdir(myjson_fol)):
         if file.endswith(".json"):
             modlog.info('Unpacking %s' %file)
@@ -128,7 +128,7 @@ def augdescriptors(dataset_calcs_fill_df):
     If an amine is not present in the "perov_desc.csv1" file, the run will not be processed
     and will error out silently!  This is a feature not a bug (for now)  
     '''
-    with open('data/perov_desc.csv2', 'r') as my_descriptors:
+    with open('data/perov_desc_edited.csv', 'r') as my_descriptors:
        descriptor_df=pd.read_csv(my_descriptors) 
     dirty_full_df=dataset_calcs_fill_df.merge(descriptor_df, left_on='_rxn_organic-inchikey', right_on='_raw_inchikey', how='inner')
     runID_df_big=pd.DataFrame(data=[dirty_full_df['_raw_jobserial'] + '_' + dirty_full_df['_raw_vialsite']]).transpose()

@@ -8,6 +8,8 @@
 *.json
 *.xls
 *.xlsx
+*.xml
+*.iml
 mycred.txt
 creds.json
 client_secrets.json
