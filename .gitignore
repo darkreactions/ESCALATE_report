@@ -17,3 +17,4 @@ __pycache__/
 *.log
 *.ipynb_checkpoints
 !DebugGroundTruth - deep inspection needed.csv
+.idea/*
