@@ -113,7 +113,8 @@ def calcConc(reagentdf, reagent_spc):
                 chemical_list.append(reagent_spc.at[reag_chem, 'amount'])
                 chemical_list.append(reagent_spc.at[reag_chem, 'units'])
         onereagent_df = (pd.DataFrame(chemical_list).transpose())
-        onereagent_df.columns = ['name','InChiKey', 'density', 'm_type','molecularmass','amount','unit']
+        onereagent_df.columns = ['name','InChiKey', 'density', 'm_type',
+                                    'molecularmass','amount','unit']
         conc_cells = (ReagentConc(onereagent_df, reagent))
         current_reagent = ReagentObject(onereagent_df, reagent)
         v1conc_cells = current_reagent.conc_v1
