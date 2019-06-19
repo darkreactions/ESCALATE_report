@@ -19,7 +19,6 @@ def molarity_calc(raw_df, finalvol_entries):
     df_total_list=raw_df[total_list]
     total_vol_df = df_total_list.sum(axis=1)
     df_final_vols=raw_df[reagent_list]
-    df_final_vols.to_csv('FinalVols.csv')
     final_vol_df = df_final_vols.sum(axis=1)
     calculated_volumes_df=pd.concat([total_vol_df, final_vol_df],axis=1)
     calculated_volumes_df.columns=['_raw_total_volume', '_raw_final_volume']

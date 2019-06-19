@@ -52,11 +52,17 @@ def cleaner(dirty_df, raw):
     rxn_df=dirty_df.filter(like='_rxn_')
     feat_df=dirty_df.filter(like='_feat_') 
     out_df=dirty_df.filter(like='_out_') 
+    proto_df = dirty_df.filter(like='_prototype_')
     if raw == 1:
-        raw_df=dirty_df.filter(like='_raw_')
-        squeaky_clean_df=pd.concat([out_df, rxn_molarity_clean, rxn_v1molarity_clean, feat_df, raw_df], axis=1)
+        raw_df = dirty_df.filter(like='_raw_')
+        squeaky_clean_df = pd.concat([out_df, rxn_molarity_clean,
+                                      rxn_v1molarity_clean, rxn_df,
+                                      feat_df, raw_df,
+                                      proto_df], axis=1)
     else:
-        squeaky_clean_df=pd.concat([out_df, rxn_molarity_clean, rxn_v1molarity_clean, rxn_df, feat_df], axis=1)
+        squeaky_clean_df = pd.concat([out_df, rxn_molarity_clean,
+                                      rxn_v1molarity_clean, rxn_df,
+                                      feat_df, proto_df], axis=1)
     return(squeaky_clean_df)
 
 ## Unpack logic

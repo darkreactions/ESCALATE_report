@@ -16,5 +16,6 @@ client_secrets.json
 __pycache__/
 *.log
 *.ipynb_checkpoints
-!DebugGroundTruth - deep inspection needed.csv
+!OriginalTestCase.csv
+!perov_desc_edited.csv
 .idea/*
