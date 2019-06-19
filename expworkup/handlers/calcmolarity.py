@@ -1,7 +1,15 @@
 import pandas as pd
 
 #hard coded around the notion that the last two entries are formic acid.  This will have to be changed!
+
 def molarity_calc(raw_df, finalvol_entries):
+    """
+    calculate the molarity for each experiment
+
+    :param raw_df:  the whole dataframe of all raw values
+    :param finalvol_entries: final volume columns from the raw dataframe
+    :return: chemical molarity dataframe for each experiment
+    """
     ##Calculate Reagent volumes
     reagent_list=[]
     for header in raw_df.columns:
@@ -24,4 +32,15 @@ def molarity_calc(raw_df, finalvol_entries):
     for header in mmol_reagent_df:
         newheader='_raw_M_'+header[10:-6]+'_final'
         molarity_df[newheader] = mmol_reagent_df[header] / (calculated_volumes_df['_raw_final_volume']/1000)
+
+    mmol_reagent_list_2=[]
+    for header in raw_df.columns:
+        if '_raw_v1-mmol_' in header and 'final' in header:
+            mmol_reagent_list_2.append(header)
+    mmol_reagent_df_2 = raw_df[mmol_reagent_list_2]
+    molarity_df_2 = pd.DataFrame()
+    for header in mmol_reagent_df_2:
+        newheader2 = '_raw_v1-M_' + header[13:-6]+'_final'
+        molarity_df_2[newheader2] = mmol_reagent_df_2[header] / (calculated_volumes_df['_raw_final_volume']/1000)
+    molarity_df = pd.concat([molarity_df, molarity_df_2], axis=1)
     return(molarity_df)

@@ -1,8 +1,7 @@
 #Copyright (c) 2018 Ian Pendleton - MIT License
-import os
-import sys
 import logging
 import argparse as ap
+import os
 
 
 from expworkup import jsontocsv
@@ -14,6 +13,7 @@ from tests import logger
 #record a detailed and organized set of the variables set by the user
 def initialize(args):
     ''' Refreshes working environment - logs initialization
+
     '''
     modlog = logging.getLogger('report.initialize')
     modlog.info('ensuring directories')
@@ -28,6 +28,7 @@ def initialize(args):
 
 if __name__ == "__main__":
     # Some command line interfacing to aid in script handling
+#    os.chdir(os.path.dirname(__file__))
     parser = ap.ArgumentParser(description='Target Folder')
     parser.add_argument('workdir', type=str,
         help='Please include target folder') 

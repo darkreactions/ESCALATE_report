@@ -3,18 +3,20 @@ import json
 import pandas as pd
 import logging
 import sys
+import os
 
 import gspread
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
+from expworkup.devconfig import cwd
 
 modlog = logging.getLogger('report.googleAPI')
 
 ##Authentication for pydrive, designed globally to minimally generate token (a slow process)
 gauth = GoogleAuth()
 GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = "expworkup/creds/client_secrets.json"
-gauth.LoadCredentialsFile("expworkup/creds/mycred.txt")
+gauth.LoadCredentialsFile("%s/expworkup/creds/mycred.txt" %cwd)
 if gauth.credentials is None:
     gauth.LocalWebserverAuth() #Creates local webserver and auto handles authentication.
 elif gauth.access_token_expired:

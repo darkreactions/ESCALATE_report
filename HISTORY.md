@@ -39,3 +39,9 @@ RELEASE HISTORY
   * Support for multiple experiments / tray processing
   * Support for versioned data repo file generation 
   * Preliminary support for escalation state set upload / versioned data upload
+
+0.7 (2019-06-17)
+-------------------------
+  * New concentration `_rxn_v1-M_` parameter added (using this notation until Alex C finalizes work)
+  * Added prototype output support
+  * various bug fixes

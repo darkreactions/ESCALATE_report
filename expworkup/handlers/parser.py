@@ -1,4 +1,9 @@
 import pandas as pd
+import logging
+
+from expworkup.objects.reagent import ReagentObject
+
+modlog = logging.getLogger('report.parser')
 
 #Overview
 #parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information
@@ -74,6 +79,18 @@ def ReagentConc(one_reagent_df, reagent):
 
 
 def calcConc(reagentdf, reagent_spc):
+    """ calculates concentration of reagents
+
+    TODO: Move conc_cells calculation into ReagentObject Class
+    TODO: move organization of reagent specification sheet from chemical dataframe into separate function
+    TODO: single step organization of dataframes for concentration calculation
+    TODO: LONG TERM -- reagent class constructed at initial JSON parsing
+
+    :param reagentdf: dataframe of reagent information for a grouping of experiments
+    :param reagent_spc: dataframe generated from chemical inventory indexed by reagent number for a group of experiments
+    :return: dataframe of concentrations with columns sorted by inchikey and reagent
+                (ex. '_raw_reagent_1_conc_UPHCENSIMPJEIS-UHFFFAOYSA-N')
+    """
     reagent_spc.set_index(['parsed name'], inplace=True)
     reagent_list=[]
     conc_df=pd.DataFrame()
@@ -82,27 +99,32 @@ def calcConc(reagentdf, reagent_spc):
             reagent_list.append(reag_chem)
         else:
             pass
-    count=0
+    count = 0
     for reagent in reagent_list:
-        count+=1
+        count += 1
         for reag_chem, row in reagent_spc.iterrows():
             if reagent in reag_chem:
-                chemical_list=[]
+                chemical_list = []
                 chemical_list.append(reagent_spc.at[reag_chem, 'name'])
                 chemical_list.append(reagent_spc.at[reag_chem, 'InChIKey'])
                 chemical_list.append(reagent_spc.at[reag_chem, 'density'])
                 chemical_list.append(reagent_spc.at[reag_chem, 'm_type'])
                 chemical_list.append(reagent_spc.at[reag_chem, 'molecular mass'])
                 chemical_list.append(reagent_spc.at[reag_chem, 'amount'])
-        onereagent_df=(pd.DataFrame(chemical_list).transpose())
-        onereagent_df.columns = ['name','InChiKey', 'density', 'm_type','molecularmass','amount']
+                chemical_list.append(reagent_spc.at[reag_chem, 'units'])
+        onereagent_df = (pd.DataFrame(chemical_list).transpose())
+        onereagent_df.columns = ['name','InChiKey', 'density', 'm_type',
+                                    'molecularmass','amount','unit']
         conc_cells = (ReagentConc(onereagent_df, reagent))
+        current_reagent = ReagentObject(onereagent_df, reagent)
+        v1conc_cells = current_reagent.conc_v1
         if conc_cells == 'null':
             pass
         else:
-            conc_cells_df=pd.DataFrame(conc_cells)
-            conc_df=pd.concat([conc_df,conc_cells_df], axis=1)
-    return(conc_df)
+            conc_cells_df = pd.DataFrame(conc_cells)
+            v1conc_cells_df = pd.DataFrame(v1conc_cells)
+            conc_df = pd.concat([conc_df, conc_cells_df, v1conc_cells_df], axis=1)
+    return conc_df
 
 #parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information
 def flatten_json_reg(y):
@@ -153,6 +175,8 @@ def reag_info(reagentdf,chemdf):
         name='null'
         mm='null'
         density='null'
+        density_new='null'
+        units='null'
         if ('_raw_reagent_' in item) and ('InChIKey' in item):
             for InChIKey in reagentdf[item]:
                 m_type='null'
@@ -167,41 +191,50 @@ def reag_info(reagentdf,chemdf):
                     name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     m_type='pureliquid' #Assigns an object type for later analysis and calculation of concentrations
                     try:
-                        density=(float(chemdf.loc[InChIKey,"Density            (g/mL)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
+                        density=(float(chemdf.loc[InChIKey,"Density            (g/mL)"]))
                     except:
-                        print("Error with the configuration of reference sheet.  Abort run and check formic acid details in google sheets (2018-08-11)")
+                        modlog.error("Abort run and check %s density details in google sheets" %name)
                         break
                 #GBL
                 elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N' or InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' or InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' or InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N': 
-                    mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
+                    mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))
                     name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     m_type='solvent'
                     try:
-                        density=(float(chemdf.loc[InChIKey,"Density            (g/mL)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
+                        density=(float(chemdf.loc[InChIKey,"Density            (g/mL)"]))
                     except:
-                        pass
+                        modlog.error("Abort run and check %s density details in google sheets" %name)
+                        break
                 #PbI2
                 elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or InChIKey == 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L':
-                    mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
+                    mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))
                     name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     m_type='inorg'
+                    try:
+                        density=(float(chemdf.loc[InChIKey,"Density            (g/mL)"]))
+                    except:
+                        modlog.error("Abort run and check %s density details in google sheets" %name)
+                        break
                 #Null
                 elif InChIKey == 'null':
                     pass
                 #Organic
                 else:
-                    mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
-                    name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
+                    mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))
+                    name=((chemdf.loc[InChIKey,"Chemical Name"]))
                     m_type='org'
                     try:
-                        density=(float(chemdf.loc[InChIKey,"Density            (g/mL)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
+                        density = (float(chemdf.loc[InChIKey,"Density            (g/mL)"]))
                     except:
-                        pass
+                        modlog.error("Abort run and check %s density details in google sheets" %name)
+                        break
                 for (item) in list(reagentdf):
                     if (parse_chemical_name in item) and ("actual_amount" in item) and not ("units" in item):
                         amount=(reagentdf.loc[0,item])
-            reagentlist.append((name, mm, density, parse_name, InChIKey, m_type, amount))
-    reagentlist_df=(pd.DataFrame(reagentlist, columns=['name', 'molecular mass', 'density', 'parsed name', "InChIKey", "m_type", "amount"]))
+                    if (parse_chemical_name in item) and ("actual_amount" in item) and ("units" in item):
+                        units=(reagentdf.loc[0,item])
+            reagentlist.append((name, mm, density, parse_name, InChIKey, m_type, amount, units))
+    reagentlist_df=(pd.DataFrame(reagentlist, columns=['name', 'molecular mass', 'density', 'parsed name', "InChIKey", "m_type", "amount", "units"]))
     return(reagentlist_df)
 
 def reagentparser(firstlevel, myjson, chem_df):
