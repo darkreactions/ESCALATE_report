@@ -239,6 +239,7 @@ def reag_info(reagentdf,chemdf):
 
 def reagentparser(firstlevel, myjson, chem_df):
     for reg_key,reg_value in firstlevel.items():
+        modlog.info('Parsing %s to csv' %myjson)
         if reg_key == 'reagent':
             reagent_df=flatten_json_reg(reg_value)
             reagent_spec=reag_info(reagent_df,chem_df) #takes all of the infomration from the chem_df (online web information here) and puts it together with the the reagent information

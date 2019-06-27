@@ -48,7 +48,7 @@ def nameCleaner(sub_dirty_df, new_prefix):
 #cleans up the name space and the csv output for distribution
 def cleaner(dirty_df, raw):
     rxn_molarity_clean = nameCleaner(dirty_df.filter(like='_raw_M_'), '_rxn_M')
-    rxn_v1molarity_clean = nameCleaner(dirty_df.filter(like='_raw_v1-M_'), '_rxn_v1-M')
+    rxn_v1molarity_clean = nameCleaner(dirty_df.filter(like='_raw_v1-M_'), '_raw_v1-M')
     rxn_df=dirty_df.filter(like='_rxn_')
     feat_df=dirty_df.filter(like='_feat_') 
     out_df=dirty_df.filter(like='_out_') 

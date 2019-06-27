@@ -102,7 +102,7 @@ def ExpDirOps(myjsonfolder, debug):
             data_from_drive= googleio.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
             genthejson(Outfile, workdir, folder, data_from_drive)
             Outfile.close()
-            time.sleep(2)  #see note below
+            time.sleep(4)  #see note below
             '''
             due to the limitations of the haverford googleapi 
             we have to throttle the connection a bit to limit the 
