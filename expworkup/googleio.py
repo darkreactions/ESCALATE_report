@@ -26,13 +26,13 @@ elif gauth.access_token_expired:
 else:
     gauth.Authorize() #Just run because everything is loaded properly
 gauth.SaveCredentialsFile("expworkup/creds/mycred.txt")
-drive=GoogleDrive(gauth)
+drive = GoogleDrive(gauth)
 
 ### General Setup Information ###
 ##GSpread Authorization information
-scope= ['https://www.googleapis.com/auth/spreadsheets.readonly']
+scope = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 credentials = ServiceAccountCredentials.from_json_keyfile_name('expworkup/creds/creds.json', scope) 
-gc =gspread.authorize(credentials)
+gc = gspread.authorize(credentials)
 
 def ChemicalData():
     chemsheetid = "1JgRKUH_ie87KAXsC-fRYEw_5SepjOgVt7njjQBETxEg"
@@ -85,8 +85,8 @@ def drivedatfold(remote_directory):
     print(' download complete')
     return crystal_files, robot_files, exp_data_entry_files, data_directories
 
-#Converts the hacked google sheets file into a TSV type file  (should eventually store as a json object)
-def sheet_to_tsv(expUID, workdir,runname):
+
+def save_ExpDataEntry_as_json(expUID, workdir, runname):
     if 'ECL' in runname:
         exp_file = drive.CreateFile({'id': expUID}) 
         exp_file.GetContentFile(workdir+exp_file['title'])
@@ -94,8 +94,8 @@ def sheet_to_tsv(expUID, workdir,runname):
         ExpDataWorkbook = gc.open_by_key(expUID)
         tsv_ready_lists = ExpDataWorkbook.get_worksheet(1)
         json_in_tsv_list = tsv_ready_lists.get_all_values()
-        json_file=workdir+runname+'_ExpDataEntry.json'
-        with  open(json_file, 'w') as f:
+        json_file = workdir+runname + '_ExpDataEntry.json'
+        with open(json_file, 'w') as f:
             for i in json_in_tsv_list:
                 print('\t'.join(i), file=f) #+ '\n')
 
@@ -112,11 +112,14 @@ def getalldata(crysUID, roboUID, expUID, workdir, runname):
     :param runname:
     :return:
     """
-    Crys_File = gc.open_by_key(crysUID)
-    Crys_file_lists = Crys_File.sheet1.get_all_values()
-    Crysout=(Crys_file_lists)
+    crystal_file = gc.open_by_key(crysUID)
+    crystal_data = crystal_file.sheet1.get_all_values()
 #    exp_file.GetContentFile(workdir+exp_file['title'])
-    sheet_to_tsv(expUID, workdir, runname)
+    save_ExpDataEntry_as_json(expUID, workdir, runname)
     robo_file = drive.CreateFile({'id': roboUID}) 
     robo_file.GetContentFile(workdir+robo_file['title'])
-    return(Crysout) #Returns only the list of lists for the crystal file, other files are in xls or need to be processed via text for various reasons
+    # todo: ian: elaborate this. what goes on here with the robot file?
+    # (I can figure out what happens to the experimental entry data.
+    # Returns only the list of lists for the crystal file,
+    # other files are in xls or need to be processed via text for various reasons
+    return crystal_data

@@ -7,6 +7,8 @@ import logging
 import json
 from pathlib import Path
 
+from tqdm import tqdm
+
 from expworkup import googleio
 
 ## Set the workflow of the code used to generate the experimental data and to process the data
@@ -48,33 +50,35 @@ def Crys(crysfile):
     crys_dump=json.dumps(crys_list)
     return(crys_dump)
 
-def genthejson(Outfile, workdir, opfolder, drive_data):
-    """Do all of the file handling for a particular run and assemble the JSON, return the completed JSON file object
-    and location for sorting and final comparison
 
-    :param Outfile:
-    :param workdir:
-    :param opfolder:
-    :param drive_data:
+def parse_run_to_json(outfile, local_data_directory, remote_run_directory, crystal_data):
+    """Parse data from one ESCALATE run into json and write to
+
+    :param outfile:
+    :param local_data_directory:
+    :param remote_run_directory:
+    :param crystal_data:
     :return:
     """
-    Crysfile = drive_data
-    Expdatafile = workdir + opfolder+'_ExpDataEntry.json'
-    Robofile = workdir + opfolder + '_RobotInput.xls'
-    exp_return = Expdata(Expdatafile)
-    robo_return = Robo(Robofile)
-    crys_return = Crys(Crysfile)
-    print(exp_return, file=Outfile)
-    print('\t},', file=Outfile)
-    print('\t', '"well_volumes":', file=Outfile)
-    print('\t', robo_return[0], ',', file=Outfile)
-    print('\t', '"tray_environment":', file=Outfile)
-    print('\t', robo_return[1], ',', file=Outfile)
-    print('\t', '"robot_reagent_handling":', file=Outfile)
-    print('\t', robo_return[2], ',', file=Outfile)
-    print('\t', '"crys_file_data":', file=Outfile)
-    print('\t', crys_return, file=Outfile)
-    print('}', file=Outfile)
+    experimental_data_entry_json_filename = local_data_directory + remote_run_directory + '_ExpDataEntry.json'
+    robot_input_excel_filename = local_data_directory + remote_run_directory + '_RobotInput.xls'
+
+    # todo this right here bois is where the data needs validatin'
+    exp_return = Expdata(experimental_data_entry_json_filename)
+    robo_return = Robo(robot_input_excel_filename)
+    crys_return = Crys(crystal_data)
+    print(exp_return, file=outfile)
+    print('\t},', file=outfile)
+    print('\t', '"well_volumes":', file=outfile)
+    print('\t', robo_return[0], ',', file=outfile)
+    print('\t', '"tray_environment":', file=outfile)
+    print('\t', robo_return[1], ',', file=outfile)
+    print('\t', '"robot_reagent_handling":', file=outfile)
+    print('\t', robo_return[2], ',', file=outfile)
+    print('\t', '"crys_file_data":', file=outfile)
+    print('\t', crys_return, file=outfile)
+    print('}', file=outfile)
+
 
 def ExpDirOps(local_directory, debug):
     """Gets all of the relevant folder titles from the experimental directory
@@ -94,7 +98,7 @@ def ExpDirOps(local_directory, debug):
         modlog.warn('debugging enabled! targeting dev folder')
         remote_directory = '1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k'
 
-    crys_dict, robo_dict, Expdata, dir_dict = googleio.drivedatfold(remote_directory)
+    crys_dict, robo_dict, Expdata, remote_run_directories = googleio.drivedatfold(remote_directory)
 
     # todo: what to do with these log statements? Do we drop this vocabulary
     # modlog.info('parsing EXPERIMENTAL_OBJECT')
@@ -102,19 +106,27 @@ def ExpDirOps(local_directory, debug):
     # modlog.info('parsing REAGENT_MODEL_OBJECT')
     # modlog.info('building runs in local directory')
 
-    print('Building folders ..', end='',flush=True)
-    for folder in dir_dict:
-        print('.', end='', flush=True)
-        exp_json = Path(local_directory + "/%s.json" % folder)
-        if exp_json.is_file():
-            modlog.info('%s exists' %folder)
+    print('Building folders ..', end='', flush=True)
+    for remote_run_directory in tqdm(remote_run_directories):
+        run_json_filename = Path(local_directory + "/{}.json".format(remote_run_directory))
+        if run_json_filename.is_file():
+            modlog.info('{} exists'.format(remote_run_directory))
         else:
-            Outfile=open(exp_json, 'w')
-            workdir='data/datafiles/'
-            modlog.info('%s Created' %folder)
-            data_from_drive = googleio.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
-            genthejson(Outfile, workdir, folder, data_from_drive)
-            Outfile.close()
+            outfile = open(run_json_filename, 'w')
+            workdir = 'data/datafiles/'  # todo ian whats up with this?
+            modlog.info('{} Created'.format(remote_run_directory))
+
+            # todo somehow I dont think having all of is info in separate dicts makes sense...
+            # there should be a better way to pass all of this data around
+
+            data_from_drive = googleio.getalldata(crys_dict[remote_run_directory],
+                                                  robo_dict[remote_run_directory],
+                                                  Expdata[remote_run_directory],
+                                                  workdir,
+                                                  remote_run_directory)
+
+            parse_run_to_json(outfile, workdir, remote_run_directory, data_from_drive)
+            outfile.close()
             time.sleep(4)  #see note below
             '''
             due to the limitations of the haverford googleapi 
