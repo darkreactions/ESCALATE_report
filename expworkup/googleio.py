@@ -9,6 +9,8 @@ import gspread
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
+from tqdm import tqdm
+
 from expworkup.devconfig import cwd
 
 modlog = logging.getLogger('report.googleAPI')
@@ -44,35 +46,44 @@ def ChemicalData():
     modlog.info('Successfully loaded chemical data for processing')
     return(chemdf)
 
-###Returns a referenced dictionary of processed files as dictionaries {folder title SD2 ID, Gdrive UID}
-def drivedatfold(opdir):
-    datadir_list = drive.ListFile({'q': "'%s' in parents and trashed=false" %opdir}).GetList()
-    dir_dict=[]
-    Crys_dict={}
-    Expdata_dict={}
-    Robo_dict={}
-    print('Downloading data ..', end='',flush=True)
-    for f in datadir_list:
-        if "Template" in f['title']:
-            pass
-        elif f['mimeType']=='application/vnd.google-apps.folder': # if folder
-            modlog.info('downloaded %s from google drive' %f['title'])
-            dir_dict.append(f['title'])
-            Exp_file_list =  drive.ListFile({'q': "'%s' in parents and trashed=false" %f['id']}).GetList()
-            #Generating a set of dictionaries to easily associate the variable name with with the UID.  Most likely a very general way to do this. 
-            #I have hard coded the entry to control what files we are pulling and operating on from the google drive.  Users might upload similar names or 
-            #do something I can't think of.  This way we control what is loaded into the JSON
-            for f_sub in Exp_file_list:
-                if "CrystalScoring" in f_sub['title']:
-                    Crys_dict[f['title']]=f_sub['id']
-                if "ExpDataEntry" in f_sub['title']:
-                    Expdata_dict[f['title']]=f_sub['id']
-                if "RobotInput" in f_sub['title']:
-                    Robo_dict[f['title']]=f_sub['id']
-            print('.',end='',flush=True)
+
+def drivedatfold(remote_directory):
+    """Parse a GDrive directory of ESCALATE runs.
+
+    Iterates through remote_directory to obtain all of the CrystalScoring, ExpDataEntry, and RobotInput file UIDs,
+    along with UIDs of all subdirectories, which should each be the output of an ESCALATE run
+
+    :param remote_directory: UID of the Gdrive directory containing ESCALATE runs to process.
+    :return: (dict, dict, dict, list): CrystalScoring, ExpDataEntry, and RobotInput name => UID dicts and subdir list
+    """
+    # get all of the child folders of remote directory
+    remote_directory_children = drive.ListFile({'q': "'%s' in parents and trashed=false" % remote_directory}).GetList()
+
+    # get all of the CrystalScoring, ExpDataEntry, and RobotInput file UIDs in child directory
+    print('Downloading data ..', end='', flush=True)
+    data_directories = []
+    crystal_files = {}
+    exp_data_entry_files = {}
+    robot_files = {}
+    for child in tqdm(remote_directory_children):
+
+        # if folder
+        if child['mimeType'] == 'application/vnd.google-apps.folder':
+            modlog.info('downloaded {} from google drive'.format(child['title']))
+            data_directories.append(child['title'])
+
+            grandchildren = drive.ListFile({'q': "'{}' in parents and trashed=false".format(child['id'])}).GetList()
+            for grandchild in grandchildren:
+                # todo generalize this
+                if "CrystalScoring" in grandchild['title']:
+                    crystal_files[child['title']] = grandchild['id']
+                if "ExpDataEntry" in grandchild['title']:
+                    exp_data_entry_files[child['title']] = grandchild['id']
+                if "RobotInput" in grandchild['title']:
+                    robot_files[child['title']] = grandchild['id']
+
     print(' download complete')
-    return(Crys_dict, Robo_dict, Expdata_dict, dir_dict) # Returns a named list of dictionaries linked to the folder (the job jun) and the specific file's UID on gdrive. Each dictionary variable is linked to folder/run
-###Returns a referenced dictionary of processed files as dictionaries {folder title SD2 ID, Gdrive UID}, the dictionary labels are thereby callable by the same key, but have different variables.. this makes sense, but likely a better way?
+    return crystal_files, robot_files, exp_data_entry_files, data_directories
 
 #Converts the hacked google sheets file into a TSV type file  (should eventually store as a json object)
 def sheet_to_tsv(expUID, workdir,runname):
@@ -88,9 +99,19 @@ def sheet_to_tsv(expUID, workdir,runname):
             for i in json_in_tsv_list:
                 print('\t'.join(i), file=f) #+ '\n')
 
-#This function pulls the files to the datafiles directory while also setting the format
-#This code should be fed all of the relevant UIDs from dictionary assembler above.  Additional functions should be designed to flag new fields as needed
+
 def getalldata(crysUID, roboUID, expUID, workdir, runname):
+    """This function pulls the files to the datafiles directory while also setting the format
+    This code should be fed all of the relevant UIDs from dictionary assembler above.
+    Additional functions should be designed to flag new fields as needed
+
+    :param crysUID: UID of crystal
+    :param roboUID:
+    :param expUID:
+    :param workdir:
+    :param runname:
+    :return:
+    """
     Crys_File = gc.open_by_key(crysUID)
     Crys_file_lists = Crys_File.sheet1.get_all_values()
     Crysout=(Crys_file_lists)

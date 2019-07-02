@@ -21,8 +21,8 @@ def initialize(args):
     #Ensure directories are in order
     if not os.path.exists('data/datafiles'):
         os.mkdir('data/datafiles')
-    if not os.path.exists(args.workdir):
-        os.mkdir(args.workdir)
+    if not os.path.exists(args.local_directory):
+        os.mkdir(args.local_directory)
     modlog.info(args)
     modlog.info('directory exist')
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     # Some command line interfacing to aid in script handling
 #    os.chdir(os.path.dirname(__file__))
     parser = ap.ArgumentParser(description='Target Folder')
-    parser.add_argument('workdir', type=str,
+    parser.add_argument('local_directory', type=str,
         help='Please include target folder') 
     parser.add_argument('-d', '--debug', type=int, default=0,
         help='Turns on testing for implementing new features to the front \
@@ -59,8 +59,8 @@ if __name__ == "__main__":
         sys.exit()
 
     initialize(args)
-    createjson.ExpDirOps(args.workdir, args.debug) #Run Primary JSON Creator
-    finalcsv = jsontocsv.printfinal(args.workdir, args.debug, args.raw) # RUn the JSON to CSV parser
+    createjson.ExpDirOps(args.local_directory, args.debug) #Run Primary JSON Creator
+    finalcsv = jsontocsv.printfinal(args.local_directory, args.debug, args.raw) # RUn the JSON to CSV parser
     if args.verdata==1:
         export_to_repo.prepareexport(finalcsv, args.state, link)
     elif args.verdata==0:

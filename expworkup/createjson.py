@@ -49,14 +49,21 @@ def Crys(crysfile):
     return(crys_dump)
 
 def genthejson(Outfile, workdir, opfolder, drive_data):
-    ## Do all of the file handling for a particular run and assemble the JSON, return the completed JSON file object
-    ## and location for sorting and final comparison
-    Crysfile=drive_data
-    Expdatafile=workdir+opfolder+'_ExpDataEntry.json'
-    Robofile=workdir+opfolder+'_RobotInput.xls'
-    exp_return=Expdata(Expdatafile)
-    robo_return=Robo(Robofile)
-    crys_return=Crys(Crysfile)
+    """Do all of the file handling for a particular run and assemble the JSON, return the completed JSON file object
+    and location for sorting and final comparison
+
+    :param Outfile:
+    :param workdir:
+    :param opfolder:
+    :param drive_data:
+    :return:
+    """
+    Crysfile = drive_data
+    Expdatafile = workdir + opfolder+'_ExpDataEntry.json'
+    Robofile = workdir + opfolder + '_RobotInput.xls'
+    exp_return = Expdata(Expdatafile)
+    robo_return = Robo(Robofile)
+    crys_return = Crys(Crysfile)
     print(exp_return, file=Outfile)
     print('\t},', file=Outfile)
     print('\t', '"well_volumes":', file=Outfile)
@@ -69,37 +76,43 @@ def genthejson(Outfile, workdir, opfolder, drive_data):
     print('\t', crys_return, file=Outfile)
     print('}', file=Outfile)
 
-def ExpDirOps(myjsonfolder, debug):
+def ExpDirOps(local_directory, debug):
+    """Gets all of the relevant folder titles from the experimental directory
+    Cross references with the working directory of the final Json files send the list of jobs needing processing
+
+    :param local_directory: The local directory to which to download data. From CLI.
+    :param debug: 1 if debug mode, else 0. From CLI.
+    :return:
+    """
     modlog.info('starting directory parsing')
-    ##Call code to get all of the relevant folder titles from the experimental directory and
-    ##Cross reference with the working directory of the final Json files send the list of jobs needing processing
-    ## loops of IFs for file checking
     if debug == 0:
+        # todo this should not be hard coded
         modlog.info('debugging disabled, running on main data directory')
-        opdir='13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
+        remote_directory = '13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
     elif debug == 1:
+        # todo this also shouldnt be hard coded: put both in a config file
         modlog.warn('debugging enabled! targeting dev folder')
-        opdir = '1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k'
-    ExpList = googleio.drivedatfold(opdir)
-    modlog.info('parsing EXPERIMENTAL_OBJECT')
-    crys_dict=(ExpList[0])
-    modlog.info('parsing EXPERIMENTAL_MODEL')
-    robo_dict=(ExpList[1])
-    modlog.info('parsing REAGENT_MODEL_OBJECT')
-    Expdata=(ExpList[2])
-    dir_dict=(ExpList[3])
-    modlog.info('building runs in local directory')
+        remote_directory = '1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k'
+
+    crys_dict, robo_dict, Expdata, dir_dict = googleio.drivedatfold(remote_directory)
+
+    # todo: what to do with these log statements? Do we drop this vocabulary
+    # modlog.info('parsing EXPERIMENTAL_OBJECT')
+    # modlog.info('parsing EXPERIMENTAL_MODEL')
+    # modlog.info('parsing REAGENT_MODEL_OBJECT')
+    # modlog.info('building runs in local directory')
+
     print('Building folders ..', end='',flush=True)
     for folder in dir_dict:
         print('.', end='', flush=True)
-        exp_json=Path(myjsonfolder+"/%s.json" %folder)
+        exp_json = Path(local_directory + "/%s.json" % folder)
         if exp_json.is_file():
             modlog.info('%s exists' %folder)
         else:
             Outfile=open(exp_json, 'w')
             workdir='data/datafiles/'
             modlog.info('%s Created' %folder)
-            data_from_drive= googleio.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
+            data_from_drive = googleio.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
             genthejson(Outfile, workdir, folder, data_from_drive)
             Outfile.close()
             time.sleep(4)  #see note below
