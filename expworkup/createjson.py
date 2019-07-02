@@ -10,45 +10,67 @@ from pathlib import Path
 from tqdm import tqdm
 
 from expworkup import googleio
+from validation import validation
 
+# todo put in config
 ## Set the workflow of the code used to generate the experimental data and to process the data
-WorkupVersion=1.0
-
+WorkupVersion = 1.0
 modlog = logging.getLogger('report.CreateJSON')
 
-def Expdata(DatFile):
-    ExpEntry=DatFile
-    with open(ExpEntry, "r") as file1:
-        file1out=json.load(file1)
-        lines=(json.dumps(file1out, indent=4, sort_keys=True))
-    lines=lines[:-8]
-    return(lines)
+
+def Expdata(local_ExpDataEntry_json):
+    """
+
+    :param local_ExpDataEntry_json:
+    :return:
+    """
+    with open(local_ExpDataEntry_json, "r") as f:
+        exp_dict = json.load(f)
+        exp_str = json.dumps(exp_dict, indent=4, sort_keys=True)
+    exp_str = exp_str[:-8]
+    return exp_str, exp_dict
     ## File processing for the experimental JSON to convert to the final form (header of the script)
 
 def Robo(robotfile):
+    """
+
+    :param robotfile:
+    :return:
+    """
     #o the file handling for the robot.xls file and return a JSON object
-    robot_dict = pd.read_excel(open(robotfile, 'rb'), header=[0], sheet_name=0)
+    robot_dict = pd.read_excel(robotfile, header=[0], sheet_name=0)
     reagentlist = []
     for header in robot_dict.columns:
         if 'Reagent' in header and "ul" in header:
             reagentlist.append(header)
     rnum = len(reagentlist)
-    robo_df = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=range(0,rnum+2))
-    robo_df_2 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+2,rnum+3]).dropna()
-    robo_df_3 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+4,rnum+5,rnum+6,rnum+7]).dropna()
-    robo_dump=json.dumps(robo_df.values.tolist())
-    robo_dump2=json.dumps(robo_df_2.values.tolist())
-    robo_dump3=json.dumps(robo_df_3.values.tolist())
-    return(robo_dump, robo_dump2, robo_dump3)
+
+    # todo: read once, then slice
+    pipette_volumes = pd.read_excel(robotfile, sheet_name=0,
+                                    usecols=range(0, rnum+2))
+    reaction_parameters = pd.read_excel(robotfile, sheet_name=0,
+                                        usecols=[rnum+2, rnum+3]).dropna()
+    reagent_info = pd.read_excel(robotfile, sheet_name=0,
+                                 usecols=[rnum+4, rnum+5, rnum+6, rnum+7]).dropna()
+
+    pipette_dump = json.dumps(pipette_volumes.values.tolist())
+    reaction_dump = json.dumps(reaction_parameters.values.tolist())
+    reagent_dump = json.dumps(reagent_info.values.tolist())
+    return pipette_dump, reaction_dump, reagent_dump, pipette_volumes, reaction_parameters, reagent_info
 
 def Crys(crysfile):
+    """
+
+    :param crysfile:
+    :return:
+    """
     ##Gather the crystal datafile information and return JSON object
-    headers=crysfile.pop(0)
-    crys_df=pd.DataFrame(crysfile, columns=headers)
-    crys_df_curated=crys_df[['Concatenated Vial site', 'Crystal Score', 'Bulk Actual Temp (C)', 'modelname']]
-    crys_list=crys_df_curated.values.tolist()
-    crys_dump=json.dumps(crys_list)
-    return(crys_dump)
+    headers = crysfile.pop(0)
+    crys_df = pd.DataFrame(crysfile, columns=headers)
+    crys_df_curated = crys_df[['Concatenated Vial site', 'Crystal Score', 'Bulk Actual Temp (C)', 'modelname']]
+    crys_list = crys_df_curated.values.tolist()
+    crys_dump = json.dumps(crys_list)
+    return crys_dump, crys_df
 
 
 def parse_run_to_json(outfile, local_data_directory, remote_run_directory, crystal_data):
@@ -64,19 +86,24 @@ def parse_run_to_json(outfile, local_data_directory, remote_run_directory, cryst
     robot_input_excel_filename = local_data_directory + remote_run_directory + '_RobotInput.xls'
 
     # todo this right here bois is where the data needs validatin'
-    exp_return = Expdata(experimental_data_entry_json_filename)
-    robo_return = Robo(robot_input_excel_filename)
-    crys_return = Crys(crystal_data)
-    print(exp_return, file=outfile)
+    exp_str, exp_dict = Expdata(experimental_data_entry_json_filename)
+    pipette_dump, reaction_dump, reagent_dump, \
+    pipette_volumes, reaction_parameters, reagent_info = Robo(robot_input_excel_filename)
+    crys_str, crys_df = Crys(crystal_data)
+
+    validation.validate_crystal_scoring(crys_df)
+    validation.validate_robot_input(pipette_volumes, reaction_parameters, reagent_info)
+
+    print(exp_str, file=outfile)
     print('\t},', file=outfile)
     print('\t', '"well_volumes":', file=outfile)
-    print('\t', robo_return[0], ',', file=outfile)
+    print('\t', pipette_dump, ',', file=outfile)
     print('\t', '"tray_environment":', file=outfile)
-    print('\t', robo_return[1], ',', file=outfile)
+    print('\t', reaction_dump, ',', file=outfile)
     print('\t', '"robot_reagent_handling":', file=outfile)
-    print('\t', robo_return[2], ',', file=outfile)
+    print('\t', reagent_dump, ',', file=outfile)
     print('\t', '"crys_file_data":', file=outfile)
-    print('\t', crys_return, file=outfile)
+    print('\t', crys_str, file=outfile)
     print('}', file=outfile)
 
 

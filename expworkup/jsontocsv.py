@@ -63,14 +63,18 @@ def cleaner(dirty_df, raw):
         squeaky_clean_df = pd.concat([out_df, rxn_molarity_clean,
                                       rxn_v1molarity_clean, rxn_df,
                                       feat_df, proto_df], axis=1)
-    return(squeaky_clean_df)
+    return squeaky_clean_df
 
-## Unpack logic
-    #most granular data for each row of the final CSV is the well information.
-    #Each well will need all associated information of chemicals, run, etc. 
-    #Unpack those values first and then copy the generated array to each of the invidual wells
-    ### developed enough now that it should be broken up into smaller pieces!
 def unpackJSON(myjson_fol):
+    """
+    most granular data for each row of the final CSV is the well information.
+    Each well will need all associated information of chemicals, run, etc.
+    Unpack those values first and then copy the generated array to each of the invidual wells
+    developed enough now that it should be broken up into smaller pieces!
+
+    :param myjson_fol:
+    :return:
+    """
     chem_df=googleio.ChemicalData()  #Grabs relevant chemical data frame from google sheets (only once no matter how many runs)
     concat_df_raw=pd.DataFrame() 
     print('Unpacking JSONs  ..', end='', flush=True)
