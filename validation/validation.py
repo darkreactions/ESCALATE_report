@@ -17,3 +17,6 @@ def validate_robot_input(pipette_volumes, reaction_parameters, reagent_info):
     is_valid = V.validate(pipette_volumes, schemas.ROBO_FILE_PIPETTE_VOLUMES)
     print(V.errors)
     return is_valid
+
+def validate_exp_data(exp_data):
+    return

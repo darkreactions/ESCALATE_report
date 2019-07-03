@@ -87,12 +87,15 @@ def parse_run_to_json(outfile, local_data_directory, remote_run_directory, cryst
 
     # todo this right here bois is where the data needs validatin'
     exp_str, exp_dict = Expdata(experimental_data_entry_json_filename)
+
     pipette_dump, reaction_dump, reagent_dump, \
     pipette_volumes, reaction_parameters, reagent_info = Robo(robot_input_excel_filename)
+
     crys_str, crys_df = Crys(crystal_data)
 
     validation.validate_crystal_scoring(crys_df)
     validation.validate_robot_input(pipette_volumes, reaction_parameters, reagent_info)
+    validation.validate_exp_data(exp_dict)
 
     print(exp_str, file=outfile)
     print('\t},', file=outfile)
@@ -146,13 +149,13 @@ def ExpDirOps(local_directory, debug):
             # todo somehow I dont think having all of is info in separate dicts makes sense...
             # there should be a better way to pass all of this data around
 
-            data_from_drive = googleio.getalldata(crys_dict[remote_run_directory],
-                                                  robo_dict[remote_run_directory],
-                                                  Expdata[remote_run_directory],
-                                                  workdir,
-                                                  remote_run_directory)
+            crystal_scoring_data = googleio.getalldata(crys_dict[remote_run_directory],
+                                                       robo_dict[remote_run_directory],
+                                                       Expdata[remote_run_directory],
+                                                       workdir,
+                                                       remote_run_directory)
 
-            parse_run_to_json(outfile, workdir, remote_run_directory, data_from_drive)
+            parse_run_to_json(outfile, workdir, remote_run_directory, crystal_scoring_data)
             outfile.close()
             time.sleep(4)  #see note below
             '''

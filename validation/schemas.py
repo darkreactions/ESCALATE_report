@@ -53,3 +53,5 @@ ROBO_FILE_PIPETTE_VOLUMES = {
     'Reagent7 (ul)': {'type': 'list', 'schema': {'type': 'integer'}},
     'Labware ID:':   {'type': 'list', 'schema': {'type': 'string'}},
 }
+
+ESCALATE_RUN = {'robo': {'reagents': ROBO_FILE_REAGENT_INFO}}
