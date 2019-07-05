@@ -47,8 +47,8 @@ def ChemicalData():
     return(chemdf)
 
 
-def drivedatfold(remote_directory):
-    """Parse a GDrive directory of ESCALATE runs.
+def get_drive_UIDs(remote_directory):
+    """Get the UIDs of files and folders of interest in Gdrive
 
     Iterates through remote_directory to obtain all of the CrystalScoring, ExpDataEntry, and RobotInput file UIDs,
     along with UIDs of all subdirectories, which should each be the output of an ESCALATE run
@@ -86,40 +86,48 @@ def drivedatfold(remote_directory):
     return crystal_files, robot_files, exp_data_entry_files, data_directories
 
 
-def save_ExpDataEntry_as_json(expUID, workdir, runname):
-    if 'ECL' in runname:
-        exp_file = drive.CreateFile({'id': expUID}) 
-        exp_file.GetContentFile(workdir+exp_file['title'])
+def save_ExpDataEntry(exp_UID, local_data_dir, run_name):
+    """todo gary can we run on this?
+    I'm not really sure what goes on with the ECL data, and the other case is Ian's JSON sheet logic
+    """
+    if 'ECL' in run_name:
+        # todo ian: where do these json files come from?
+        exp_file = drive.CreateFile({'id': exp_UID})
+        exp_file.GetContentFile(os.path.join(local_data_dir, exp_file['title']))
     else:
-        ExpDataWorkbook = gc.open_by_key(expUID)
-        tsv_ready_lists = ExpDataWorkbook.get_worksheet(1)
+        exp_data_workbook = gc.open_by_key(exp_UID)
+        tsv_ready_lists = exp_data_workbook.get_worksheet(1)
         json_in_tsv_list = tsv_ready_lists.get_all_values()
-        json_file = workdir+runname + '_ExpDataEntry.json'
+        json_file = local_data_dir + run_name + '_ExpDataEntry.json'
         with open(json_file, 'w') as f:
             for i in json_in_tsv_list:
-                print('\t'.join(i), file=f) #+ '\n')
+                print('\t'.join(i), file=f)
 
 
-def getalldata(crysUID, roboUID, expUID, workdir, runname):
+def download_run_data(crys_UID, robo_UID, exp_UID, local_data_dir, run_name):
     """This function pulls the files to the datafiles directory while also setting the format
     This code should be fed all of the relevant UIDs from dictionary assembler above.
     Additional functions should be designed to flag new fields as needed
 
-    :param crysUID: UID of crystal
-    :param roboUID:
-    :param expUID:
-    :param workdir:
-    :param runname:
+    :param crys_UID: UID of crystal
+    :param robo_UID:
+    :param exp_UID:
+    :param local_data_dir:
+    :param run_name:
     :return:
     """
-    crystal_file = gc.open_by_key(crysUID)
-    crystal_data = crystal_file.sheet1.get_all_values()
-#    exp_file.GetContentFile(workdir+exp_file['title'])
-    save_ExpDataEntry_as_json(expUID, workdir, runname)
-    robo_file = drive.CreateFile({'id': roboUID}) 
-    robo_file.GetContentFile(workdir+robo_file['title'])
-    # todo: ian: elaborate this. what goes on here with the robot file?
-    # (I can figure out what happens to the experimental entry data.
-    # Returns only the list of lists for the crystal file,
-    # other files are in xls or need to be processed via text for various reasons
-    return crystal_data
+
+    # save crystal file
+    crystal_workbook = gc.open_by_key(crys_UID)
+    crystal_rows = crystal_workbook.sheet1.get_all_values()
+    crystal_df = pd.DataFrame.from_records(crystal_rows[1:], columns=crystal_rows[0])
+    crystal_df.to_csv(os.path.join(local_data_dir, "{}.csv".format(crystal_workbook.title)),
+                      index=False)
+
+    # save exp file
+    save_ExpDataEntry(exp_UID, local_data_dir, run_name)
+
+    # save robot file
+    robo_file = drive.CreateFile({'id': robo_UID})
+    robo_file.GetContentFile(os.path.join(local_data_dir, robo_file['title']))
+    return

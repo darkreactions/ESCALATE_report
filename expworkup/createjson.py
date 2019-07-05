@@ -27,7 +27,7 @@ def Expdata(local_ExpDataEntry_json):
     with open(local_ExpDataEntry_json, "r") as f:
         exp_dict = json.load(f)
         exp_str = json.dumps(exp_dict, indent=4, sort_keys=True)
-    exp_str = exp_str[:-8]
+    exp_str = exp_str[:-8]  # todo Ian: why? this needs to be documented
     return exp_str, exp_dict
     ## File processing for the experimental JSON to convert to the final form (header of the script)
 
@@ -65,33 +65,41 @@ def Crys(crysfile):
     :return:
     """
     ##Gather the crystal datafile information and return JSON object
-    headers = crysfile.pop(0)
-    crys_df = pd.DataFrame(crysfile, columns=headers)
+    crys_df = pd.read_csv(crysfile)
     crys_df_curated = crys_df[['Concatenated Vial site', 'Crystal Score', 'Bulk Actual Temp (C)', 'modelname']]
     crys_list = crys_df_curated.values.tolist()
     crys_dump = json.dumps(crys_list)
     return crys_dump, crys_df
 
 
-def parse_run_to_json(outfile, local_data_directory, remote_run_directory, crystal_data):
+def parse_run_to_json(outfile, local_data_directory, run_name):
     """Parse data from one ESCALATE run into json and write to
+
+    TODO: this is the T in ETL,
+        * separate out the (Download, Read, (these are extract)), Transform, and Validate functionalty
+            * It seems like we are going to need to Transform before we Validate
+            * Question: are we reading from drive and validating, or reading from drive, saving to disk, and validating?
+            * Right now we are running into datatype issues (e.g. int vs string) which are small trasnformations,
+              Lets just (try to) transform everything into the expected form before validating
+
+        * Document: how are we transforming it here?
 
     :param outfile:
     :param local_data_directory:
-    :param remote_run_directory:
+    :param run_name:
     :param crystal_data:
     :return:
     """
-    experimental_data_entry_json_filename = local_data_directory + remote_run_directory + '_ExpDataEntry.json'
-    robot_input_excel_filename = local_data_directory + remote_run_directory + '_RobotInput.xls'
+    exp_filename = local_data_directory + run_name + '_ExpDataEntry.json'
+    robo_filename = local_data_directory + run_name + '_RobotInput.xls'
+    crys_filename = local_data_directory + run_name + '_CrystalScoring.csv'
 
-    # todo this right here bois is where the data needs validatin'
-    exp_str, exp_dict = Expdata(experimental_data_entry_json_filename)
+    exp_str, exp_dict = Expdata(exp_filename)
 
     pipette_dump, reaction_dump, reagent_dump, \
-    pipette_volumes, reaction_parameters, reagent_info = Robo(robot_input_excel_filename)
+    pipette_volumes, reaction_parameters, reagent_info = Robo(robo_filename)
 
-    crys_str, crys_df = Crys(crystal_data)
+    crys_str, crys_df = Crys(crys_filename)
 
     validation.validate_crystal_scoring(crys_df)
     validation.validate_robot_input(pipette_volumes, reaction_parameters, reagent_info)
@@ -128,7 +136,7 @@ def ExpDirOps(local_directory, debug):
         modlog.warn('debugging enabled! targeting dev folder')
         remote_directory = '1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k'
 
-    crys_dict, robo_dict, Expdata, remote_run_directories = googleio.drivedatfold(remote_directory)
+    crys_UIDs, robo_UIDs, exp_UIDs, drive_run_dirnames = googleio.get_drive_UIDs(remote_directory)
 
     # todo: what to do with these log statements? Do we drop this vocabulary
     # modlog.info('parsing EXPERIMENTAL_OBJECT')
@@ -137,25 +145,28 @@ def ExpDirOps(local_directory, debug):
     # modlog.info('building runs in local directory')
 
     print('Building folders ..', end='', flush=True)
-    for remote_run_directory in tqdm(remote_run_directories):
-        run_json_filename = Path(local_directory + "/{}.json".format(remote_run_directory))
+    for drive_run_dirname in tqdm(drive_run_dirnames):
+        run_json_filename = Path(local_directory + "/{}.json".format(drive_run_dirname))
         if run_json_filename.is_file():
-            modlog.info('{} exists'.format(remote_run_directory))
+            modlog.info('{} exists'.format(drive_run_dirname))
         else:
             outfile = open(run_json_filename, 'w')
             workdir = 'data/datafiles/'  # todo ian whats up with this?
-            modlog.info('{} Created'.format(remote_run_directory))
+            modlog.info('{} Created'.format(drive_run_dirname))
 
             # todo somehow I dont think having all of is info in separate dicts makes sense...
             # there should be a better way to pass all of this data around
+            """
+            Something like: 
+            UIDs = {'run_name': {'crys': str, 'robo': str, 'exp': str}}
+            """
+            googleio.download_run_data(crys_UIDs[drive_run_dirname],
+                                       robo_UIDs[drive_run_dirname],
+                                       exp_UIDs[drive_run_dirname],
+                                       workdir,
+                                       drive_run_dirname)
 
-            crystal_scoring_data = googleio.getalldata(crys_dict[remote_run_directory],
-                                                       robo_dict[remote_run_directory],
-                                                       Expdata[remote_run_directory],
-                                                       workdir,
-                                                       remote_run_directory)
-
-            parse_run_to_json(outfile, workdir, remote_run_directory, crystal_scoring_data)
+            parse_run_to_json(outfile, workdir, drive_run_dirname)
             outfile.close()
             time.sleep(4)  #see note below
             '''
