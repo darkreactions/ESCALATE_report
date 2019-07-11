@@ -267,7 +267,13 @@ def reagentparser(firstlevel, myjson, chem_df):
             columnnames.append('_raw_labwareID')
             well_volumes_df=pd.DataFrame(reg_value, columns=columnnames)
         if reg_key == 'crys_file_data':
-            crys_file_data_df=pd.DataFrame(reg_value, columns=['_raw_vialsite', '_out_crystalscore', '_rxn_temperatureC_actual_bulk', '_raw_modelname'])
+            crys_file_data_df=pd.DataFrame(reg_value, columns=['_raw_vialsite', 
+                                                               '_out_crystalscore',
+                                                               '_rxn_temperatureC_actual_bulk',
+                                                               '_raw_modelname',
+                                                               '_raw_participantname', 
+                                                               '_raw_notes'
+                                                               ])
     #The following code aligns and normalizes the data frames
     experiment_df=well_volumes_df.merge(crys_file_data_df)
     wellcount=(len(experiment_df.index))-1

@@ -40,12 +40,21 @@ def Robo(robotfile):
     return(robo_dump, robo_dump2, robo_dump3)
 
 def Crys(crysfile):
-    ##Gather the crystal datafile information and return JSON object
-    headers=crysfile.pop(0)
-    crys_df=pd.DataFrame(crysfile, columns=headers)
-    crys_df_curated=crys_df[['Concatenated Vial site', 'Crystal Score', 'Bulk Actual Temp (C)', 'modelname']]
-    crys_list=crys_df_curated.values.tolist()
-    crys_dump=json.dumps(crys_list)
+    '''
+    Gather the crystal datafile information and return JSON object
+
+    :param crysfile: tabular file (.csv) used to contain experiment data
+    '''
+    headers = crysfile.pop(0)
+    crys_df = pd.DataFrame(crysfile, columns=headers)
+    crys_df_curated = crys_df[['Concatenated Vial site',
+                               'Crystal Score',
+                               'Bulk Actual Temp (C)',
+                               'modelname',
+                               'participantname',
+                               'notes']]
+    crys_list = crys_df_curated.values.tolist()
+    crys_dump = json.dumps(crys_list)
     return(crys_dump)
 
 def genthejson(Outfile, workdir, opfolder, drive_data):
