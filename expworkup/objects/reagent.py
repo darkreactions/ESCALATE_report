@@ -49,8 +49,8 @@ class ReagentObject:
         # calculate the total volume of the reagent solution using the volume of the chemicals as an approximation
         for index, row in one_reagent_df.iterrows():
             if row['unit'] == 'gram':
-                one_reagent_df.at[index, 'chemical_volume'] = float(row['density']) * \
-                                                              float(row['amount'])  # converts grams to mL
+                one_reagent_df.at[index, 'chemical_volume'] = float(row['amount']) / \
+                                                              float(row['density'])  # converts grams to mL
             elif row['unit'] == 'milliliter':
                 one_reagent_df.at[index, 'chemical_volume'] = row['amount']  # leaves mL well enough alone
             elif row['unit'] == 'null':
@@ -62,16 +62,16 @@ class ReagentObject:
                 calculated_concentration = float(row['amount']) / float(row['molecularmass']) / \
                                                  float(final_reagent_volume / 1000)  # g --> mol --> [M] (v1-conc)
                 name_space = (reagent_name + "_v1-conc_" + (one_reagent_df.loc[(index, 'InChiKey')]))
-                conc[name_space]=calculated_concentration
+                conc[name_space] = calculated_concentration
             elif row['unit'] == 'milliliter':
                 calculated_concentration = float(row['amount']) * float(row['density']) / \
                                             float(row['molecularmass']) / float(final_reagent_volume / 1000)
                 name_space = (reagent_name + "_v1-conc_" + (one_reagent_df.loc[(index, 'InChiKey')]))
-                conc[name_space]=calculated_concentration
+                conc[name_space] = calculated_concentration
             elif row['unit'] == 'null':
                 calculated_concentration = 0  # null is null!
                 name_space = (reagent_name + "_v1-conc_" + (one_reagent_df.loc[(index, 'InChiKey')]))
-                conc[name_space]=calculated_concentration
+                conc[name_space] = calculated_concentration
         return([conc])
 
 

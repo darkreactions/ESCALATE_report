@@ -169,7 +169,11 @@ def flatten_json_reg(y):
     return(pd.io.json.json_normalize(finaldict)) # normalizes the data and reads into a single row data frame
 
 def reag_info(reagentdf,chemdf):
-    ## ignore GBL ##
+    '''
+        ### Eventually this section of code can be replaced by class objects which describe the reagent for each experiment in line
+        ### Currenlty this code is assembling a dataframe which describes the relatinship between various reagents in order
+        ### to perform subsequent calcualtions.  The inchi keys for example are hard coded and should be variable
+    '''
     reagentlist=[]
     for item in list(reagentdf):
         name='null'
@@ -182,10 +186,7 @@ def reag_info(reagentdf,chemdf):
                 m_type='null'
                 parse_name=item[:-21]
                 parse_chemical_name=item[:-9]
-        ### Eventually this section of code can be replaced by class objects which describe the reagent for each experiment in line
-        ### Currenlty this code is assembling a dataframe which describes the relatinship between various reagents in order
-        ### to perform subsequent calcualtions.  The inchi keys for example are hard coded and should be variable
-                #FA
+                # list of acids
                 if InChIKey == "BDAGIHXWWSANSR-UHFFFAOYSA-N":
                     mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
@@ -195,8 +196,11 @@ def reag_info(reagentdf,chemdf):
                     except:
                         modlog.error("Abort run and check %s density details in google sheets" %name)
                         break
-                #GBL
-                elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N' or InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' or InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' or InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N': 
+                # list of all solvents
+                elif InChIKey == 'YEJRWHAVMIAJKC-UHFFFAOYSA-N' \
+                        or InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' \
+                        or InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' \
+                        or InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N': 
                     mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))
                     name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     m_type='solvent'
@@ -205,8 +209,9 @@ def reag_info(reagentdf,chemdf):
                     except:
                         modlog.error("Abort run and check %s density details in google sheets" %name)
                         break
-                #PbI2
-                elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or InChIKey == 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L':
+                # list of inorganics
+                elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' \
+                        or InChIKey == 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L':
                     mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))
                     name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     m_type='inorg'

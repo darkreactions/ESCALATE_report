@@ -15,38 +15,52 @@ from expworkup.handlers import calcmmol
 from expworkup.handlers import calcmolarity
 from expworkup.handlers import inchigen
 
+
 debug = 0 #args.Debug
 finalvol_entries=2 ## Hard coded number of formic acid entries at the end of the run (this needs fixing)
 
 modlog = logging.getLogger('report.JSONtoCSV')
 
-#Will eventually create a dataframe from the robot handling information
+
 def robo_handling():
+    '''
+    TODO: Create a dataframe from the robot handling information 
+    '''
     pass
 
-#The name cleaner is hard coded at the moment for the chemicals we are using. This will need to be generalized somehow...
+
 def nameCleaner(sub_dirty_df, new_prefix):
-    organic_df=pd.DataFrame()
-    cleaned_M=pd.DataFrame()
+    ''' The name cleaner is hard coded at the moment for the chemicals
+    we are using at HC/ LBL
+    TODO: Generalize name cleaner for groups or "m_types" based on inchikey
+    or chemical abbreviation
+
+    '''
+    organic_df = pd.DataFrame()
+    cleaned_M = pd.DataFrame()
     for header in sub_dirty_df.columns:
-        #GBl handling -- > Solvent labeled (or other solvent such as DMF)
-        if 'YEJRWHAVMIAJKC-UHFFFAOYSA-N' in header:# or 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' in header:
+        # m_type = solvent (all solvent category data)
+        if 'YEJRWHAVMIAJKC-UHFFFAOYSA-N' in header \
+                or 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' in header \
+                or 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' in header \
+                or 'YMWUJEATGCHHMB-UHFFFAOYSA-N' in header:
             pass
-        #Acid handling --> Acid labeld --> will need to declare type in the future or something
+        # m_type = acid
         elif "BDAGIHXWWSANSR-UHFFFAOYSA-N" in header:
-            cleaned_M['%s_acid'%new_prefix]=sub_dirty_df[header]
-#            molarity_df['_rxn_M_acid'] = mmol_reagent_df[header] / (calculated_volumes_df['_raw_final_volume']/1000)
-        #PBI2 handling --> inorganic label
-        elif 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' in header:# or 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L' in header:
-            cleaned_M['%s_inorganic'%new_prefix]=sub_dirty_df[header]
-#            molarity_df['_rxn_M_inorganic'] = mmol_reagent_df[header] / (calculated_volumes_df['_raw_final_volume']/1000)
+            cleaned_M['%s_acid' % new_prefix] = sub_dirty_df[header]
+        # m_type = inorganic (category of "inorgnic" used for HC/ LBL)
+        elif 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' in header \
+                or 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L' in header:
+            cleaned_M['%s_inorganic' % new_prefix] = sub_dirty_df[header]
         else:
-            organic_df[header]=sub_dirty_df[header]
-    cleaned_M['%s_organic'%new_prefix]=organic_df.sum(axis=1)
+            organic_df[header] = sub_dirty_df[header]
+    cleaned_M['%s_organic' % new_prefix] = organic_df.sum(axis=1)
     return(cleaned_M)
 
-#cleans up the name space and the csv output for distribution
+
 def cleaner(dirty_df, raw):
+    ''' cleans up the name space and the csv output for distribution
+    '''
     rxn_molarity_clean = nameCleaner(dirty_df.filter(like='_raw_M_'), '_rxn_M')
     rxn_v1molarity_clean = nameCleaner(dirty_df.filter(like='_raw_v1-M_'), '_raw_v1-M')
     rxn_df=dirty_df.filter(like='_rxn_')
