@@ -1,4 +1,8 @@
 import pandas as pd
+import logging
+
+
+modlog = logging.getLogger('report.feature_augmentation')
 
 def GrabOrganicInchi(inchi_df, molaritydf):
     """ Converts dataframe of inchi keys to a single column of 'organic' Inchis
@@ -15,36 +19,44 @@ def GrabOrganicInchi(inchi_df, molaritydf):
     generalizing the subsequent feature merger code as well    
 
     """
-    inchi_dict={}
+    inchi_dict = {}
     for row_label, row in inchi_df.iterrows():
         for InChIKey in row:
-#            header=header_list[row_index]
-#            InChIKey=header[10:-6]
-            #pass if formic acid hard coded inchi key
+            # pass if formic acid (hard coded inchi key)
             if InChIKey == "BDAGIHXWWSANSR-UHFFFAOYSA-N":
                 pass
-            #pass if inchi is GBL --> 12/9/18 update now solvent ## Probably can fix this generally#
-            elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N' or InChIKey=='ZMXDDKWLCZADIW-UHFFFAOYSA-N' or InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' or InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N': 
+            # pass if inchi is solvent
+            elif InChIKey == 'YEJRWHAVMIAJKC-UHFFFAOYSA-N' or \
+                    InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' or \
+                    InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' or \
+                    InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N':
                 pass
-            #pass if lead iodide
-            elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or InChIKey=='ZASWJUOMEGBQCQ-UHFFFAOYSA-L':
+            # pass if lead iodide
+            elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or \
+                    InChIKey == 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L':
                 pass
             elif InChIKey == 'null' or InChIKey == 0:
                 pass
             else:
                 molarityorganicdf = molaritydf.filter(regex=InChIKey)
                 totalmolarity_organic = (molarityorganicdf.loc[row_label].sum())
+                # ToDo: Move to validation module
+                if isinstance(totalmolarity_organic, pd.core.series.Series):
+                    modlog.error("Rendered JSON files in selected folder are out of date. \
+                         Please delete folder and start again.")
+                    import sys
+                    sys.exit()
                 if totalmolarity_organic != 0:
                     orgInChIKey = InChIKey
                 else:
                     pass
         inchi_dict[row_label] = orgInChIKey
-    keylist_df=pd.DataFrame.from_dict(inchi_dict, orient='index')#, columns=['RunID_vial', '_rxn_organic-inchikey'])
-    keylist_df.rename(columns={list(keylist_df)[0]:'_rxn_organic-inchikey'}, inplace=True)
+    keylist_df = pd.DataFrame.from_dict(inchi_dict, orient='index')
+    keylist_df.rename(columns={list(keylist_df)[0]: '_rxn_organic-inchikey'},
+                      inplace=True)
     keylist_df.index.name = 'RunID_vial'
 #    keylist_df.set_index('RunID_vial', inplace=True)
     return(keylist_df)
-
 
 
 def GrabInchi(rxn_mmol_df, labels_df, inchi_df):
