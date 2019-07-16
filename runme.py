@@ -9,6 +9,7 @@ from expworkup import createjson
 from expworkup import googleio
 from versiondata import export_to_repo
 from tests import logger
+from utils import globals
 
 #record a detailed and organized set of the variables set by the user
 def initialize(args):
@@ -31,7 +32,13 @@ if __name__ == "__main__":
 #    os.chdir(os.path.dirname(__file__))
     parser = ap.ArgumentParser(description='Target Folder')
     parser.add_argument('workdir', type=str,
-        help='Please include target folder') 
+            help='Please include target folder')
+#    parser.add_argument('lab',
+#                        type=str,
+#                        choices=['LBL', 'HC', 'MIT_PVLab', 'dev'],
+#                        help='Please include target folder',
+#                        default='LBL'
+#                        )
     parser.add_argument('-d', '--debug', type=int, default=0,
         help='Turns on testing for implementing new features to the front \
             end of the code, prior to distribution through dataset')
@@ -57,6 +64,8 @@ if __name__ == "__main__":
     else:
         modlog.error('User MUST specify a stateset during version data repo upload preparation!')
         sys.exit()
+    
+#    globals.set_lab(args.lab)
 
     initialize(args)
     createjson.ExpDirOps(args.workdir, args.debug) #Run Primary JSON Creator

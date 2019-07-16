@@ -23,20 +23,40 @@ def Expdata(DatFile):
     return(lines)
     ## File processing for the experimental JSON to convert to the final form (header of the script)
 
-def Robo(robotfile):
+def Robo(robotfile, robotfile1):
     #o the file handling for the robot.xls file and return a JSON object
-    robot_dict = pd.read_excel(open(robotfile, 'rb'), header=[0], sheet_name=0)
-    reagentlist = []
-    for header in robot_dict.columns:
-        if 'Reagent' in header and "ul" in header:
-            reagentlist.append(header)
-    rnum = len(reagentlist)
-    robo_df = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=range(0,rnum+2))
-    robo_df_2 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+2,rnum+3]).dropna()
-    robo_df_3 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+4,rnum+5,rnum+6,rnum+7]).dropna()
-    robo_dump=json.dumps(robo_df.values.tolist())
-    robo_dump2=json.dumps(robo_df_2.values.tolist())
-    robo_dump3=json.dumps(robo_df_3.values.tolist())
+    # ooooh weeee that is some nasty code below, just looking for the right name
+    try:
+        robot_dict = pd.read_excel(open(robotfile, 'rb'), header=[0], sheet_name=0)
+        reagentlist = []
+        for header in robot_dict.columns:
+            if 'Reagent' in header and "ul" in header:
+                reagentlist.append(header)
+        rnum = len(reagentlist)
+        robo_df = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=range(0,rnum+2))
+        robo_df_2 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+2,rnum+3]).dropna()
+        robo_df_3 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+4,rnum+5,rnum+6,rnum+7]).dropna()
+        robo_dump=json.dumps(robo_df.values.tolist())
+        robo_dump2=json.dumps(robo_df_2.values.tolist())
+        robo_dump3=json.dumps(robo_df_3.values.tolist())
+    except OSError:
+        try:
+            robot_dict = pd.read_excel(open(robotfile1, 'rb'), header=[0], sheet_name=0)
+            robotfile = robotfile1
+            reagentlist = []
+            for header in robot_dict.columns:
+                if 'Precursor' in header and "ul" in header:
+                    reagentlist.append(header)
+            rnum = len(reagentlist)
+            robo_df = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=range(0,rnum+3))
+            robo_df_2 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+3,rnum+4]).dropna()
+            robo_df_3 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+5,rnum+6,rnum+7,rnum+8]).dropna()
+            robo_dump=json.dumps(robo_df.values.tolist())
+            robo_dump2=json.dumps(robo_df_2.values.tolist())
+            robo_dump3=json.dumps(robo_df_3.values.tolist())
+        except OSError:
+            modlog.error("Failed to find correct experiment specification file, severe exit error")
+            sys.exit()
     return(robo_dump, robo_dump2, robo_dump3)
 
 def Crys(crysfile):
@@ -46,25 +66,31 @@ def Crys(crysfile):
     :param crysfile: tabular file (.csv) used to contain experiment data
     '''
     headers = crysfile.pop(0)
-    crys_df = pd.DataFrame(crysfile, columns=headers)
-    crys_df_curated = crys_df[['Concatenated Vial site',
-                               'Crystal Score',
-                               'Bulk Actual Temp (C)',
-                               'modelname',
-                               'participantname',
-                               'notes']]
-    crys_list = crys_df_curated.values.tolist()
-    crys_dump = json.dumps(crys_list)
-    return(crys_dump)
+    crys_df_curated = pd.DataFrame(crysfile, columns=headers)
+#    crys_df_curated = crys_df[['Concatenated Vial site',
+#                               'Crystal Score',
+#                               'Bulk Actual Temp (C)',
+#                               'modelname',
+#                               'participantname',
+#                               'notes']]
+#    crys_list = crys_df_curated.values.tolist()
+#    crys_dump = json.dumps(crys_list)
+    out_json = crys_df_curated.to_json(orient='records')
+    return(out_json)
 
 def genthejson(Outfile, workdir, opfolder, drive_data):
     ## Do all of the file handling for a particular run and assemble the JSON, return the completed JSON file object
     ## and location for sorting and final comparison
     Crysfile=drive_data
+
     Expdatafile=workdir+opfolder+'_ExpDataEntry.json'
+    Expdatafile1=workdir+opfolder+'_preparation_interface.json'
+
     Robofile=workdir+opfolder+'_RobotInput.xls'
+    Robofile1=workdir+opfolder+'_ExperimentSpecification.xls'
+
     exp_return=Expdata(Expdatafile)
-    robo_return=Robo(Robofile)
+    robo_return=Robo(Robofile, Robofile1)
     crys_return=Crys(Crysfile)
     print(exp_return, file=Outfile)
     print('\t},', file=Outfile)

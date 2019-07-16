@@ -63,13 +63,16 @@ def drivedatfold(opdir):
             #I have hard coded the entry to control what files we are pulling and operating on from the google drive.  Users might upload similar names or 
             #do something I can't think of.  This way we control what is loaded into the JSON
             for f_sub in Exp_file_list:
-                if "CrystalScoring" in f_sub['title']:
-                    Crys_dict[f['title']]=f_sub['id']
-                if "ExpDataEntry" in f_sub['title']:
-                    Expdata_dict[f['title']]=f_sub['id']
-                if "RobotInput" in f_sub['title']:
-                    Robo_dict[f['title']]=f_sub['id']
-            print('.',end='',flush=True)
+                if "CrystalScoring" in f_sub['title']\
+                        or '_observation_interface' in f_sub['title']:
+                    Crys_dict[f['title']] = f_sub['id']
+                if "ExpDataEntry" in f_sub['title']\
+                        or "preparation_interface" in f_sub['title']:
+                    Expdata_dict[f['title']] = f_sub['id']
+                if "RobotInput" in f_sub['title']\
+                        or "ExperimentSpecification" in f_sub['title']:
+                    Robo_dict[f['title']] = f_sub['id']
+            print('.', end='', flush=True)
     print(' download complete')
     return(Crys_dict, Robo_dict, Expdata_dict, dir_dict) # Returns a named list of dictionaries linked to the folder (the job jun) and the specific file's UID on gdrive. Each dictionary variable is linked to folder/run
 ###Returns a referenced dictionary of processed files as dictionaries {folder title SD2 ID, Gdrive UID}, the dictionary labels are thereby callable by the same key, but have different variables.. this makes sense, but likely a better way?
