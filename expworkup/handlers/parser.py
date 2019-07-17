@@ -279,12 +279,12 @@ def reagentparser(firstlevel, myjson, chem_df):
                 experiment_df=well_volumes_df.merge(crys_file_data_df)
     #The following code aligns and normalizes the data frames
             elif 'Experiment Number' in crys_file_data_df.columns:
-#                crys_file_data_df = crys_file_data_df.rename(columns = {'Experiment Number': 'Experiment Index'})
-                crys_file_data_df['_raw_vialsite'] = crys_file_data_df['Experiment Number'].astype(str)
+                crys_file_data_df['_raw_vialsite'] = crys_file_data_df['Experiment Number'].astype(int)
                 well_volumes_df.dropna(inplace=True)
-                well_volumes_df['_raw_vialsite'] = well_volumes_df['_raw_vialsite'].astype(str) 
-#                well_volumes_df.drop('_raw_vialsite', inplace=True, axis=1)
-                experiment_df=well_volumes_df.merge(crys_file_data_df, on='_raw_vialsite')
+                well_volumes_df['_raw_vialsite'] = well_volumes_df['_raw_vialsite'].astype(int) 
+#                experiment_df=well_volumes_df.merge(crys_file_data_df, on='_raw_vialsite')
+                experiment_df = pd.concat([well_volumes_df.set_index('_raw_vialsite'),crys_file_data_df.set_index('_raw_vialsite')], axis=1, join='inner').reset_index()
+                experiment_df['_raw_vialsite'] = experiment_df['_raw_vialsite'].astype(str)
     #The following code aligns and normalizes the data frames
     wellcount=(len(experiment_df.index))-1
     fullrun_df=(run_df.append([run_df]*wellcount,ignore_index=True))

@@ -14,6 +14,7 @@ from expworkup.handlers import parser
 from expworkup.handlers import calcmmol
 from expworkup.handlers import calcmolarity
 from expworkup.handlers import inchigen
+from utils import globals
 
 
 debug = 0 #args.Debug
@@ -43,14 +44,14 @@ def nameCleaner(sub_dirty_df, new_prefix):
         if 'YEJRWHAVMIAJKC-UHFFFAOYSA-N' in header \
                 or 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' in header \
                 or 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' in header \
-                or 'YMWUJEATGCHHMB-UHFFFAOYSA-N' in header:
+                or 'YMWUJEATGCHHMB-UHFFFAOYSA-N' in header \
+                or 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L' in header:  # This one is PbBr2 (just need to pass for now!)
             pass
         # m_type = acid
         elif "BDAGIHXWWSANSR-UHFFFAOYSA-N" in header:
             cleaned_M['%s_acid' % new_prefix] = sub_dirty_df[header]
         # m_type = inorganic (category of "inorgnic" used for HC/ LBL)
-        elif 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' in header \
-                or 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L' in header:
+        elif 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' in header:
             cleaned_M['%s_inorganic' % new_prefix] = sub_dirty_df[header]
         else:
             organic_df[header] = sub_dirty_df[header]
@@ -63,20 +64,30 @@ def cleaner(dirty_df, raw):
     '''
     rxn_molarity_clean = nameCleaner(dirty_df.filter(like='_raw_M_'), '_rxn_M')
     rxn_v1molarity_clean = nameCleaner(dirty_df.filter(like='_raw_v1-M_'), '_raw_v1-M')
-    rxn_df=dirty_df.filter(like='_rxn_')
-    feat_df=dirty_df.filter(like='_feat_') 
-    out_df=dirty_df.filter(like='_out_') 
-    proto_df = dirty_df.filter(like='_prototype_')
-    if raw == 1:
-        raw_df = dirty_df.filter(like='_raw_')
-        squeaky_clean_df = pd.concat([out_df, rxn_molarity_clean,
-                                      rxn_v1molarity_clean, rxn_df,
-                                      feat_df, raw_df,
-                                      proto_df], axis=1)
-    else:
-        squeaky_clean_df = pd.concat([out_df, rxn_molarity_clean,
-                                      rxn_v1molarity_clean, rxn_df,
-                                      feat_df, proto_df], axis=1)
+
+    if globals.get_lab() == 'LBL' or globals.get_lab() == "HC":
+        dirty_df.rename(columns={'Unnamed: 2': '_raw_placeholder'}, inplace=True)
+        dirty_df.rename(columns={'Bulk Actual Temp (C)': '_rxn_temperatureC_actual_bulk'}, inplace=True)
+        dirty_df.rename(columns={'Crystal Score': '_out_crystalscore'}, inplace=True)
+        dirty_df.rename(columns={'_out_predicted': '_raw_model_predicted'}, inplace=True)
+        rxn_df = dirty_df.filter(like='_rxn_')
+        feat_df = dirty_df.filter(like='_feat_') 
+        out_df = dirty_df.filter(like='_out_') 
+        proto_df = dirty_df.filter(like='_prototype_')
+        if raw == 1:
+            raw_df = dirty_df.filter(like='_raw_')
+            squeaky_clean_df = pd.concat([out_df, rxn_molarity_clean,
+                                          rxn_v1molarity_clean, rxn_df,
+                                          feat_df, raw_df,
+                                          proto_df], axis=1)
+        else:
+            squeaky_clean_df = pd.concat([out_df, rxn_molarity_clean,
+                                          rxn_v1molarity_clean, rxn_df,
+                                          feat_df, proto_df], axis=1)
+    elif globals.get_lab() == 'MIT':
+        squeaky_clean_df = dirty_df
+    elif globals.get_lab() == 'dev':    
+        squeaky_clean_df = dirty_df
     return(squeaky_clean_df)
 
 ## Unpack logic
@@ -86,7 +97,8 @@ def cleaner(dirty_df, raw):
     ### developed enough now that it should be broken up into smaller pieces!
 def unpackJSON(myjson_fol):
     chem_df=googleio.ChemicalData()  #Grabs relevant chemical data frame from google sheets (only once no matter how many runs)
-    concat_df_raw=pd.DataFrame() 
+    concat_df = pd.DataFrame()
+    concat_df_raw = pd.DataFrame()
     print('Unpacking JSONs  ..', end='', flush=True)
     for file in sorted(os.listdir(myjson_fol)):
         if file.endswith(".json"):
