@@ -20,8 +20,8 @@ def initialize(args):
     modlog.info('ensuring directories')
     if not os.path.exists('data/datafiles'):
         os.mkdir('data/datafiles')
-    if not os.path.exists(args.workdir):
-        os.mkdir(args.workdir)
+    if not os.path.exists(args.local_directory):
+        os.mkdir(args.local_directory)
     modlog.info(args)
     modlog.info('directory exist')
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     '''
     parser = ap.ArgumentParser(description='Target Folder')
-    parser.add_argument('workdir', type=str,
+    parser.add_argument('local_directory', type=str,
                         help='Please include target folder')
     parser.add_argument('-l', '--lab',
                         type=str,
@@ -79,8 +79,8 @@ if __name__ == "__main__":
         debug = 0
 
     initialize(args)
-    createjson.ExpDirOps(args.workdir, debug) 
-    finalcsv = jsontocsv.printfinal(args.workdir, debug, args.raw)
+    createjson.ExpDirOps(args.workdir, debug)
+    finalcsv = jsontocsv.printfinal(args.local_directory, debug, args.raw)
     if args.verdata == 1:
         export_to_repo.prepareexport(finalcsv, args.state, link)
     elif args.verdata == 0:
