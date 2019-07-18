@@ -7,6 +7,7 @@ import logging
 
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from tqdm import tqdm
 
 from tests import logger
 from expworkup import googleio
@@ -103,8 +104,7 @@ def unpackJSON(myjson_fol):
     chem_df=googleio.ChemicalData()  #Grabs relevant chemical data frame from google sheets (only once no matter how many runs)
     concat_df = pd.DataFrame()
     concat_df_raw = pd.DataFrame()
-    print('Unpacking JSONs  ..', end='', flush=True)
-    for file in sorted(os.listdir(myjson_fol)):
+    for file in tqdm(sorted(os.listdir(myjson_fol))):
         if file.endswith(".json"):
             modlog.info('Unpacking %s' %file)
             concat_df=pd.DataFrame()  
@@ -123,8 +123,7 @@ def unpackJSON(myjson_fol):
             concat_df=pd.concat([mmol_df, concat_df, runID_df], sort=True, axis=1)
         #Combines the most recent dataframe with the final dataframe which is targeted for export
         concat_df_raw = pd.concat([concat_df_raw,concat_df], sort=True)
-        print('.', end='',flush=True)
-    print(' unpacking complete!')
+    print('JSON to CSV conversion complete!')
     return(concat_df_raw) #this contains all of the raw values from the processed JSON files.  No additional data has been calculated
 
 def augmentdataset(raw_df):
@@ -176,6 +175,7 @@ def augdescriptors(dataset_calcs_fill_df):
 def printfinal(myjsonfolder, debug,raw):
     modlog.info('%s loaded with JSONs for parsing, starting' %myjsonfolder)
     raw_df=unpackJSON(myjsonfolder)
+    print('Renaming headers ... almost done')
     modlog.info('augmenting parsed JSONs with chemical calculations (concentrations)')
     augmented_raw_df = augmentdataset(raw_df)
     modlog.info('appending features and curating dataset')

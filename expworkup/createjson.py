@@ -1,5 +1,6 @@
 #Copyright (c) 2018 Ian Pendleton - MIT License
 import os
+import sys
 import time
 import pandas as pd
 import numpy as np
@@ -11,6 +12,7 @@ from tqdm import tqdm
 
 from expworkup import googleio
 from validation import validation
+from utils import globals
 
 # todo put in config
 ## Set the workflow of the code used to generate the experimental data and to process the data
@@ -29,7 +31,7 @@ def Expdata(local_ExpDataEntry_json):
         exp_str = json.dumps(exp_dict, indent=4, sort_keys=True)
     exp_str = exp_str[:-8]  # todo Ian: why? this needs to be documented
     return exp_str, exp_dict
-    ## File processing for the experimental JSON to convert to the final form (header of the script)
+
 
 def Robo(robotfile, robotfile1):
     """
@@ -66,14 +68,12 @@ def Robo(robotfile, robotfile1):
                 if 'Precursor' in header and "ul" in header:
                     reagentlist.append(header)
             rnum = len(reagentlist)
-                    # todo: read once, then slice
             pipette_volumes = pd.read_excel(robotfile, sheet_name=0,
-                                            usecols=range(0, rnum+2))
+                                            usecols=range(0, rnum+3))
             reaction_parameters = pd.read_excel(robotfile, sheet_name=0,
-                                                usecols=[rnum+2, rnum+3]).dropna()
+                                                usecols=[rnum+3, rnum+4]).dropna()
             reagent_info = pd.read_excel(robotfile, sheet_name=0,
-                                         usecols=[rnum+4, rnum+5, rnum+6, rnum+7]).dropna()
-
+                                         usecols=[rnum+5, rnum+6, rnum+7, rnum+8]).dropna()
             pipette_dump = json.dumps(pipette_volumes.values.tolist())
             reaction_dump = json.dumps(reaction_parameters.values.tolist())
             reagent_dump = json.dumps(reagent_info.values.tolist())
@@ -82,17 +82,25 @@ def Robo(robotfile, robotfile1):
             sys.exit()
     return pipette_dump, reaction_dump, reagent_dump, pipette_volumes, reaction_parameters, reagent_info
 
-def Crys(crysfile):
+def Crys(crysfile, crysfile1):
     '''
     Gather the crystal datafile information and return JSON object
 
     :param crysfile: tabular file (.csv) used to contain experiment data
     :return:
     '''
-    headers = crysfile.pop(0)
-    crys_df_curated = pd.DataFrame(crysfile, columns=headers)
+    #headers = crysfile.pop(0)
+    try:
+        crys_df_curated = pd.read_csv(crysfile)#, columns=headers)
+    except Exception:
+        try:
+            crys_df_curated = pd.read_csv(crysfile1)#, columns=headers)
+        except Exception:
+            modlog.error("Failed to find correct experiment observation file. \
+                         Neither %s or %s exist!" % (crysfile, crysfile1))
+            sys.exit()
     out_json = crys_df_curated.to_json(orient='records')
-    return(out_json)
+    return(out_json, crys_df_curated)
 
 def parse_run_to_json(outfile, local_data_directory, run_name):
     """Parse data from one ESCALATE run into json and write to
@@ -113,19 +121,23 @@ def parse_run_to_json(outfile, local_data_directory, run_name):
     :return:
     """
     exp_filename = local_data_directory + run_name + '_ExpDataEntry.json'
-    robo_filename = local_data_directory + run_name + '_RobotInput.xls'
+
+    robo_filename = './' + local_data_directory + run_name + '_RobotInput.xls'
+    robo_filename1 = './' + local_data_directory + run_name + '_ExperimentSpecification.xls'
+
     crys_filename = local_data_directory + run_name + '_CrystalScoring.csv'
+    crys_filename1 = local_data_directory + run_name + '_observation_interface.csv'
 
     exp_str, exp_dict = Expdata(exp_filename)
 
     pipette_dump, reaction_dump, reagent_dump, \
-    pipette_volumes, reaction_parameters, reagent_info = Robo(robo_filename)
+    pipette_volumes, reaction_parameters, reagent_info = Robo(robo_filename, robo_filename1)
 
-    crys_str, crys_df = Crys(crys_filename)
+    crys_str, crys_df = Crys(crys_filename, crys_filename1)
 
-    validation.validate_crystal_scoring(crys_df)
-    validation.validate_robot_input(pipette_volumes, reaction_parameters, reagent_info)
-    validation.validate_exp_data(exp_dict)
+#    validation.validate_crystal_scoring(crys_df)
+#    validation.validate_robot_input(pipette_volumes, reaction_parameters, reagent_info)
+#    validation.validate_exp_data(exp_dict)
 
     print(exp_str, file=outfile)
     print('\t},', file=outfile)
@@ -168,35 +180,57 @@ def ExpDirOps(local_directory, debug):
 
     print('Building folders ..', end='', flush=True)
     for drive_run_dirname in tqdm(drive_run_dirnames):
+        sleep_timer = 1
         run_json_filename = Path(local_directory + "/{}.json".format(drive_run_dirname))
+        try:
+            if os.stat(run_json_filename).st_size == 0:
+                os.remove(run_json_filename)
+                modlog.info('{} was empty and was removed'.format(run_json_filename))
+        except Exception:
+            pass
         if run_json_filename.is_file():
             modlog.info('{} exists'.format(drive_run_dirname))
         else:
-            outfile = open(run_json_filename, 'w')
-            workdir = 'data/datafiles/'  # todo ian whats up with this?
-            modlog.info('{} Created'.format(drive_run_dirname))
+            while run_json_filename.is_file() is False:
+                try:
+                    time.sleep(sleep_timer)
+                    outfile = open(run_json_filename, 'w')
+                    workdir = 'data/datafiles/'  # todo ian whats up with this?
+                    modlog.info('{} Created'.format(drive_run_dirname))
+                    # todo somehow I dont think having all of is info in separate dicts makes sense...
+                    # there should be a better way to pass all of this data around
+                    """
+                    Something like: 
+                    UIDs = {'run_name': {'crys': str, 'robo': str, 'exp': str}}
+                    """
+                    googleio.download_run_data(crys_UIDs[drive_run_dirname],
+                                               robo_UIDs[drive_run_dirname],
+                                               exp_UIDs[drive_run_dirname],
+                                               workdir,
+                                               drive_run_dirname)
 
-            # todo somehow I dont think having all of is info in separate dicts makes sense...
-            # there should be a better way to pass all of this data around
-            """
-            Something like: 
-            UIDs = {'run_name': {'crys': str, 'robo': str, 'exp': str}}
-            """
-            googleio.download_run_data(crys_UIDs[drive_run_dirname],
-                                       robo_UIDs[drive_run_dirname],
-                                       exp_UIDs[drive_run_dirname],
-                                       workdir,
-                                       drive_run_dirname)
+                    parse_run_to_json(outfile, workdir, drive_run_dirname)
+                    outfile.close()
+                    '''
+                    due to the limitations of the haverford googleapi 
+                    we have to throttle the connection a bit to limit the 
+                    number of api requests anything lower than 2 bugs it out
 
-            parse_run_to_json(outfile, workdir, drive_run_dirname)
-            outfile.close()
-            time.sleep(4)  #see note below
-            '''
-            due to the limitations of the haverford googleapi 
-            we have to throttle the connection a bit to limit the 
-            number of api requests anything lower than 2 bugs it out
-
-            This will need to be re-enabled once we open the software beyond
-            haverford college until we improve the scope of the googleio api
-            '''
-    print(' local directories created')
+                    This will need to be re-enabled once we open the software beyond
+                    haverford college until we improve the scope of the googleio api
+                    '''
+                except Exception:
+                    modlog.info('During download of {} sever request limit was met at {} seconds'.format(run_json_filename, sleep_timer))
+                    sleep_timer = sleep_timer*2
+                    if sleep_timer > 60:
+                        sleep_timer = 60
+                        print("Something might be wrong.. if this message displays more than once kill job and try re-running")
+                    modlog.info('New sleep timer {}'.format(sleep_timer))
+                    try:
+                        if os.stat(run_json_filename).st_size == 0:
+                            os.remove(run_json_filename)
+                            modlog.info('{} was empty and was removed'.format(run_json_filename))
+                    except Exception:
+                        pass
+                    pass
+    print('%s associated local files created' % globals.get_lab())

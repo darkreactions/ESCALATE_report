@@ -82,10 +82,8 @@ def get_drive_UIDs(remote_directory):
                         or "preparation_interface" in grandchild['title']:
                     exp_data_entry_files[child['title']] = grandchild['id']
                 if "RobotInput" in grandchild['title']\
-                        or "ExperimentSpecification" in f_sub['title']:
+                        or "ExperimentSpecification" in grandchild['title']:
                     robot_files[child['title']] = grandchild['id']
-            print('.', end='', flush=True)
-
     print(' download complete')
     return crystal_files, robot_files, exp_data_entry_files, data_directories
 
