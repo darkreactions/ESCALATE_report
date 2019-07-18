@@ -9,6 +9,8 @@ import gspread
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
+from tqdm import tqdm
+
 from expworkup.devconfig import cwd
 
 modlog = logging.getLogger('report.googleAPI')
@@ -24,13 +26,13 @@ elif gauth.access_token_expired:
 else:
     gauth.Authorize() #Just run because everything is loaded properly
 gauth.SaveCredentialsFile("expworkup/creds/mycred.txt")
-drive=GoogleDrive(gauth)
+drive = GoogleDrive(gauth)
 
 ### General Setup Information ###
 ##GSpread Authorization information
-scope= ['https://www.googleapis.com/auth/spreadsheets.readonly']
+scope = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 credentials = ServiceAccountCredentials.from_json_keyfile_name('expworkup/creds/creds.json', scope) 
-gc =gspread.authorize(credentials)
+gc = gspread.authorize(credentials)
 
 def ChemicalData():
     chemsheetid = "1JgRKUH_ie87KAXsC-fRYEw_5SepjOgVt7njjQBETxEg"
@@ -44,61 +46,90 @@ def ChemicalData():
     modlog.info('Successfully loaded chemical data for processing')
     return(chemdf)
 
-###Returns a referenced dictionary of processed files as dictionaries {folder title SD2 ID, Gdrive UID}
-def drivedatfold(opdir):
-    datadir_list = drive.ListFile({'q': "'%s' in parents and trashed=false" %opdir}).GetList()
-    dir_dict=[]
-    Crys_dict={}
-    Expdata_dict={}
-    Robo_dict={}
-    print('Downloading data ..', end='',flush=True)
-    for f in datadir_list:
-        if "Template" in f['title']:
-            pass
-        elif f['mimeType']=='application/vnd.google-apps.folder': # if folder
-            modlog.info('downloaded %s from google drive' %f['title'])
-            dir_dict.append(f['title'])
-            Exp_file_list =  drive.ListFile({'q': "'%s' in parents and trashed=false" %f['id']}).GetList()
-            #Generating a set of dictionaries to easily associate the variable name with with the UID.  Most likely a very general way to do this. 
-            #I have hard coded the entry to control what files we are pulling and operating on from the google drive.  Users might upload similar names or 
-            #do something I can't think of.  This way we control what is loaded into the JSON
-            for f_sub in Exp_file_list:
-                if "CrystalScoring" in f_sub['title']\
-                        or '_observation_interface' in f_sub['title']:
-                    Crys_dict[f['title']] = f_sub['id']
-                if "ExpDataEntry" in f_sub['title']\
-                        or "preparation_interface" in f_sub['title']:
-                    Expdata_dict[f['title']] = f_sub['id']
-                if "RobotInput" in f_sub['title']\
-                        or "ExperimentSpecification" in f_sub['title']:
-                    Robo_dict[f['title']] = f_sub['id']
-            print('.', end='', flush=True)
+
+def get_drive_UIDs(remote_directory):
+    """Get the UIDs of files and folders of interest in Gdrive
+
+    Iterates through remote_directory to obtain all of the CrystalScoring, ExpDataEntry, and RobotInput file UIDs,
+    along with UIDs of all subdirectories, which should each be the output of an ESCALATE run
+
+    :param remote_directory: UID of the Gdrive directory containing ESCALATE runs to process.
+    :return: (dict, dict, dict, list): CrystalScoring, ExpDataEntry, and RobotInput name => UID dicts and subdir list
+    """
+    # get all of the child folders of remote directory
+    remote_directory_children = drive.ListFile({'q': "'%s' in parents and trashed=false" % remote_directory}).GetList()
+
+    # get all of the CrystalScoring, ExpDataEntry, and RobotInput file UIDs in child directory
+    print('Downloading data ..', end='', flush=True)
+    data_directories = []
+    crystal_files = {}
+    exp_data_entry_files = {}
+    robot_files = {}
+    for child in tqdm(remote_directory_children):
+
+        # if folder
+        if child['mimeType'] == 'application/vnd.google-apps.folder':
+            modlog.info('downloaded {} from google drive'.format(child['title']))
+            data_directories.append(child['title'])
+
+            grandchildren = drive.ListFile({'q': "'{}' in parents and trashed=false".format(child['id'])}).GetList()
+            for grandchild in grandchildren:
+                # todo generalize this
+                if "CrystalScoring" in grandchild['title']\
+                        or '_observation_interface' in grandchild['title']:
+                    crystal_files[child['title']] = grandchild['id']
+                if "ExpDataEntry" in grandchild['title']\
+                        or "preparation_interface" in grandchild['title']:
+                    exp_data_entry_files[child['title']] = grandchild['id']
+                if "RobotInput" in grandchild['title']\
+                        or "ExperimentSpecification" in grandchild['title']:
+                    robot_files[child['title']] = grandchild['id']
     print(' download complete')
-    return(Crys_dict, Robo_dict, Expdata_dict, dir_dict) # Returns a named list of dictionaries linked to the folder (the job jun) and the specific file's UID on gdrive. Each dictionary variable is linked to folder/run
-###Returns a referenced dictionary of processed files as dictionaries {folder title SD2 ID, Gdrive UID}, the dictionary labels are thereby callable by the same key, but have different variables.. this makes sense, but likely a better way?
+    return crystal_files, robot_files, exp_data_entry_files, data_directories
 
-#Converts the hacked google sheets file into a TSV type file  (should eventually store as a json object)
-def sheet_to_tsv(expUID, workdir,runname):
-    if 'ECL' in runname:
-        exp_file = drive.CreateFile({'id': expUID}) 
-        exp_file.GetContentFile(workdir+exp_file['title'])
+
+def save_ExpDataEntry(exp_UID, local_data_dir, run_name):
+    """todo gary can we run on this?
+    I'm not really sure what goes on with the ECL data, and the other case is Ian's JSON sheet logic
+    """
+    if 'ECL' in run_name:
+        # todo ian: where do these json files come from?
+        exp_file = drive.CreateFile({'id': exp_UID})
+        exp_file.GetContentFile(os.path.join(local_data_dir, exp_file['title']))
     else:
-        ExpDataWorkbook = gc.open_by_key(expUID)
-        tsv_ready_lists = ExpDataWorkbook.get_worksheet(1)
+        exp_data_workbook = gc.open_by_key(exp_UID)
+        tsv_ready_lists = exp_data_workbook.get_worksheet(1)
         json_in_tsv_list = tsv_ready_lists.get_all_values()
-        json_file=workdir+runname+'_ExpDataEntry.json'
-        with  open(json_file, 'w') as f:
+        json_file = local_data_dir + run_name + '_ExpDataEntry.json'
+        with open(json_file, 'w') as f:
             for i in json_in_tsv_list:
-                print('\t'.join(i), file=f) #+ '\n')
+                print('\t'.join(i), file=f)
 
-#This function pulls the files to the datafiles directory while also setting the format
-#This code should be fed all of the relevant UIDs from dictionary assembler above.  Additional functions should be designed to flag new fields as needed
-def getalldata(crysUID, roboUID, expUID, workdir, runname):
-    Crys_File = gc.open_by_key(crysUID)
-    Crys_file_lists = Crys_File.sheet1.get_all_values()
-    Crysout=(Crys_file_lists)
-#    exp_file.GetContentFile(workdir+exp_file['title'])
-    sheet_to_tsv(expUID, workdir, runname)
-    robo_file = drive.CreateFile({'id': roboUID}) 
-    robo_file.GetContentFile(workdir+robo_file['title'])
-    return(Crysout) #Returns only the list of lists for the crystal file, other files are in xls or need to be processed via text for various reasons
+
+def download_run_data(crys_UID, robo_UID, exp_UID, local_data_dir, run_name):
+    """This function pulls the files to the datafiles directory while also setting the format
+    This code should be fed all of the relevant UIDs from dictionary assembler above.
+    Additional functions should be designed to flag new fields as needed
+
+    :param crys_UID: UID of crystal
+    :param robo_UID:
+    :param exp_UID:
+    :param local_data_dir:
+    :param run_name:
+    :return:
+    """
+
+    # save crystal file
+    crystal_workbook = gc.open_by_key(crys_UID)
+    crystal_rows = crystal_workbook.sheet1.get_all_values()
+    crystal_df = pd.DataFrame.from_records(crystal_rows[1:], columns=crystal_rows[0])
+    crystal_df.to_csv(os.path.join(local_data_dir, "{}.csv".format(crystal_workbook.title)),
+                      index=False)
+
+    # save exp file
+    save_ExpDataEntry(exp_UID, local_data_dir, run_name)
+
+    # save robot file
+    robo_file = drive.CreateFile({'id': robo_UID})
+    robo_file.GetContentFile(os.path.join(local_data_dir, robo_file['title']))
+    return

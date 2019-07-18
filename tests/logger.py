@@ -5,7 +5,7 @@ def mylogfunc(args):
     logger = logging.getLogger('report')
     logger.setLevel(logging.DEBUG)
     # create file handler which logs event debug messages
-    fh = logging.FileHandler('%s_LogFile.log'%args.workdir)
+    fh = logging.FileHandler('%s_LogFile.log'%args.local_directory)
     fh.setLevel(logging.DEBUG)
     # create console handler with a higher log level
     wh = logging.StreamHandler()
@@ -18,4 +18,4 @@ def mylogfunc(args):
     wh.setFormatter(warning_formatter)
     logger.addHandler(fh)
     logger.addHandler(wh) 
-    return('%s_Logfile.log'%args.workdir)
+    return('%s_Logfile.log'%args.local_directory)

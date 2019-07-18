@@ -1,5 +1,6 @@
 #Copyright (c) 2018 Ian Pendleton - MIT License
 import os
+import sys
 import time
 import pandas as pd
 import numpy as np
@@ -7,24 +8,37 @@ import logging
 import json
 from pathlib import Path
 
+from tqdm import tqdm
+
 from expworkup import googleio
+from validation import validation
+from utils import globals
 
+# todo put in config
 ## Set the workflow of the code used to generate the experimental data and to process the data
-WorkupVersion=1.0
-
+WorkupVersion = 1.0
 modlog = logging.getLogger('report.CreateJSON')
 
-def Expdata(DatFile):
-    ExpEntry=DatFile
-    with open(ExpEntry, "r") as file1:
-        file1out=json.load(file1)
-        lines=(json.dumps(file1out, indent=4, sort_keys=True))
-    lines=lines[:-8]
-    return(lines)
-    ## File processing for the experimental JSON to convert to the final form (header of the script)
+
+def Expdata(local_ExpDataEntry_json):
+    """
+
+    :param local_ExpDataEntry_json:
+    :return:
+    """
+    with open(local_ExpDataEntry_json, "r") as f:
+        exp_dict = json.load(f)
+        exp_str = json.dumps(exp_dict, indent=4, sort_keys=True)
+    exp_str = exp_str[:-8]  # todo Ian: why? this needs to be documented
+    return exp_str, exp_dict
+
 
 def Robo(robotfile, robotfile1):
-    #o the file handling for the robot.xls file and return a JSON object
+    """
+
+    :param robotfile:
+    :return:
+    """
     # ooooh weeee that is some nasty code below, just looking for the right name
     try:
         robot_dict = pd.read_excel(open(robotfile, 'rb'), header=[0], sheet_name=0)
@@ -33,12 +47,18 @@ def Robo(robotfile, robotfile1):
             if 'Reagent' in header and "ul" in header:
                 reagentlist.append(header)
         rnum = len(reagentlist)
-        robo_df = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=range(0,rnum+2))
-        robo_df_2 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+2,rnum+3]).dropna()
-        robo_df_3 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+4,rnum+5,rnum+6,rnum+7]).dropna()
-        robo_dump=json.dumps(robo_df.values.tolist())
-        robo_dump2=json.dumps(robo_df_2.values.tolist())
-        robo_dump3=json.dumps(robo_df_3.values.tolist())
+
+        # todo: read once, then slice
+        pipette_volumes = pd.read_excel(robotfile, sheet_name=0,
+                                        usecols=range(0, rnum+2))
+        reaction_parameters = pd.read_excel(robotfile, sheet_name=0,
+                                            usecols=[rnum+2, rnum+3]).dropna()
+        reagent_info = pd.read_excel(robotfile, sheet_name=0,
+                                     usecols=[rnum+4, rnum+5, rnum+6, rnum+7]).dropna()
+
+        pipette_dump = json.dumps(pipette_volumes.values.tolist())
+        reaction_dump = json.dumps(reaction_parameters.values.tolist())
+        reagent_dump = json.dumps(reagent_info.values.tolist())
     except OSError:
         try:
             robot_dict = pd.read_excel(open(robotfile1, 'rb'), header=[0], sheet_name=0)
@@ -48,102 +68,169 @@ def Robo(robotfile, robotfile1):
                 if 'Precursor' in header and "ul" in header:
                     reagentlist.append(header)
             rnum = len(reagentlist)
-            robo_df = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=range(0,rnum+3))
-            robo_df_2 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+3,rnum+4]).dropna()
-            robo_df_3 = pd.read_excel(open(robotfile,'rb'), sheet_name=0,usecols=[rnum+5,rnum+6,rnum+7,rnum+8]).dropna()
-            robo_dump=json.dumps(robo_df.values.tolist())
-            robo_dump2=json.dumps(robo_df_2.values.tolist())
-            robo_dump3=json.dumps(robo_df_3.values.tolist())
+            pipette_volumes = pd.read_excel(robotfile, sheet_name=0,
+                                            usecols=range(0, rnum+3))
+            reaction_parameters = pd.read_excel(robotfile, sheet_name=0,
+                                                usecols=[rnum+3, rnum+4]).dropna()
+            reagent_info = pd.read_excel(robotfile, sheet_name=0,
+                                         usecols=[rnum+5, rnum+6, rnum+7, rnum+8]).dropna()
+            pipette_dump = json.dumps(pipette_volumes.values.tolist())
+            reaction_dump = json.dumps(reaction_parameters.values.tolist())
+            reagent_dump = json.dumps(reagent_info.values.tolist())
         except OSError:
             modlog.error("Failed to find correct experiment specification file, severe exit error")
             sys.exit()
-    return(robo_dump, robo_dump2, robo_dump3)
+    return pipette_dump, reaction_dump, reagent_dump, pipette_volumes, reaction_parameters, reagent_info
 
-def Crys(crysfile):
+def Crys(crysfile, crysfile1):
     '''
     Gather the crystal datafile information and return JSON object
 
     :param crysfile: tabular file (.csv) used to contain experiment data
+    :return:
     '''
-    headers = crysfile.pop(0)
-    crys_df_curated = pd.DataFrame(crysfile, columns=headers)
-#    crys_df_curated = crys_df[['Concatenated Vial site',
-#                               'Crystal Score',
-#                               'Bulk Actual Temp (C)',
-#                               'modelname',
-#                               'participantname',
-#                               'notes']]
-#    crys_list = crys_df_curated.values.tolist()
-#    crys_dump = json.dumps(crys_list)
+    #headers = crysfile.pop(0)
+    try:
+        crys_df_curated = pd.read_csv(crysfile)#, columns=headers)
+    except Exception:
+        try:
+            crys_df_curated = pd.read_csv(crysfile1)#, columns=headers)
+        except Exception:
+            modlog.error("Failed to find correct experiment observation file. \
+                         Neither %s or %s exist!" % (crysfile, crysfile1))
+            sys.exit()
     out_json = crys_df_curated.to_json(orient='records')
-    return(out_json)
+    return(out_json, crys_df_curated)
 
-def genthejson(Outfile, workdir, opfolder, drive_data):
-    ## Do all of the file handling for a particular run and assemble the JSON, return the completed JSON file object
-    ## and location for sorting and final comparison
-    Crysfile=drive_data
+def parse_run_to_json(outfile, local_data_directory, run_name):
+    """Parse data from one ESCALATE run into json and write to
 
-    Expdatafile=workdir+opfolder+'_ExpDataEntry.json'
-    Expdatafile1=workdir+opfolder+'_preparation_interface.json'
+    TODO: this is the T in ETL,
+        * separate out the (Download, Read, (these are extract)), Transform, and Validate functionalty
+            * It seems like we are going to need to Transform before we Validate
+            * Question: are we reading from drive and validating, or reading from drive, saving to disk, and validating?
+            * Right now we are running into datatype issues (e.g. int vs string) which are small trasnformations,
+              Lets just (try to) transform everything into the expected form before validating
 
-    Robofile=workdir+opfolder+'_RobotInput.xls'
-    Robofile1=workdir+opfolder+'_ExperimentSpecification.xls'
+        * Document: how are we transforming it here?
 
-    exp_return=Expdata(Expdatafile)
-    robo_return=Robo(Robofile, Robofile1)
-    crys_return=Crys(Crysfile)
-    print(exp_return, file=Outfile)
-    print('\t},', file=Outfile)
-    print('\t', '"well_volumes":', file=Outfile)
-    print('\t', robo_return[0], ',', file=Outfile)
-    print('\t', '"tray_environment":', file=Outfile)
-    print('\t', robo_return[1], ',', file=Outfile)
-    print('\t', '"robot_reagent_handling":', file=Outfile)
-    print('\t', robo_return[2], ',', file=Outfile)
-    print('\t', '"crys_file_data":', file=Outfile)
-    print('\t', crys_return, file=Outfile)
-    print('}', file=Outfile)
+    :param outfile:
+    :param local_data_directory:
+    :param run_name:
+    :param crystal_data:
+    :return:
+    """
+    exp_filename = local_data_directory + run_name + '_ExpDataEntry.json'
 
-def ExpDirOps(myjsonfolder, debug):
+    robo_filename = './' + local_data_directory + run_name + '_RobotInput.xls'
+    robo_filename1 = './' + local_data_directory + run_name + '_ExperimentSpecification.xls'
+
+    crys_filename = local_data_directory + run_name + '_CrystalScoring.csv'
+    crys_filename1 = local_data_directory + run_name + '_observation_interface.csv'
+
+    exp_str, exp_dict = Expdata(exp_filename)
+
+    pipette_dump, reaction_dump, reagent_dump, \
+    pipette_volumes, reaction_parameters, reagent_info = Robo(robo_filename, robo_filename1)
+
+    crys_str, crys_df = Crys(crys_filename, crys_filename1)
+
+#    validation.validate_crystal_scoring(crys_df)
+#    validation.validate_robot_input(pipette_volumes, reaction_parameters, reagent_info)
+#    validation.validate_exp_data(exp_dict)
+
+    print(exp_str, file=outfile)
+    print('\t},', file=outfile)
+    print('\t', '"well_volumes":', file=outfile)
+    print('\t', pipette_dump, ',', file=outfile)
+    print('\t', '"tray_environment":', file=outfile)
+    print('\t', reaction_dump, ',', file=outfile)
+    print('\t', '"robot_reagent_handling":', file=outfile)
+    print('\t', reagent_dump, ',', file=outfile)
+    print('\t', '"crys_file_data":', file=outfile)
+    print('\t', crys_str, file=outfile)
+    print('}', file=outfile)
+
+
+def ExpDirOps(local_directory, debug):
+    """Gets all of the relevant folder titles from the experimental directory
+    Cross references with the working directory of the final Json files send the list of jobs needing processing
+
+    :param local_directory: The local directory to which to download data. From CLI.
+    :param debug: 1 if debug mode, else 0. From CLI.
+    :return:
+    """
     modlog.info('starting directory parsing')
-    ##Call code to get all of the relevant folder titles from the experimental directory and
-    ##Cross reference with the working directory of the final Json files send the list of jobs needing processing
-    ## loops of IFs for file checking
     if debug == 0:
+        # todo this should not be hard coded
         modlog.info('debugging disabled, running on main data directory')
-        opdir='13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
+        remote_directory = '13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
     elif debug == 1:
+        # todo this also shouldnt be hard coded: put both in a config file
         modlog.warn('debugging enabled! targeting dev folder')
-        opdir = '1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k'
-    ExpList = googleio.drivedatfold(opdir)
-    modlog.info('parsing EXPERIMENTAL_OBJECT')
-    crys_dict=(ExpList[0])
-    modlog.info('parsing EXPERIMENTAL_MODEL')
-    robo_dict=(ExpList[1])
-    modlog.info('parsing REAGENT_MODEL_OBJECT')
-    Expdata=(ExpList[2])
-    dir_dict=(ExpList[3])
-    modlog.info('building runs in local directory')
-    print('Building folders ..', end='',flush=True)
-    for folder in dir_dict:
-        print('.', end='', flush=True)
-        exp_json=Path(myjsonfolder+"/%s.json" %folder)
-        if exp_json.is_file():
-            modlog.info('%s exists' %folder)
-        else:
-            Outfile=open(exp_json, 'w')
-            workdir='data/datafiles/'
-            modlog.info('%s Created' %folder)
-            data_from_drive= googleio.getalldata(crys_dict[folder],robo_dict[folder],Expdata[folder], workdir, folder)
-            genthejson(Outfile, workdir, folder, data_from_drive)
-            Outfile.close()
-            time.sleep(4)  #see note below
-            '''
-            due to the limitations of the haverford googleapi 
-            we have to throttle the connection a bit to limit the 
-            number of api requests anything lower than 2 bugs it out
+        remote_directory = '1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k'
 
-            This will need to be re-enabled once we open the software beyond
-            haverford college until we improve the scope of the googleio api
-            '''
-    print(' local directories created')
+    crys_UIDs, robo_UIDs, exp_UIDs, drive_run_dirnames = googleio.get_drive_UIDs(remote_directory)
+
+    # todo: what to do with these log statements? Do we drop this vocabulary
+    # modlog.info('parsing EXPERIMENTAL_OBJECT')
+    # modlog.info('parsing EXPERIMENTAL_MODEL')
+    # modlog.info('parsing REAGENT_MODEL_OBJECT')
+    # modlog.info('building runs in local directory')
+
+    print('Building folders ..', end='', flush=True)
+    for drive_run_dirname in tqdm(drive_run_dirnames):
+        sleep_timer = 1
+        run_json_filename = Path(local_directory + "/{}.json".format(drive_run_dirname))
+        try:
+            if os.stat(run_json_filename).st_size == 0:
+                os.remove(run_json_filename)
+                modlog.info('{} was empty and was removed'.format(run_json_filename))
+        except Exception:
+            pass
+        if run_json_filename.is_file():
+            modlog.info('{} exists'.format(drive_run_dirname))
+        else:
+            while run_json_filename.is_file() is False:
+                try:
+                    time.sleep(sleep_timer)
+                    outfile = open(run_json_filename, 'w')
+                    workdir = 'data/datafiles/'  # todo ian whats up with this?
+                    modlog.info('{} Created'.format(drive_run_dirname))
+                    # todo somehow I dont think having all of is info in separate dicts makes sense...
+                    # there should be a better way to pass all of this data around
+                    """
+                    Something like: 
+                    UIDs = {'run_name': {'crys': str, 'robo': str, 'exp': str}}
+                    """
+                    googleio.download_run_data(crys_UIDs[drive_run_dirname],
+                                               robo_UIDs[drive_run_dirname],
+                                               exp_UIDs[drive_run_dirname],
+                                               workdir,
+                                               drive_run_dirname)
+
+                    parse_run_to_json(outfile, workdir, drive_run_dirname)
+                    outfile.close()
+                    '''
+                    due to the limitations of the haverford googleapi 
+                    we have to throttle the connection a bit to limit the 
+                    number of api requests anything lower than 2 bugs it out
+
+                    This will need to be re-enabled once we open the software beyond
+                    haverford college until we improve the scope of the googleio api
+                    '''
+                except Exception:
+                    modlog.info('During download of {} sever request limit was met at {} seconds'.format(run_json_filename, sleep_timer))
+                    sleep_timer = sleep_timer*2
+                    if sleep_timer > 60:
+                        sleep_timer = 60
+                        print("Something might be wrong.. if this message displays more than once kill job and try re-running")
+                    modlog.info('New sleep timer {}'.format(sleep_timer))
+                    try:
+                        if os.stat(run_json_filename).st_size == 0:
+                            os.remove(run_json_filename)
+                            modlog.info('{} was empty and was removed'.format(run_json_filename))
+                    except Exception:
+                        pass
+                    pass
+    print('%s associated local files created' % globals.get_lab())

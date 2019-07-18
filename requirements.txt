@@ -37,3 +37,4 @@ uritemplate==3.0.0
 wrapt==1.11.1
 xlrd==1.2.0
 xlwt==1.2.0
+tqdm
