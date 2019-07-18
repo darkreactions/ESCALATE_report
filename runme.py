@@ -46,10 +46,10 @@ if __name__ == "__main__":
 #    parser.add_argument('-d', '--debug', type=int, default=0,
 #        help='Turns on testing for implementing new features to the front \
 #            end of the code, prior to distribution through dataset')
-    parser.add_argument('--raw', type=int, default=0,
+    parser.add_argument('--raw', type=int, default=1, type=int, choices=[0, 1],
                         help='final dataframe is printed with all raw values\
-                        included ||default = 0||')
-    parser.add_argument('-v', '--verdata', type=int, default=0,
+                        included ||default = 1||')
+    parser.add_argument('-v', '--verdata', type=int, default=0, type=int, choices=[0, 1],
                         help='generates the output in a form ready for upload to the \
                         versioned data repo ||default = 0||')
     parser.add_argument('-s', '--state', type=str,
