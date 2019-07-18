@@ -27,9 +27,10 @@ def GrabOrganicInchi(inchi_df, molaritydf):
                 pass
             # pass if inchi is solvent
             elif InChIKey == 'YEJRWHAVMIAJKC-UHFFFAOYSA-N' or \
-                    InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' or \
-                    InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' or \
-                    InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N':
+                    InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' or\
+                    InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' or\
+                    InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N' or\
+                    InChIKey == 'MVPPADPHJFYWMZ-UHFFFAOYSA-N':
                 pass
             # pass if lead iodide
             elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or \
@@ -95,11 +96,16 @@ def GrabInchi(rxn_mmol_df, labels_df, inchi_df):
                 #pass if formic acid hard coded inchi key
                 if InChIKey == "BDAGIHXWWSANSR-UHFFFAOYSA-N":
                     pass
-                #pass if inchi is GBL --> 12/9/18 update now solvent ## Probably can fix this generally#
-                elif InChIKey =='YEJRWHAVMIAJKC-UHFFFAOYSA-N' or InChIKey=='ZMXDDKWLCZADIW-UHFFFAOYSA-N': 
+                # pass if inchi is solvent
+                elif InChIKey == 'YEJRWHAVMIAJKC-UHFFFAOYSA-N' or \
+                        InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' or \
+                        InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' or \
+                        InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N' or \
+                        InChIKey == 'MVPPADPHJFYWMZ-UHFFFAOYSA-N':
                     pass
-                #pass if lead iodide
-                elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or InChIKey=='ZASWJUOMEGBQCQ-UHFFFAOYSA-L':
+                # pass if lead iodide
+                elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or \
+                        InChIKey == 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L':
                     pass
                 elif InChIKey == 'null':
                     pass

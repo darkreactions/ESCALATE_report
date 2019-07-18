@@ -200,7 +200,8 @@ def reag_info(reagentdf,chemdf):
                 elif InChIKey == 'YEJRWHAVMIAJKC-UHFFFAOYSA-N' \
                         or InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' \
                         or InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' \
-                        or InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N': 
+                        or InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N' \
+                        or InChIKey == 'MVPPADPHJFYWMZ-UHFFFAOYSA-N':
                     mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))
                     name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     m_type='solvent'
@@ -272,15 +273,19 @@ def reagentparser(firstlevel, myjson, chem_df):
             columnnames.append('_raw_labwareID')
             well_volumes_df=pd.DataFrame(reg_value, columns=columnnames)
         if reg_key == 'crys_file_data':
-            crys_file_data_df=pd.DataFrame(reg_value, columns=['_raw_vialsite', 
-                                                               '_out_crystalscore',
-                                                               '_rxn_temperatureC_actual_bulk',
-                                                               '_raw_modelname',
-                                                               '_raw_participantname', 
-                                                               '_raw_notes'
-                                                               ])
+            crys_file_data_df = pd.DataFrame(reg_value)
+            if 'Concatenated Vial site' in crys_file_data_df.columns:
+                crys_file_data_df = crys_file_data_df.rename(columns = {'Concatenated Vial site': '_raw_vialsite'})
+                experiment_df=well_volumes_df.merge(crys_file_data_df)
     #The following code aligns and normalizes the data frames
-    experiment_df=well_volumes_df.merge(crys_file_data_df)
+            elif 'Experiment Number' in crys_file_data_df.columns:
+                crys_file_data_df['_raw_vialsite'] = crys_file_data_df['Experiment Number'].astype(int)
+                well_volumes_df.dropna(inplace=True)
+                well_volumes_df['_raw_vialsite'] = well_volumes_df['_raw_vialsite'].astype(int) 
+#                experiment_df=well_volumes_df.merge(crys_file_data_df, on='_raw_vialsite')
+                experiment_df = pd.concat([well_volumes_df.set_index('_raw_vialsite'),crys_file_data_df.set_index('_raw_vialsite')], axis=1, join='inner').reset_index()
+                experiment_df['_raw_vialsite'] = experiment_df['_raw_vialsite'].astype(str)
+    #The following code aligns and normalizes the data frames
     wellcount=(len(experiment_df.index))-1
     fullrun_df=(run_df.append([run_df]*wellcount,ignore_index=True))
     fullConc_df=(Conc_df.append([Conc_df]*wellcount,ignore_index=True))
