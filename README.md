@@ -14,6 +14,10 @@ scientists, but may be more challenging for non-domain experts or individuals un
 dataset is augmented with chemical calculations such as concentrations, temperatures derived from models of plate temperature,
 and other empirical observations.  In the final steps the dataset is supplemented with chemical features (currently stored in a
 CSV as part of this repository) derived from other API such as ChemAxon and RDKit.
+
+A detailed description of the current functionality and logic for this code can be found here: https://docs.google.com/document/d/1vF4mq76mNutCdTCtKAUu91RTm3IS5LX4STxJ0t1JF5U/edit#
+
+User Documents are being updated and can be found here: https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit#heading=h.uzjqm9vtn09j
  
 Installation
 ============
