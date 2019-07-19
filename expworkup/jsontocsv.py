@@ -85,7 +85,7 @@ def cleaner(dirty_df, raw):
             squeaky_clean_df = pd.concat([out_df, rxn_molarity_clean,
                                           rxn_v1molarity_clean, rxn_df,
                                           feat_df, proto_df], axis=1)
-    elif globals.get_lab() == 'MIT':
+    elif globals.get_lab() == 'MIT_PVLab':
         squeaky_clean_df = dirty_df
     elif globals.get_lab() == 'dev':    
         squeaky_clean_df = dirty_df

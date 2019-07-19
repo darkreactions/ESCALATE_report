@@ -1,5 +1,6 @@
 import pandas as pd
 import logging
+from utils import globals
 
 from expworkup.objects.reagent import ReagentObject
 
@@ -18,7 +19,13 @@ def dict_listoflists(list_lists):
         values.append(value)
     tray=pd.DataFrame(values)#, columns=['_rxn_temperatureC', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS'])
     tray_df=tray.transpose()
-    tray_df.columns =['_raw_temperatureC_nominal', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS']
+    # TODO: Unjankify this specification
+    if globals.get_lab() in ['LBL', 'HC', 'dev']:
+        tray_df.columns =['_raw_temperatureC_nominal', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS']
+    if globals.get_lab() in ['MIT_PVLab']:
+        tray_df.columns =['Spincoating Temperature ( C )', 'Spincoating Speed (rpm):',
+                                        'Spincoating Duration (s)', 'Spincoating Duration 2 (s)',
+                                        'Annealing Temperature ( C )','Annealing Duration (s)']
     return(tray_df)
 
 #Flattens the list and returns the heirchical naming structure 0 ... 1 ... 2  ## See the example in the faltten_json_reg definition for more details

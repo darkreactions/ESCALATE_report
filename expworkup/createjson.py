@@ -161,14 +161,17 @@ def ExpDirOps(local_directory, debug):
     :return:
     """
     modlog.info('starting directory parsing')
-    if debug == 0:
+    if globals.get_lab() in ['LBL', 'HC']:
         # todo this should not be hard coded
         modlog.info('debugging disabled, running on main data directory')
         remote_directory = '13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
-    elif debug == 1:
+    elif globals.get_lab() in ['dev']:
         # todo this also shouldnt be hard coded: put both in a config file
         modlog.warn('debugging enabled! targeting dev folder')
         remote_directory = '1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k'
+    elif globals.get_lab() in ['MIT_PVLab']:
+        modlog.info('Pulling from MIT datafolder')
+        remote_directory = '1VNsWClt-ppg8ojUztDYssnSgfoe9XRhi'
 
     crys_UIDs, robo_UIDs, exp_UIDs, drive_run_dirnames = googleio.get_drive_UIDs(remote_directory)
 
