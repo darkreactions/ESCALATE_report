@@ -78,6 +78,25 @@ RELEASE HISTORY
 
 0.2 (2018-10-01)
 --------------------------
+<<<<<<< HEAD
   * Organized code for distribution
   
 >>>>>>> put history in reverse chronological order
+=======
+  * Support for multiple experiments / tray processing
+  * Support for versioned data repo file generation 
+  * Preliminary support for escalation state set upload / versioned data upload
+
+0.7 (2019-06-17)
+-------------------------
+  * New concentration `_rxn_v1-M_` parameter added (using this notation until Alex C finalizes work)
+  * Added prototype output support
+  * various bug fixes
+
+0.8 (2019-07-22)
+-------------------------
+  * Added support for MIT_PVLab workflow
+  * Generalized interface parsing
+  * improved flexibility for reading various columns from observation_interface(old crystal_score form)
+  * specific development folder with examples from both labs (HC/LBL and MIT)
+>>>>>>> docs update
