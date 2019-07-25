@@ -10,6 +10,8 @@ from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
 from tqdm import tqdm
+from expworkup.devconfig import lab_vars
+from utils import globals
 
 from expworkup.devconfig import cwd
 
@@ -35,7 +37,7 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name('expworkup/creds/
 gc = gspread.authorize(credentials)
 
 def ChemicalData():
-    chemsheetid = "1JgRKUH_ie87KAXsC-fRYEw_5SepjOgVt7njjQBETxEg"
+    chemsheetid = lab_vars[globals.get_lab()]['chemsheetid']
     ChemicalBook = gc.open_by_key(chemsheetid)
     chemicalsheet = ChemicalBook.get_worksheet(0)
     chemical_list = chemicalsheet.get_all_values()

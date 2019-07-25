@@ -46,7 +46,8 @@ def nameCleaner(sub_dirty_df, new_prefix):
                 or 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' in header \
                 or 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' in header \
                 or 'YMWUJEATGCHHMB-UHFFFAOYSA-N' in header \
-                or 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L' in header:  # This one is PbBr2 (just need to pass for now!)
+                or 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L' in header \
+                or 'UserDefinedSolvent' in header:  # This one is PbBr2 (just need to pass for now!)
             pass
         # m_type = acid
         elif "BDAGIHXWWSANSR-UHFFFAOYSA-N" in header:

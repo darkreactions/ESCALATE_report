@@ -30,7 +30,8 @@ def GrabOrganicInchi(inchi_df, molaritydf):
                     InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' or\
                     InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' or\
                     InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N' or\
-                    InChIKey == 'MVPPADPHJFYWMZ-UHFFFAOYSA-N':
+                    InChIKey == 'MVPPADPHJFYWMZ-UHFFFAOYSA-N' or\
+                    InChIKey == 'UserDefinedSolvent':
                 pass
             # pass if lead iodide
             elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or \
@@ -101,7 +102,8 @@ def GrabInchi(rxn_mmol_df, labels_df, inchi_df):
                         InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' or \
                         InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' or \
                         InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N' or \
-                        InChIKey == 'MVPPADPHJFYWMZ-UHFFFAOYSA-N':
+                        InChIKey == 'MVPPADPHJFYWMZ-UHFFFAOYSA-N' or \
+                        InChIKey == 'UserDefinedSolvent':
                     pass
                 # pass if lead iodide
                 elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or \
