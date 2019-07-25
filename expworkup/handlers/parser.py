@@ -56,8 +56,12 @@ def ReagentConc(one_reagent_df, reagent):
         if m_type == 'null':
             pass
         if m_type == 'solvent':
-            solv_mm=float(df.loc[(index,'molecularmass')])
-            solv_d=float(df.loc[(index,'density')])
+            try:
+                solv_mm=float(df.loc[(index,'molecularmass')])
+                solv_d=float(df.loc[(index,'density')])
+            except Exception:
+                solv_mm=(df.loc[(index,'molecularmass')])
+                solv_d=(df.loc[(index,'density')])
             solv_A=float(df.loc[(index,'amount')])
         index+=1
     index=0
@@ -208,8 +212,12 @@ def reag_info(reagentdf,chemdf):
                         or InChIKey == 'ZMXDDKWLCZADIW-UHFFFAOYSA-N' \
                         or InChIKey == 'IAZDPXIOMUYVGZ-UHFFFAOYSA-N' \
                         or InChIKey == 'YMWUJEATGCHHMB-UHFFFAOYSA-N' \
-                        or InChIKey == 'MVPPADPHJFYWMZ-UHFFFAOYSA-N':
-                    mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))
+                        or InChIKey == 'MVPPADPHJFYWMZ-UHFFFAOYSA-N' \
+                        or InChIKey == 'UserDefinedSolvent':
+                    try: 
+                        mm=(float(chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]))
+                    except Exception:
+                        mm=chemdf.loc[InChIKey,"Molecular Weight (g/mol)"]
                     name=((chemdf.loc[InChIKey,"Chemical Name"]))# / float(chemdf.loc["FAH","Density            (g/mL)"])
                     m_type='solvent'
                     try:
