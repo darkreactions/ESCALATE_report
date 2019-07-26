@@ -190,7 +190,7 @@ def ExpDirOps(local_directory, debug):
                 os.remove(run_json_filename)
                 modlog.info('{} was empty and was removed'.format(run_json_filename))
         except Exception:
-            print(sys.exc_info())
+            modlog.info(sys.exc_info())
             pass
         if run_json_filename.is_file():
             modlog.info('{} exists'.format(drive_run_dirname))
@@ -224,7 +224,7 @@ def ExpDirOps(local_directory, debug):
                     haverford college until we improve the scope of the googleio api
                     '''
                 except Exception:
-                    print(sys.exc_info())
+                    modlog.info(sys.exc_info())
                     modlog.info('During download of {} sever request limit was met at {} seconds'.format(run_json_filename, sleep_timer))
                     sleep_timer = sleep_timer*2
                     if sleep_timer > 60:
