@@ -6,7 +6,7 @@ RELEASE HISTORY
   * Added support for MIT_PVLab workflow
   * Update CLI: added choice for lab
   * Generalized interface parsing to handle sheets from both labs 
-  * Create development folder for debug mode with examples from both labs (HC/LBL and MIT)
+  * specific development folder with examples from both labs (HC/LBL and MIT)
 
 0.7 (2019-06-17)
 -------------------------
