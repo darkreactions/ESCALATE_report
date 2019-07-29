@@ -59,51 +59,19 @@ lab_vars = {
             'reagent_interface_amount_startrow': 15,
             'reagent_alias': 'Reagent',
             'Robofile': '_RobotInput.xls'
+        },
+    'dev':
+        {
+            'template_folder': '1w5tReXSRvC6cm_rQy74-10QLIlG7Eee0',
+            'targetfolder': '19nt2-9Inub8IEYDxOLnplCPDEYt1NPqZ', # this is 1 dev
+            'chemsheetid': '1uj6A3TH2oMSQwzhPapfmr1t-CbevEGmQjKIyfg9aSgk',
+            'chem_workbook_index': 0,
+            'reagentsheetid': '1uj6A3TH2oMSQwzhPapfmr1t-CbevEGmQjKIyfg9aSgk',
+            'reagent_workbook_index': 1,
+            'reagent_interface_amount_startrow': 16,
+            'reagent_alias': 'Reagent',
+            'max_reagents': 8,
+            'required_files': ['observation_interface', 'preparation_interface', 'metadata.json'],
+            'observation_interface': {'uid_col': 'F'}
         }
 }
-
-#######################################
-# Wolfram Kernel Management
-
-
-system = platform.system()
-if system == "Linux":
-    wolfram_kernel_path = None
-    from pathlib import Path
-    # try first path location
-    wolfram_kernel = Path('/usr/local/Wolfram/WolframEngine/12.0/Executables/WolframKernel')
-    if wolfram_kernel.is_file():
-        wolfram_kernel_path = "/usr/local/Wolfram/WolframEngine/12.0/Executables/WolframKernel"
-    # try second path location
-    wolfram_kernel_2 = Path('/usr/local/Wolfram/Mathematica/12.0/Executables/WolframKernel')
-    if wolfram_kernel_2.is_file():
-        wolfram_kernel_path = '/usr/local/Wolfram/Mathematica/12.0/Executables/WolframKernel'
-    if wolfram_kernel_path is None:
-        print('WolframKernel not successfully found, please correct devconfig')
-        import sys
-        sys.exit()
-# Mac
-elif system == "Darwin":
-    wolfram_kernel_path = None
-
-######################################
-# Sampler Selection
-
-
-# must be 'default' or 'wolfram'
-# 'wolfram' is currently experimental and unsupported
-sampler = 'wolfram'
-
-#######################################
-# Laboratory file management
-
-
-def labfiles(lab):
-    """Returns files that need to be sent to a given laboratory"""
-    if lab == "LBL" or lab == "HC":
-        filereq = ['CrystalScoring', 'ExpDataEntry', 'metadata.json']
-    if lab == "MIT_PVLab":
-        filereq = ['observation_interface', 'preparation_interface', 'metadata.json']
-    if lab == 'ECL':
-        filereq = ['CrystalScoring', 'metadata.json']
-    return filereq

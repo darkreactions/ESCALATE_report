@@ -64,9 +64,9 @@ def get_drive_UIDs(remote_directory):
     # get all of the CrystalScoring, ExpDataEntry, and RobotInput file UIDs in child directory
     print('Downloading data ..', end='', flush=True)
     data_directories = []
-    crystal_files = {}
-    exp_data_entry_files = {}
-    robot_files = {}
+    observation_interface_files = {}
+    prep_interface_files = {}
+    pipette_volume_files = {}
     for child in tqdm(remote_directory_children):
 
         # if folder
@@ -79,59 +79,59 @@ def get_drive_UIDs(remote_directory):
                 # todo generalize this
                 if "CrystalScoring" in grandchild['title']\
                         or '_observation_interface' in grandchild['title']:
-                    crystal_files[child['title']] = grandchild['id']
+                    observation_interface_files[child['title']] = grandchild['id']
                 if "ExpDataEntry" in grandchild['title']\
                         or "preparation_interface" in grandchild['title']:
-                    exp_data_entry_files[child['title']] = grandchild['id']
+                    prep_interface_files[child['title']] = grandchild['id']
                 if "RobotInput" in grandchild['title']\
                         or "ExperimentSpecification" in grandchild['title']:
-                    robot_files[child['title']] = grandchild['id']
+                    pipette_volume_files[child['title']] = grandchild['id']
     print(' download complete')
-    return crystal_files, robot_files, exp_data_entry_files, data_directories
+    return observation_interface_files, pipette_volume_files, prep_interface_files, data_directories
 
 
-def save_ExpDataEntry(exp_UID, local_data_dir, run_name):
+def save_prep_interface(prep_UID, local_data_dir, run_name):
     """todo gary can we run on this?
     I'm not really sure what goes on with the ECL data, and the other case is Ian's JSON sheet logic
     """
     if 'ECL' in run_name:
         # todo ian: where do these json files come from?
-        exp_file = drive.CreateFile({'id': exp_UID})
-        exp_file.GetContentFile(os.path.join(local_data_dir, exp_file['title']))
+        prep_file = drive.CreateFile({'id': prep_UID})
+        prep_file.GetContentFile(os.path.join(local_data_dir, prep_file['title']))
     else:
-        exp_data_workbook = gc.open_by_key(exp_UID)
-        tsv_ready_lists = exp_data_workbook.get_worksheet(1)
+        prep_workbook = gc.open_by_key(prep_UID)
+        tsv_ready_lists = prep_workbook.get_worksheet(1)
         json_in_tsv_list = tsv_ready_lists.get_all_values()
-        json_file = local_data_dir + run_name + '_ExpDataEntry.json'
+        json_file = local_data_dir + run_name + '_ExpDataEntry.json' # todo this doesnt make sense for MIT
         with open(json_file, 'w') as f:
             for i in json_in_tsv_list:
                 print('\t'.join(i), file=f)
 
 
-def download_run_data(crys_UID, robo_UID, exp_UID, local_data_dir, run_name):
+def download_run_data(obs_UID, vol_UID, prep_UID, local_data_dir, run_name):
     """This function pulls the files to the datafiles directory while also setting the format
     This code should be fed all of the relevant UIDs from dictionary assembler above.
     Additional functions should be designed to flag new fields as needed
 
-    :param crys_UID: UID of crystal
-    :param robo_UID:
-    :param exp_UID:
+    :param obs_UID: UID of crystal
+    :param vol_UID:
+    :param prep_UID:
     :param local_data_dir:
     :param run_name:
     :return:
     """
 
     # save crystal file
-    crystal_workbook = gc.open_by_key(crys_UID)
-    crystal_rows = crystal_workbook.sheet1.get_all_values()
-    crystal_df = pd.DataFrame.from_records(crystal_rows[1:], columns=crystal_rows[0])
-    crystal_df.to_csv(os.path.join(local_data_dir, "{}.csv".format(crystal_workbook.title)),
-                      index=False)
+    obs_workbook = gc.open_by_key(obs_UID)
+    obs_rows = obs_workbook.sheet1.get_all_values()
+    obs_df = pd.DataFrame.from_records(obs_rows[1:], columns=obs_rows[0])
+    obs_df.to_csv(os.path.join(local_data_dir, "{}.csv".format(obs_workbook.title)),
+                  index=False)
 
     # save exp file
-    save_ExpDataEntry(exp_UID, local_data_dir, run_name)
+    save_prep_interface(prep_UID, local_data_dir, run_name)
 
     # save robot file
-    robo_file = drive.CreateFile({'id': robo_UID})
-    robo_file.GetContentFile(os.path.join(local_data_dir, robo_file['title']))
+    vol_file = drive.CreateFile({'id': vol_UID})
+    vol_file.GetContentFile(os.path.join(local_data_dir, vol_file['title']))
     return

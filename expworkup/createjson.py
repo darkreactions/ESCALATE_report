@@ -173,7 +173,7 @@ def ExpDirOps(local_directory, debug):
         modlog.info('Pulling from MIT datafolder')
         remote_directory = '1VNsWClt-ppg8ojUztDYssnSgfoe9XRhi'
 
-    crys_UIDs, robo_UIDs, exp_UIDs, drive_run_dirnames = googleio.get_drive_UIDs(remote_directory)
+    observation_UIDs, exp_volume_UIDs, prep_UIDs, drive_run_dirnames = googleio.get_drive_UIDs(remote_directory)
 
     # todo: what to do with these log statements? Do we drop this vocabulary
     # modlog.info('parsing EXPERIMENTAL_OBJECT')
@@ -207,9 +207,9 @@ def ExpDirOps(local_directory, debug):
                     Something like: 
                     UIDs = {'run_name': {'crys': str, 'robo': str, 'exp': str}}
                     """
-                    googleio.download_run_data(crys_UIDs[drive_run_dirname],
-                                               robo_UIDs[drive_run_dirname],
-                                               exp_UIDs[drive_run_dirname],
+                    googleio.download_run_data(observation_UIDs[drive_run_dirname],
+                                               exp_volume_UIDs[drive_run_dirname],
+                                               prep_UIDs[drive_run_dirname],
                                                workdir,
                                                drive_run_dirname)
 
