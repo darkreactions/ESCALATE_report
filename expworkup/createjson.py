@@ -23,29 +23,28 @@ WorkupVersion = 1.0
 modlog = logging.getLogger('report.CreateJSON')
 
 
-def parse_preparation_interface(local_ExpDataEntry_json):
+def parse_preparation_interface(fname):
     """
 
-    :param local_ExpDataEntry_json:
+    :param fname:
     :return:
     """
-    with open(local_ExpDataEntry_json, "r") as f:
+    with open(fname, "r") as f:
         exp_dict = json.load(f)
         exp_str = json.dumps(exp_dict, indent=4, sort_keys=True)
     exp_str = exp_str[:-8]  # todo Ian: why? this needs to be documented
     return exp_str, exp_dict
 
 
-def parse_exp_volumes(robotfile, robotfile1):
+def parse_exp_volumes(fname):
     """
 
-    :param robotfile:
+    :param fname:
     :return:
     """
     LAB = globals.get_lab()
-    # ooooh weeee that is some nasty code below, just looking for the right name
 
-    robot_dict = pd.read_excel(open(robotfile, 'rb'), header=[0], sheet_name=0)
+    robot_dict = pd.read_excel(open(fname, 'rb'), header=[0], sheet_name=0)
     reagentlist = []
     for header in robot_dict.columns:
         if config.lab_vars[LAB]['reagent_alias'] in header and "ul" in header:
@@ -55,17 +54,17 @@ def parse_exp_volumes(robotfile, robotfile1):
     if LAB == 'MIT_PVLab':
         rnum += 1
 
-    pipette_volumes = pd.read_excel(robotfile, sheet_name=0,
+    pipette_volumes = pd.read_excel(fname, sheet_name=0,
                                     usecols=range(0, rnum+2))
-    reaction_parameters = pd.read_excel(robotfile, sheet_name=0,
+    reaction_parameters = pd.read_excel(fname, sheet_name=0,
                                         usecols=[rnum+2, rnum+3]).dropna()
-    reagent_info = pd.read_excel(robotfile, sheet_name=0,
+    reagent_info = pd.read_excel(fname, sheet_name=0,
                                  usecols=[rnum+4, rnum+5, rnum+6, rnum+7]).dropna()
 
     pipette_dump = json.dumps(pipette_volumes.values.tolist())
     reaction_dump = json.dumps(reaction_parameters.values.tolist())
     reagent_dump = json.dumps(reagent_info.values.tolist())
-    
+
     return pipette_dump, reaction_dump, reagent_dump, pipette_volumes, reaction_parameters, reagent_info
 
 def parse_observation_interface(fname):
