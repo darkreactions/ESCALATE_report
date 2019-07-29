@@ -10,9 +10,9 @@ RELEASE HISTORY
 0.8 (2019-07-22)
 -------------------------
   * Added support for MIT_PVLab workflow
-  * Generalized interface parsing
-  * improved flexibility for reading various columns from observation_interface(old crystal_score form)
-  * specific development folder with examples from both labs (HC/LBL and MIT)
+  * Update CLI: added choice for lab
+  * Generalized interface parsing to handle sheets from both labs 
+  * Create development folder for debug mode with examples from both labs (HC/LBL and MIT)
 
 0.7 (2019-06-17)
 -------------------------
