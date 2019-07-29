@@ -7,6 +7,7 @@ import numpy as np
 import logging
 import json
 from pathlib import Path
+from gspread.exceptions import APIError
 
 from tqdm import tqdm
 
@@ -160,6 +161,7 @@ def ExpDirOps(local_directory, debug):
     :param debug: 1 if debug mode, else 0. From CLI.
     :return:
     """
+
     modlog.info('starting directory parsing')
     if globals.get_lab() in ['LBL', 'HC']:
         # todo this should not be hard coded
@@ -181,61 +183,61 @@ def ExpDirOps(local_directory, debug):
     # modlog.info('parsing REAGENT_MODEL_OBJECT')
     # modlog.info('building runs in local directory')
 
-    print('Building folders ..', end='', flush=True)
+    print('Building folders ...')
     for drive_run_dirname in tqdm(drive_run_dirnames):
         sleep_timer = 1
         run_json_filename = Path(local_directory + "/{}.json".format(drive_run_dirname))
-        try:
+
+        if os.path.exists(run_json_filename):
             if os.stat(run_json_filename).st_size == 0:
                 os.remove(run_json_filename)
                 modlog.info('{} was empty and was removed'.format(run_json_filename))
-        except Exception:
-            modlog.info(sys.exc_info())
-            pass
-        if run_json_filename.is_file():
-            modlog.info('{} exists'.format(drive_run_dirname))
-        else:
-            while run_json_filename.is_file() is False:
-                try:
-                    time.sleep(sleep_timer)
-                    outfile = open(run_json_filename, 'w')
-                    workdir = 'data/datafiles/'  # todo ian whats up with this?
-                    modlog.info('{} Created'.format(drive_run_dirname))
-                    # todo somehow I dont think having all of is info in separate dicts makes sense...
-                    # there should be a better way to pass all of this data around
-                    """
-                    Something like: 
-                    UIDs = {'run_name': {'crys': str, 'robo': str, 'exp': str}}
-                    """
-                    googleio.download_run_data(observation_UIDs[drive_run_dirname],
-                                               exp_volume_UIDs[drive_run_dirname],
-                                               prep_UIDs[drive_run_dirname],
-                                               workdir,
-                                               drive_run_dirname)
+            else:
+                continue
 
-                    parse_run_to_json(outfile, workdir, drive_run_dirname)
-                    outfile.close()
-                    '''
-                    due to the limitations of the haverford googleapi 
-                    we have to throttle the connection a bit to limit the 
-                    number of api requests anything lower than 2 bugs it out
+        while not os.path.exists(run_json_filename):
+            try:
+                time.sleep(sleep_timer)
+                outfile = open(run_json_filename, 'w')
+                workdir = 'data/datafiles/'  # todo ian whats up with this?
+                modlog.info('{} Created'.format(drive_run_dirname))
+                # todo somehow I dont think having all of is info in separate dicts makes sense...
+                # there should be a better way to pass all of this data around
+                """
+                Something like: 
+                UIDs = {'run_name': {'crys': str, 'robo': str, 'exp': str}}
+                """
+                googleio.download_run_data(observation_UIDs[drive_run_dirname],
+                                           exp_volume_UIDs[drive_run_dirname],
+                                           prep_UIDs[drive_run_dirname],
+                                           workdir,
+                                           drive_run_dirname)
 
-                    This will need to be re-enabled once we open the software beyond
-                    haverford college until we improve the scope of the googleio api
-                    '''
-                except Exception:
-                    modlog.info(sys.exc_info())
-                    modlog.info('During download of {} sever request limit was met at {} seconds'.format(run_json_filename, sleep_timer))
-                    sleep_timer = sleep_timer*2
-                    if sleep_timer > 60:
-                        sleep_timer = 60
-                        print("Something might be wrong.. if this message displays more than once kill job and try re-running")
-                    modlog.info('New sleep timer {}'.format(sleep_timer))
-                    try:
-                        if os.stat(run_json_filename).st_size == 0:
-                            os.remove(run_json_filename)
-                            modlog.info('{} was empty and was removed'.format(run_json_filename))
-                    except Exception:
-                        pass
-                    pass
+                parse_run_to_json(outfile, workdir, drive_run_dirname)
+                outfile.close()
+                '''
+                due to the limitations of the haverford googleapi 
+                we have to throttle the connection a bit to limit the 
+                number of api requests anything lower than 2 bugs it out
+
+                This will need to be re-enabled once we open the software beyond
+                haverford college until we improve the scope of the googleio api
+                '''
+            except APIError as e:
+
+                if not e.response.reason == 'Too Many Requests':
+                    raise e
+
+                modlog.info(sys.exc_info())
+                modlog.info('During download of {} sever request limit was met at {} seconds'.format(run_json_filename, sleep_timer))
+                sleep_timer = sleep_timer*2
+
+                if sleep_timer > 60:
+                    sleep_timer = 60
+                    print("Something might be wrong.. if this message displays more than once kill job and try re-running")
+                modlog.info('New sleep timer {}'.format(sleep_timer))
+
+                if os.path.exists(run_json_filename) and os.stat(run_json_filename).st_size == 0:
+                    os.remove(run_json_filename)
+
     print('%s associated local files created' % globals.get_lab())

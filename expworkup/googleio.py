@@ -62,7 +62,7 @@ def get_drive_UIDs(remote_directory):
     remote_directory_children = drive.ListFile({'q': "'%s' in parents and trashed=false" % remote_directory}).GetList()
 
     # get all of the CrystalScoring, ExpDataEntry, and RobotInput file UIDs in child directory
-    print('Downloading data ..', end='', flush=True)
+    print('Retrieving relevant file pointers...')
     data_directories = []
     observation_interface_files = {}
     prep_interface_files = {}
@@ -86,7 +86,6 @@ def get_drive_UIDs(remote_directory):
                 if "RobotInput" in grandchild['title']\
                         or "ExperimentSpecification" in grandchild['title']:
                     pipette_volume_files[child['title']] = grandchild['id']
-    print(' download complete')
     return observation_interface_files, pipette_volume_files, prep_interface_files, data_directories
 
 
