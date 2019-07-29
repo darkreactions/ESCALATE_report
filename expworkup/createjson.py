@@ -11,9 +11,11 @@ from gspread.exceptions import APIError
 
 from tqdm import tqdm
 
+import expworkup.devconfig as config
 from expworkup import googleio
 from validation import validation
 from utils import globals
+from utils.file_handling import get_interface_filename
 
 # todo put in config
 ## Set the workflow of the code used to generate the experimental data and to process the data
@@ -21,7 +23,7 @@ WorkupVersion = 1.0
 modlog = logging.getLogger('report.CreateJSON')
 
 
-def Expdata(local_ExpDataEntry_json):
+def parse_preparation_interface(local_ExpDataEntry_json):
     """
 
     :param local_ExpDataEntry_json:
@@ -34,74 +36,48 @@ def Expdata(local_ExpDataEntry_json):
     return exp_str, exp_dict
 
 
-def Robo(robotfile, robotfile1):
+def parse_exp_volumes(robotfile, robotfile1):
     """
 
     :param robotfile:
     :return:
     """
+    LAB = globals.get_lab()
     # ooooh weeee that is some nasty code below, just looking for the right name
-    try:
-        robot_dict = pd.read_excel(open(robotfile, 'rb'), header=[0], sheet_name=0)
-        reagentlist = []
-        for header in robot_dict.columns:
-            if 'Reagent' in header and "ul" in header:
-                reagentlist.append(header)
-        rnum = len(reagentlist)
 
-        # todo: read once, then slice
-        pipette_volumes = pd.read_excel(robotfile, sheet_name=0,
-                                        usecols=range(0, rnum+2))
-        reaction_parameters = pd.read_excel(robotfile, sheet_name=0,
-                                            usecols=[rnum+2, rnum+3]).dropna()
-        reagent_info = pd.read_excel(robotfile, sheet_name=0,
-                                     usecols=[rnum+4, rnum+5, rnum+6, rnum+7]).dropna()
+    robot_dict = pd.read_excel(open(robotfile, 'rb'), header=[0], sheet_name=0)
+    reagentlist = []
+    for header in robot_dict.columns:
+        if config.lab_vars[LAB]['reagent_alias'] in header and "ul" in header:
+            reagentlist.append(header)
+    rnum = len(reagentlist)
 
-        pipette_dump = json.dumps(pipette_volumes.values.tolist())
-        reaction_dump = json.dumps(reaction_parameters.values.tolist())
-        reagent_dump = json.dumps(reagent_info.values.tolist())
-    except OSError:
-        try:
-            robot_dict = pd.read_excel(open(robotfile1, 'rb'), header=[0], sheet_name=0)
-            robotfile = robotfile1
-            reagentlist = []
-            for header in robot_dict.columns:
-                if 'Precursor' in header and "ul" in header:
-                    reagentlist.append(header)
-            rnum = len(reagentlist)
-            pipette_volumes = pd.read_excel(robotfile, sheet_name=0,
-                                            usecols=range(0, rnum+3))
-            reaction_parameters = pd.read_excel(robotfile, sheet_name=0,
-                                                usecols=[rnum+3, rnum+4]).dropna()
-            reagent_info = pd.read_excel(robotfile, sheet_name=0,
-                                         usecols=[rnum+5, rnum+6, rnum+7, rnum+8]).dropna()
-            pipette_dump = json.dumps(pipette_volumes.values.tolist())
-            reaction_dump = json.dumps(reaction_parameters.values.tolist())
-            reagent_dump = json.dumps(reagent_info.values.tolist())
-        except OSError:
-            modlog.error("Failed to find correct experiment specification file, severe exit error")
-            sys.exit()
+    if LAB == 'MIT_PVLab':
+        rnum += 1
+
+    pipette_volumes = pd.read_excel(robotfile, sheet_name=0,
+                                    usecols=range(0, rnum+2))
+    reaction_parameters = pd.read_excel(robotfile, sheet_name=0,
+                                        usecols=[rnum+2, rnum+3]).dropna()
+    reagent_info = pd.read_excel(robotfile, sheet_name=0,
+                                 usecols=[rnum+4, rnum+5, rnum+6, rnum+7]).dropna()
+
+    pipette_dump = json.dumps(pipette_volumes.values.tolist())
+    reaction_dump = json.dumps(reaction_parameters.values.tolist())
+    reagent_dump = json.dumps(reagent_info.values.tolist())
+    
     return pipette_dump, reaction_dump, reagent_dump, pipette_volumes, reaction_parameters, reagent_info
 
-def Crys(crysfile, crysfile1):
+def parse_observation_interface(fname):
     '''
     Gather the crystal datafile information and return JSON object
 
-    :param crysfile: tabular file (.csv) used to contain experiment data
+    :param fname: tabular file (.csv) used to contain experiment data
     :return:
     '''
-    #headers = crysfile.pop(0)
-    try:
-        crys_df_curated = pd.read_csv(crysfile)#, columns=headers)
-    except Exception:
-        try:
-            crys_df_curated = pd.read_csv(crysfile1)#, columns=headers)
-        except Exception:
-            modlog.error("Failed to find correct experiment observation file. \
-                         Neither %s or %s exist!" % (crysfile, crysfile1))
-            sys.exit()
-    out_json = crys_df_curated.to_json(orient='records')
-    return(out_json, crys_df_curated)
+    observation_df = pd.read_csv(fname)#, columns=headers)
+    out_json = observation_df.to_json(orient='records')
+    return out_json, observation_df
 
 def parse_run_to_json(outfile, local_data_directory, run_name):
     """Parse data from one ESCALATE run into json and write to
@@ -121,20 +97,19 @@ def parse_run_to_json(outfile, local_data_directory, run_name):
     :param crystal_data:
     :return:
     """
-    exp_filename = local_data_directory + run_name + '_ExpDataEntry.json'
 
-    robo_filename = './' + local_data_directory + run_name + '_RobotInput.xls'
-    robo_filename1 = './' + local_data_directory + run_name + '_ExperimentSpecification.xls'
+    local_data_directory = os.path.join('.', local_data_directory)
 
-    crys_filename = local_data_directory + run_name + '_CrystalScoring.csv'
-    crys_filename1 = local_data_directory + run_name + '_observation_interface.csv'
+    exp_volume_spec_fname = get_interface_filename('experiment_specification', local_data_directory, run_name)
+    prep_interface_fname = get_interface_filename('preparation_interface', local_data_directory, run_name)
+    obs_interface_fname = get_interface_filename('observation_interface', local_data_directory, run_name)
 
-    exp_str, exp_dict = Expdata(exp_filename)
+    exp_str, exp_dict = parse_preparation_interface(prep_interface_fname)
 
     pipette_dump, reaction_dump, reagent_dump, \
-    pipette_volumes, reaction_parameters, reagent_info = Robo(robo_filename, robo_filename1)
+    pipette_volumes, reaction_parameters, reagent_info = parse_exp_volumes(exp_volume_spec_fname)
 
-    crys_str, crys_df = Crys(crys_filename, crys_filename1)
+    crys_str, crys_df = parse_observation_interface(obs_interface_fname)
 
 #    validation.validate_crystal_scoring(crys_df)
 #    validation.validate_robot_input(pipette_volumes, reaction_parameters, reagent_info)

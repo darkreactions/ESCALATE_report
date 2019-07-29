@@ -75,3 +75,11 @@ lab_vars = {
             'observation_interface': {'uid_col': 'F'}
         }
 }
+
+# valid interface filenames after download from gdrive
+
+valid_input_files = {
+    'preparation_interface': ['ExpDataEntry.json'],
+    'experiment_specification': ['ExperimentSpecification.xls', 'RobotInput.xls'],
+    'observation_interface': ['observation_interface.csv', 'CrystalScoring.csv']
+}
