@@ -153,7 +153,7 @@ def parse_run_to_json(outfile, local_data_directory, run_name):
     print('}', file=outfile)
 
 
-def ExpDirOps(local_directory, debug):
+def download_experiment_directories(local_directory, debug):
     """Gets all of the relevant folder titles from the experimental directory
     Cross references with the working directory of the final Json files send the list of jobs needing processing
 
@@ -196,33 +196,23 @@ def ExpDirOps(local_directory, debug):
                 continue
 
         while not os.path.exists(run_json_filename):
+
+            time.sleep(sleep_timer)
+            outfile = open(run_json_filename, 'w')
+            workdir = 'data/datafiles/'  # todo ian whats up with this?
+            modlog.info('{} Created'.format(drive_run_dirname))
+            # todo somehow I dont think having all of is info in separate dicts makes sense...
+            # there should be a better way to pass all of this data around
+            """
+            Something like: 
+            UIDs = {'run_name': {'crys': str, 'robo': str, 'exp': str}}
+                """
             try:
-                time.sleep(sleep_timer)
-                outfile = open(run_json_filename, 'w')
-                workdir = 'data/datafiles/'  # todo ian whats up with this?
-                modlog.info('{} Created'.format(drive_run_dirname))
-                # todo somehow I dont think having all of is info in separate dicts makes sense...
-                # there should be a better way to pass all of this data around
-                """
-                Something like: 
-                UIDs = {'run_name': {'crys': str, 'robo': str, 'exp': str}}
-                """
                 googleio.download_run_data(observation_UIDs[drive_run_dirname],
                                            exp_volume_UIDs[drive_run_dirname],
                                            prep_UIDs[drive_run_dirname],
                                            workdir,
                                            drive_run_dirname)
-
-                parse_run_to_json(outfile, workdir, drive_run_dirname)
-                outfile.close()
-                '''
-                due to the limitations of the haverford googleapi 
-                we have to throttle the connection a bit to limit the 
-                number of api requests anything lower than 2 bugs it out
-
-                This will need to be re-enabled once we open the software beyond
-                haverford college until we improve the scope of the googleio api
-                '''
             except APIError as e:
 
                 if not e.response.reason == 'Too Many Requests':
@@ -237,6 +227,10 @@ def ExpDirOps(local_directory, debug):
                     print("Something might be wrong.. if this message displays more than once kill job and try re-running")
                 modlog.info('New sleep timer {}'.format(sleep_timer))
 
+            else:
+                parse_run_to_json(outfile, workdir, drive_run_dirname)
+                outfile.close()
+            finally:
                 if os.path.exists(run_json_filename) and os.stat(run_json_filename).st_size == 0:
                     os.remove(run_json_filename)
 
