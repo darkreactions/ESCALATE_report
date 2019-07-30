@@ -15,7 +15,7 @@ import expworkup.devconfig as config
 from expworkup import googleio
 from validation import validation
 from utils import globals
-from utils.file_handling import get_interface_filename
+from utils.file_handling import get_interface_filename, get_experimental_run_lab
 
 # todo put in config
 ## Set the workflow of the code used to generate the experimental data and to process the data
@@ -36,22 +36,21 @@ def parse_preparation_interface(fname):
     return exp_str, exp_dict
 
 
-def parse_exp_volumes(fname):
+def parse_exp_volumes(fname, experiment_lab):
     """
 
     :param fname:
     :return:
     """
-    LAB = globals.get_lab()
 
     robot_dict = pd.read_excel(open(fname, 'rb'), header=[0], sheet_name=0)
     reagentlist = []
     for header in robot_dict.columns:
-        if config.lab_vars[LAB]['reagent_alias'] in header and "ul" in header:
+        if config.lab_vars[experiment_lab]['reagent_alias'] in header and "ul" in header:
             reagentlist.append(header)
     rnum = len(reagentlist)
 
-    if LAB == 'MIT_PVLab':
+    if experiment_lab == 'MIT_PVLab':
         rnum += 1
 
     pipette_volumes = pd.read_excel(fname, sheet_name=0,
@@ -74,7 +73,7 @@ def parse_observation_interface(fname):
     :param fname: tabular file (.csv) used to contain experiment data
     :return:
     '''
-    observation_df = pd.read_csv(fname)#, columns=headers)
+    observation_df = pd.read_csv(fname)
     out_json = observation_df.to_json(orient='records')
     return out_json, observation_df
 
@@ -98,6 +97,7 @@ def parse_run_to_json(outfile, local_data_directory, run_name):
     """
 
     local_data_directory = os.path.join('.', local_data_directory)
+    run_lab = get_experimental_run_lab(run_name)
 
     exp_volume_spec_fname = get_interface_filename('experiment_specification', local_data_directory, run_name)
     prep_interface_fname = get_interface_filename('preparation_interface', local_data_directory, run_name)
@@ -106,7 +106,7 @@ def parse_run_to_json(outfile, local_data_directory, run_name):
     exp_str, exp_dict = parse_preparation_interface(prep_interface_fname)
 
     pipette_dump, reaction_dump, reagent_dump, \
-    pipette_volumes, reaction_parameters, reagent_info = parse_exp_volumes(exp_volume_spec_fname)
+    pipette_volumes, reaction_parameters, reagent_info = parse_exp_volumes(exp_volume_spec_fname, run_lab)
 
     crys_str, crys_df = parse_observation_interface(obs_interface_fname)
 
