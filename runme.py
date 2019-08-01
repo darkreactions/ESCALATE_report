@@ -2,6 +2,7 @@
 import logging
 import argparse as ap
 import os
+import sys
 
 
 from expworkup import jsontocsv
@@ -76,7 +77,7 @@ if __name__ == "__main__":
         debug = 0
 
     initialize(args)
-    createjson.ExpDirOps(args.local_directory, debug)
+    createjson.download_experiment_directories(args.local_directory, debug)
     finalcsv = jsontocsv.printfinal(args.local_directory, debug, args.raw)
     if args.verdata == 1:
         export_to_repo.prepareexport(finalcsv, args.state, link)

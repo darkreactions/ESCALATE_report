@@ -3,13 +3,14 @@ import logging
 from utils import globals
 
 from expworkup.objects.reagent import ReagentObject
+from utils.file_handling import get_experimental_run_lab
 
 modlog = logging.getLogger('report.parser')
 
 #Overview
 #parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information
 
-def dict_listoflists(list_lists):
+def dict_listoflists(list_lists, run_lab):
     values=[]
     for item in list_lists:
 #        key=str(item[0])
@@ -19,13 +20,14 @@ def dict_listoflists(list_lists):
         values.append(value)
     tray=pd.DataFrame(values)#, columns=['_rxn_temperatureC', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS'])
     tray_df=tray.transpose()
-    # TODO: Unjankify this specification
-    if globals.get_lab() in ['LBL', 'HC', 'dev']:
+    if run_lab in ['LBL', 'HC', 'dev', 'ECL']:
         tray_df.columns =['_raw_temperatureC_nominal', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS']
-    if globals.get_lab() in ['MIT_PVLab']:
+    if run_lab in ['MIT_PVLab']:
         tray_df.columns =['Spincoating Temperature ( C )', 'Spincoating Speed (rpm):',
                                         'Spincoating Duration (s)', 'Spincoating Duration 2 (s)',
                                         'Annealing Temperature ( C )','Annealing Duration (s)']
+
+    # todo: handle custom parameters
     return(tray_df)
 
 #Flattens the list and returns the heirchical naming structure 0 ... 1 ... 2  ## See the example in the faltten_json_reg definition for more details
@@ -259,6 +261,8 @@ def reag_info(reagentdf,chemdf):
     return(reagentlist_df)
 
 def reagentparser(firstlevel, myjson, chem_df):
+
+    run_lab = get_experimental_run_lab(myjson)
     for reg_key,reg_value in firstlevel.items():
         modlog.info('Parsing %s to csv' %myjson)
         if reg_key == 'reagent':
@@ -268,7 +272,7 @@ def reagentparser(firstlevel, myjson, chem_df):
         if reg_key == 'run':
             run_df=flatten_json(reg_value)
         if reg_key == 'tray_environment':
-            tray_df=dict_listoflists(reg_value)
+            tray_df=dict_listoflists(reg_value, run_lab)
          ##### Currently ommitting this line of data as the information here does not add detail to the data structure ### 
 #        if reg_key == 'robot_reagent_handling':
 #            robo_df=robo_handling(reg_value)
