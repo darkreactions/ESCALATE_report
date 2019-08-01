@@ -12,8 +12,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 from tqdm import tqdm
 from expworkup.devconfig import lab_vars
 from utils import globals
+from utils.file_handling import get_interface_filename
 
-from expworkup.devconfig import cwd
+from expworkup.devconfig import cwd, valid_input_files
 
 modlog = logging.getLogger('report.googleAPI')
 
@@ -64,6 +65,7 @@ def get_drive_UIDs(remote_directory):
     # get all of the CrystalScoring, ExpDataEntry, and RobotInput file UIDs in child directory
     print('Retrieving relevant file pointers...')
     data_directories = []
+    spec_interface_files = {}
     observation_interface_files = {}
     prep_interface_files = {}
     pipette_volume_files = {}
@@ -76,17 +78,24 @@ def get_drive_UIDs(remote_directory):
 
             grandchildren = drive.ListFile({'q': "'{}' in parents and trashed=false".format(child['id'])}).GetList()
             for grandchild in grandchildren:
-                # todo generalize this
-                if "CrystalScoring" in grandchild['title']\
-                        or '_observation_interface' in grandchild['title']:
+                # todo (dont) generalize this
+                if "CrystalScoring" in grandchild['title'] or '_observation_interface' in grandchild['title']:
                     observation_interface_files[child['title']] = grandchild['id']
-                if "ExpDataEntry" in grandchild['title']\
-                        or "preparation_interface" in grandchild['title']:
+                if "ExpDataEntry" in grandchild['title'] or "preparation_interface" in grandchild['title']:
                     prep_interface_files[child['title']] = grandchild['id']
-                if "RobotInput" in grandchild['title']\
-                        or "ExperimentSpecification" in grandchild['title']:
+                if "RobotInput" in grandchild['title'] or "ExperimentSpecification" in grandchild['title']:
                     pipette_volume_files[child['title']] = grandchild['id']
-    return observation_interface_files, pipette_volume_files, prep_interface_files, data_directories
+
+                # oohwee this could be recursive couldnt it?
+                if grandchild['mimeType'] == 'application/vnd.google-apps.folder':
+                    greatgrandchildren = drive.ListFile({'q': "'{}' in parents and trashed=false".format(grandchild['id'])}).GetList()
+                    for greatgrandchild in greatgrandchildren:
+
+                        # we only need this for custom actions (for now) which will only be in SpecificationInterface
+                        if 'SpecificationInterface' in greatgrandchild['title']:
+                            spec_interface_files[child['title']] = greatgrandchild['id']
+
+    return observation_interface_files, pipette_volume_files, prep_interface_files, spec_interface_files, data_directories
 
 
 def save_prep_interface(prep_UID, local_data_dir, run_name):
@@ -107,7 +116,7 @@ def save_prep_interface(prep_UID, local_data_dir, run_name):
                 print('\t'.join(i), file=f)
 
 
-def download_run_data(obs_UID, vol_UID, prep_UID, local_data_dir, run_name):
+def download_run_data(obs_UID, vol_UID, prep_UID, specUID, local_data_dir, run_name):
     """This function pulls the files to the datafiles directory while also setting the format
     This code should be fed all of the relevant UIDs from dictionary assembler above.
     Additional functions should be designed to flag new fields as needed
@@ -129,6 +138,11 @@ def download_run_data(obs_UID, vol_UID, prep_UID, local_data_dir, run_name):
 
     # save exp file
     save_prep_interface(prep_UID, local_data_dir, run_name)
+
+    # save spec file
+    if specUID:
+        spec_file = drive.CreateFile({'id': specUID})
+        spec_file.GetContentFile(os.path.join(local_data_dir, spec_file['title']))
 
     # save robot file
     vol_file = drive.CreateFile({'id': vol_UID})

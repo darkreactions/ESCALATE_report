@@ -149,7 +149,7 @@ def download_experiment_directories(local_directory, debug):
         modlog.info('Pulling from MIT datafolder')
         remote_directory = '1VNsWClt-ppg8ojUztDYssnSgfoe9XRhi'
 
-    observation_UIDs, exp_volume_UIDs, prep_UIDs, drive_run_dirnames = googleio.get_drive_UIDs(remote_directory)
+    observation_UIDs, exp_volume_UIDs, prep_UIDs, spec_UIDs, drive_run_dirnames = googleio.get_drive_UIDs(remote_directory)
 
     # todo: what to do with these log statements? Do we drop this vocabulary
     # modlog.info('parsing EXPERIMENTAL_OBJECT')
@@ -185,6 +185,7 @@ def download_experiment_directories(local_directory, debug):
                 googleio.download_run_data(observation_UIDs[drive_run_dirname],
                                            exp_volume_UIDs[drive_run_dirname],
                                            prep_UIDs[drive_run_dirname],
+                                           spec_UIDs.get(drive_run_dirname),
                                            workdir,
                                            drive_run_dirname)
             except APIError as e:
