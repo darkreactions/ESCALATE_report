@@ -91,7 +91,8 @@ lab_vars = {
 # valid interface filenames after download from gdrive
 
 valid_input_files = {
-    'preparation_interface': ['ExpDataEntry.json'],
-    'experiment_specification': ['ExperimentSpecification.xls', 'RobotInput.xls'],
-    'observation_interface': ['observation_interface.csv', 'CrystalScoring.csv']
+    'preparation_interface': ['ExpDataEntry.json'],  # reagent prep
+    'experiment_specification': ['ExperimentSpecification.xls', 'RobotInput.xls'],  # volume file
+    'observation_interface': ['observation_interface.csv', 'CrystalScoring.csv'],  # results
+    'specification_interface': ['Template', 'SpecificationInterface']  # user input file
 }
