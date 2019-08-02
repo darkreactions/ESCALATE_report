@@ -11,21 +11,23 @@ modlog = logging.getLogger('report.parser')
 #parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information
 
 def dict_listoflists(list_lists, run_lab):
-    values=[]
+    values = []
     for item in list_lists:
-#        key=str(item[0])
-#        key=str('_rxn_'+key[:-1])
-#        keys.append(key)
-        value=item[1]
+        value = item[1]
         values.append(value)
-    tray=pd.DataFrame(values)#, columns=['_rxn_temperatureC', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS'])
-    tray_df=tray.transpose()
+    tray_df = pd.DataFrame(values).transpose()
+
     if run_lab in ['LBL', 'HC', 'dev', 'ECL']:
-        tray_df.columns =['_raw_temperatureC_nominal', '_rxn_stirrateRPM','_rxn_mixingtime1S','_rxn_mixingtime2S','_rxn_reactiontimeS']
+        # todo: if custom actions are added for hc/lbl, integrate here: will look something like MIT code below
+        # but appending _raw, dropping whitespce, special chars, etc.
+        tray_df.columns = ['_raw_temperatureC_nominal',
+                           '_rxn_stirrateRPM',
+                           '_rxn_mixingtime1S',
+                           '_rxn_mixingtime2S',
+                           '_rxn_reactiontimeS']
+
     if run_lab in ['MIT_PVLab']:
-        tray_df.columns =['Spincoating Temperature ( C )', 'Spincoating Speed (rpm):',
-                                        'Spincoating Duration (s)', 'Spincoating Duration 2 (s)',
-                                        'Annealing Temperature ( C )','Annealing Duration (s)']
+        tray_df.columns = [item[0] for item in list_lists]
 
     # todo: handle custom parameters
     return(tray_df)
