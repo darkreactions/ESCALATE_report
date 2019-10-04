@@ -45,3 +45,8 @@ RELEASE HISTORY
   * New concentration `_rxn_v1-M_` parameter added (using this notation until Alex C finalizes work)
   * Added prototype output support
   * various bug fixes
+
+0.8 (tentative: 2018-10-21)
+-------------------------
+  * Changed the default header `_rxn_M_*` to target v1 concentrations
+  * Shifted deprecated v0 from `_rxn_M_*` to `_raw_v0-M_* 'concentrations'
