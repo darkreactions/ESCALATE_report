@@ -14,11 +14,7 @@ import pandas as pd
 import csv
 from datetime import datetime
 
-<<<<<<< Updated upstream
-index_name = '0041'
-=======
 index_name = '0042'
->>>>>>> Stashed changes
 trainingdata_name = index_name + ".perovskitedata"
 state_name = index_name + ".stateset"
 link_name = index_name + ".link"
