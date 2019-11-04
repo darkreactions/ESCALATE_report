@@ -1,10 +1,11 @@
 RELEASE HISTORY
 ===============
 
-0.8 (tentative: 2018-10-21)
+0.8 (2018-10-30)
 -------------------------
   * Changed the default header `_rxn_M_*` to target v1 concentrations
   * Shifted deprecated v0 from `_rxn_M_*` to `_raw_v0-M_* 'concentrations'
+  * Updated perov_des_edited.csv 
 
 0.7 (2019-06-17)
 -------------------------
