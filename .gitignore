@@ -10,6 +10,7 @@
 *.xlsx
 *.xml
 *.iml
+*.pyc
 mycred.txt
 creds.json
 client_secrets.json

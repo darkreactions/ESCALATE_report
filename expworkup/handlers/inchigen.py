@@ -19,6 +19,8 @@ def GrabOrganicInchi(inchi_df, molaritydf):
     generalizing the subsequent feature merger code as well    
 
     """
+#    molaritydf molaritydf_in.filter(regex='')
+    #TODO: generalize, import the correct df (miinimum to avoid errors)
     inchi_dict = {}
     for row_label, row in inchi_df.iterrows():
         for InChIKey in row:
@@ -37,17 +39,18 @@ def GrabOrganicInchi(inchi_df, molaritydf):
             elif InChIKey == 'RQQRAHKHDFPBMC-UHFFFAOYSA-L' or \
                     InChIKey == 'ZASWJUOMEGBQCQ-UHFFFAOYSA-L':
                 pass
-            elif InChIKey == 'null' or InChIKey == 0:
-                pass
+            elif InChIKey == 'null' or InChIKey == 0: pass
             else:
                 molarityorganicdf = molaritydf.filter(regex=InChIKey)
-                totalmolarity_organic = (molarityorganicdf.loc[row_label].sum())
-                # ToDo: Move to validation module
+#                totalmolarity_organic = (sum(molarityorganicdf.loc[row_label].values.tolist()))
+                totalmolarity_organic = (molarityorganicdf.loc[row_label].sum()) # something fishy happens where these drop to pandas series (often a bug)
                 if isinstance(totalmolarity_organic, pd.core.series.Series):
-                    modlog.error("Rendered JSON files in selected folder are out of date. \
-                         Please delete folder and start again.")
-                    import sys
-                    sys.exit()
+#                    print('total molarity organic', totalmolarity_organic)
+#                    print('the df', molarityorganicdf)
+#                    print('row_label', row_label)#(possibly useful for debugging))
+                    modlog.error(f'{row_label} is likely corrupt, if this is unexpected try deleting this JSON and starting again')
+                    modlog.error(f"Rendered JSON files in selected folder are somehow corrupt. \
+                         Please delete folder and start again if you are unable to diagnose the problem")
                 if totalmolarity_organic != 0:
                     orgInChIKey = InChIKey
                 else:
