@@ -67,7 +67,7 @@ def cleaner(dirty_df, raw):
     rxn_molarity_clean = nameCleaner(dirty_df.filter(like='_raw_M_'), '_raw_v0-M')
     rxn_v1molarity_clean = nameCleaner(dirty_df.filter(like='_raw_v1-M_'), '_rxn_M')
 
-    if globals.get_lab() == 'LBL' or globals.get_lab() == "HC":
+    if globals.get_lab() in ['LBL', "HC", 'LBL_WF3_Iodides']:
         dirty_df.rename(columns={'Unnamed: 2': '_raw_placeholder'}, inplace=True)
         dirty_df.rename(columns={'Bulk Actual Temp (C)': '_rxn_temperatureC_actual_bulk'}, inplace=True)
         dirty_df.rename(columns={'Crystal Score': '_out_crystalscore'}, inplace=True)

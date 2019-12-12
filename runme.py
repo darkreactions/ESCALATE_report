@@ -35,7 +35,7 @@ if __name__ == "__main__":
                         help='Please include target folder')
     parser.add_argument('-l', '--lab',
                         type=str,
-                        choices=['LBL', 'HC', 'MIT_PVLab', 'dev'],
+                        choices=['LBL', 'HC', 'MIT_PVLab', 'dev', 'LBL_WF3_Iodides'],
                         help="Please specify a supported lab from the options \
                               listed. Selecting 'dev' will change the \
                               directory target to the debugging folder. \

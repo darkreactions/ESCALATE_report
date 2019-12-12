@@ -8,7 +8,7 @@ cwd = os.getcwd()
 # version control todo: ian where does this get used? Not sure if we should have to manually do this
 RoboVersion = 2.5
 
-SUPPORTED_LABS = ['LBL', 'HC', 'MIT_PVLab', 'ECL']
+SUPPORTED_LABS = ['LBL', 'LBL_WF3_Iodides', 'HC', 'MIT_PVLab', 'ECL']
 
 #######################################
 # chemistry-relevant specifications
@@ -49,6 +49,18 @@ lab_vars = {
             'reagent_alias': 'Reagent'
         },
     'LBL':
+        {
+            'template_folder': '131G45eK7o9ZiDb4a2yV7l2E1WVQrz16d',
+            'targetfolder': '11vIE3oGU77y38VRSu-OQQw2aWaNfmOHe',  # target folder for new experiments
+            'chemsheetid': '1JgRKUH_ie87KAXsC-fRYEw_5SepjOgVt7njjQBETxEg',
+            'chem_workbook_index': 0,
+            'reagentsheetid': '1JgRKUH_ie87KAXsC-fRYEw_5SepjOgVt7njjQBETxEg',
+            'reagent_workbook_index': 1,
+            'reagent_interface_amount_startrow': 15,
+            'reagent_alias': 'Reagent',
+            'Robofile': '_RobotInput.xls'
+        },
+    'LBL_WF3_Iodides':
         {
             'template_folder': '131G45eK7o9ZiDb4a2yV7l2E1WVQrz16d',
             'targetfolder': '11vIE3oGU77y38VRSu-OQQw2aWaNfmOHe',  # target folder for new experiments

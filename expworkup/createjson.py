@@ -141,6 +141,9 @@ def download_experiment_directories(local_directory, debug):
         # todo this should not be hard coded
         modlog.info('debugging disabled, running on main data directory')
         remote_directory = '13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
+    elif globals.get_lab() in ['LBL_WF3_Iodides']:
+        modlog.info('debugging disabled, running on LBL_WF2_Iodides data directory')
+        remote_directory = '11CcFTLw7mu4tnnv8QO1opSE7XQiEP32L'
     elif globals.get_lab() in ['dev']:
         # todo this also shouldnt be hard coded: put both in a config file
         modlog.warn('debugging enabled! targeting dev folder')

@@ -9,6 +9,7 @@ modlog = logging.getLogger('report.parser')
 
 #Overview
 #parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information
+# TODO: report these from dictionary and generalize
 
 def dict_listoflists(list_lists, run_lab):
     values = []
@@ -17,17 +18,27 @@ def dict_listoflists(list_lists, run_lab):
         values.append(value)
     tray_df = pd.DataFrame(values).transpose()
 
-    if run_lab in ['LBL', 'HC', 'dev', 'ECL']:
-        # todo: if custom actions are added for hc/lbl, integrate here: will look something like MIT code below
-        # but appending _raw, dropping whitespce, special chars, etc.
-        tray_df.columns = ['_raw_temperatureC_nominal',
-                           '_rxn_stirrateRPM',
-                           '_rxn_mixingtime1S',
-                           '_rxn_mixingtime2S',
-                           '_rxn_reactiontimeS']
-
-    if run_lab in ['MIT_PVLab']:
-        tray_df.columns = [item[0] for item in list_lists]
+    #if run_lab in ['LBL', 'HC', 'dev', 'ECL']:
+    #    # todo: if custom actions are added for hc/lbl, integrate here: will look something like MIT code below
+    #    # but appending _raw, dropping whitespce, special chars, etc.
+    #    tray_df.columns = ['_raw_temperatureC_nominal',
+    #                       '_rxn_stirrateRPM',
+    #                       '_rxn_mixingtime1S',
+    #                       '_rxn_mixingtime2S',
+    #                       '_rxn_reactiontimeS']
+#   # if run_lab in ['LBL_WF3_Iodides']:
+#   #     tray_df.columns = ['Temperature (C):', 
+#   #                        'Stir Rate (rpm):',
+#   #                        'Mixing time (s):',
+#   #                        'Mixing time2 (s):',
+#   #                        'Reaction time (s):',
+#   #                         'Temperature Cool (C):',
+#   #                                 userAction0,
+#   #                                 userAction1
+#   #                                 ],
+#
+    #if run_lab is ['MIT_PVLab', 'LBL_WF3_Iodides']:
+    tray_df.columns = [f"_rxn_{item[0].replace(' ','').replace('(','_').replace(')', '').replace(':','')}" for item in list_lists]
 
     # todo: handle custom parameters
     return(tray_df)
