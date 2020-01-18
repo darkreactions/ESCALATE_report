@@ -1,7 +1,12 @@
 RELEASE HISTORY
 ===============
 
-0.8.1 (2018-10-30)
+0.82 (2020-01-17)
+-------------------------
+  * Code cleaning, synchronizing between capture and report, updates to readability
+  * 
+
+0.8.1 (2019-10-30)
 -------------------------
   * Changed the default header `_rxn_M_*` to target v1 concentrations
   * Shifted deprecated v0 from `_rxn_M_*` to `_raw_v0-M_* 'concentrations'

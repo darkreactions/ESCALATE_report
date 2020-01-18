@@ -37,6 +37,10 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name('expworkup/creds/
 gc = gspread.authorize(credentials)
 
 def ChemicalData():
+    '''
+    Uses google api to gather the chemical inventory targeted by labsheet 'chemsheetid' in dev config
+    '''
+
     chemsheetid = lab_vars[globals.get_lab()]['chemsheetid']
     ChemicalBook = gc.open_by_key(chemsheetid)
     chemicalsheet = ChemicalBook.get_worksheet(0)
@@ -46,6 +50,7 @@ def ChemicalData():
     chemdf=chemdf.reset_index(drop=True)
     chemdf=chemdf.set_index(['InChI Key (ID)'])
     modlog.info('Successfully loaded chemical data for processing')
+
     return(chemdf)
 
 
