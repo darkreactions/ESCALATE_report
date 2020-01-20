@@ -1,165 +1,82 @@
-import pandas as pd
+import logging
 import numpy as np
+import pandas as pd
+import logging
 import os
 import sys
 
-INCHI_TO_CHEMNAME = {'null':'null',
-'YEJRWHAVMIAJKC-UHFFFAOYSA-N':'Gamma-Butyrolactone',
-'IAZDPXIOMUYVGZ-UHFFFAOYSA-N':'Dimethyl sulfoxide',
-'BDAGIHXWWSANSR-UHFFFAOYSA-N':'Formic Acid',
-'RQQRAHKHDFPBMC-UHFFFAOYSA-L':'Lead Diiodide',
-'XFYICZOIWSBQSK-UHFFFAOYSA-N':'Ethylammonium Iodide',
-'LLWRXQXPJMPHLR-UHFFFAOYSA-N':'Methylammonium iodide',
-'UPHCENSIMPJEIS-UHFFFAOYSA-N':'Phenethylammonium iodide',
-'GGYGJCFIYJVWIP-UHFFFAOYSA-N':'Acetamidinium iodide',
-'CALQKRVFTWDYDG-UHFFFAOYSA-N':'n-Butylammonium iodide',
-'UUDRLGYROXTISK-UHFFFAOYSA-N':'Guanidinium iodide',
-'YMWUJEATGCHHMB-UHFFFAOYSA-N':'Dichloromethane',
-'JMXLWMIFDJCGBV-UHFFFAOYSA-N':'Dimethylammonium iodide',
-'KFQARYBEAKAXIC-UHFFFAOYSA-N':'Phenylammonium Iodide',
-'NLJDBTZLVTWXRG-UHFFFAOYSA-N':'t-Butylammonium Iodide',
-'GIAPQOZCVIEHNY-UHFFFAOYSA-N':'N-propylammonium Iodide',
-'QHJPGANWSLEMTI-UHFFFAOYSA-N':'Formamidinium Iodide',
-'WXTNTIQDYHIFEG-UHFFFAOYSA-N':'1,4-Diazabicyclo[2,2,2]octane-1,4-diium Iodide',
-'LCTUISCIGMWMAT-UHFFFAOYSA-N':'4-Fluoro-Benzylammonium iodide',
-'NOHLSFNWSBZSBW-UHFFFAOYSA-N':'4-Fluoro-Phenethylammonium iodide',
-'FJFIJIDZQADKEE-UHFFFAOYSA-N':'4-Fluoro-Phenylammonium iodide',
-'QRFXELVDJSDWHX-UHFFFAOYSA-N':'4-Methoxy-Phenylammonium iodide',
-'SQXJHWOXNLTOOO-UHFFFAOYSA-N':'4-Trifluoromethyl-Benzylammonium iodide',
-'KOAGKPNEVYEZDU-UHFFFAOYSA-N':'4-Trifluoromethyl-Phenylammonium iodide',
-'MVPPADPHJFYWMZ-UHFFFAOYSA-N':'chlorobenzene',
-'CWJKVUQGXKYWTR-UHFFFAOYSA-N':'Acetamidinium bromide',
-'QJFMCHRSDOLMHA-UHFFFAOYSA-N':'Benzylammonium Bromide',
-'PPCHYMCMRUGLHR-UHFFFAOYSA-N':'Benzylammonium Iodide',
-'XAKAQFUGWUAPJN-UHFFFAOYSA-N':'Beta Alanine Hydroiodide',
-'KOECRLKKXSXCPB-UHFFFAOYSA-K':'Bismuth iodide',
-'XQPRBTXUXXVTKB-UHFFFAOYSA-M':'Cesium iodide',
-'ZMXDDKWLCZADIW-UHFFFAOYSA-N':'Dimethylformamide',
-'BCQZYUOYVLJOPE-UHFFFAOYSA-N':'Ethane-1,2-diammonium bromide',
-'IWNWLPUNKAYUAW-UHFFFAOYSA-N':'Ethane-1,2-diammonium iodide',
-'PNZDZRMOBIIQTC-UHFFFAOYSA-N':'Ethylammonium bromide',
-'QWANGZFTSGZRPZ-UHFFFAOYSA-N':'Formamidinium bromide',
-'VQNVZLDDLJBKNS-UHFFFAOYSA-N':'Guanidinium bromide',
-'VMLAEGAAHIIWJX-UHFFFAOYSA-N':'i-Propylammonium iodide',
-'JBOIAZWJIACNJF-UHFFFAOYSA-N':'Imidazolium Iodide',
-'RFYSBVUZWGEPBE-UHFFFAOYSA-N':'iso-Butylammonium bromide',
-'FCTHQYIDLRRROX-UHFFFAOYSA-N':'iso-Butylammonium iodide',
-'UZHWWTHDRVLCJU-UHFFFAOYSA-N':'iso-Pentylammonium iodide',
-'MCEUZMYFCCOOQO-UHFFFAOYSA-L':'Lead(II) acetate trihydrate',
-'ZASWJUOMEGBQCQ-UHFFFAOYSA-L':'Lead(II) bromide',
-'ISWNAMNOYHCTSB-UHFFFAOYSA-N':'Methylammonium bromide',
-'VAWHFUNJDMQUSB-UHFFFAOYSA-N':'Morpholinium Iodide',
-'VZXFEELLBDNLAL-UHFFFAOYSA-N':'n-Dodecylammonium bromide',
-'PXWSKGXEHZHFJA-UHFFFAOYSA-N':'n-Dodecylammonium iodide',
-'VNAAUNTYIONOHR-UHFFFAOYSA-N':'n-Hexylammonium iodide',
-'HBZSVMFYMAOGRS-UHFFFAOYSA-N':'n-Octylammonium Iodide',
-'FEUPHURYMJEUIH-UHFFFAOYSA-N':'neo-Pentylammonium bromide',
-'CQWGDVVCKBJLNX-UHFFFAOYSA-N':'neo-Pentylammonium iodide',
-'IRAGENYJMTVCCV-UHFFFAOYSA-N':'Phenethylammonium bromide',
-'UXWKNNJFYZFNDI-UHFFFAOYSA-N':'piperazine dihydrobromide',
-'QZCGFUVVXNFSLE-UHFFFAOYSA-N':'Piperazine-1,4-diium iodide',
-'HBPSMMXRESDUSG-UHFFFAOYSA-N':'Piperidinium Iodide',
-'IMROMDMJAWUWLK-UHFFFAOYSA-N':'Poly(vinyl alcohol), Mw89000-98000, >99% hydrolyzed)',
-'QNBVYCDYFJUNLO-UHDJGPCESA-N':'Pralidoxime iodide',
-'UMDDLGMCNFAZDX-UHFFFAOYSA-O':'Propane-1,3-diammonium iodide',
-'VFDOIPKMSSDMCV-UHFFFAOYSA-N':'Pyrrolidinium Bromide',
-'DMFMZFFIQRMJQZ-UHFFFAOYSA-N':'Pyrrolidinium Iodide',
-'DYEHDACATJUKSZ-UHFFFAOYSA-N':'Quinuclidin-1-ium bromide',
-'LYHPZBKXSHVBDW-UHFFFAOYSA-N':'Quinuclidin-1-ium iodide',
-'UXYJHTKQEFCXBJ-UHFFFAOYSA-N':'tert-Octylammonium iodide',
-'BJDYCCHRZIFCGN-UHFFFAOYSA-N':'Pyridinium Iodide',
-'ZEVRFFCPALTVDN-UHFFFAOYSA-N':'Cyclohexylmethylammonium iodide',
-'WGYRINYTHSORGH-UHFFFAOYSA-N':'Cyclohexylammonium iodide',
-'XZUCBFLUEBDNSJ-UHFFFAOYSA-N':'Butane-1,4-diammonium Iodide',
-'RYYSZNVPBLKLRS-UHFFFAOYSA-N':'1,4-Benzene diammonium iodide',
-'DWOWCUCDJIERQX-UHFFFAOYSA-M':'5-Azaspiro[4.4]nonan-5-ium iodide',
-'YYMLRIWBISZOMT-UHFFFAOYSA-N':'Diethylammonium iodide',
-'UVLZLKCGKYLKOR-UHFFFAOYSA-N':'2-Pyrrolidin-1-ium-1-ylethylammonium iodide',
-'BAMDIFIROXTEEM-UHFFFAOYSA-N':'N,N-Dimethylethane- 1,2-diammonium iodide',
-'JERSPYRKVMAEJY-UHFFFAOYSA-N':'N,N-dimethylpropane- 1,3-diammonium iodide',
-'NXRUEVJQMBGVAT-UHFFFAOYSA-N':'N,N-Diethylpropane-1,3-diammonium iodide',
-'PBGZCCFVBVEIAS-UHFFFAOYSA-N':'Di-isopropylammonium iodide',
-'QNNYEDWTOZODAS-UHFFFAOYSA-N':'4-methoxy-phenethylammonium-iodide',
-'N/A':'None'}
+modlog = logging.getLogger('report.reagent_entities')
 
-INCHI_TO_ABBR = {'null':'null',
-'YEJRWHAVMIAJKC-UHFFFAOYSA-N':'GBL',
-'IAZDPXIOMUYVGZ-UHFFFAOYSA-N':'DMSO',
-'BDAGIHXWWSANSR-UHFFFAOYSA-N':'FAH',
-'RQQRAHKHDFPBMC-UHFFFAOYSA-L':'PbI2',
-'XFYICZOIWSBQSK-UHFFFAOYSA-N':'EtNH3I',
-'LLWRXQXPJMPHLR-UHFFFAOYSA-N':'MeNH3I',
-'UPHCENSIMPJEIS-UHFFFAOYSA-N':'PhEtNH3I',
-'GGYGJCFIYJVWIP-UHFFFAOYSA-N':'AcNH3I',
-'CALQKRVFTWDYDG-UHFFFAOYSA-N':'n-BuNH3I',
-'UUDRLGYROXTISK-UHFFFAOYSA-N':'GnNH3I',
-'YMWUJEATGCHHMB-UHFFFAOYSA-N':'DCM',
-'JMXLWMIFDJCGBV-UHFFFAOYSA-N':'Me2NH2I',
-'KFQARYBEAKAXIC-UHFFFAOYSA-N':'PhenylammoniumIodide',
-'NLJDBTZLVTWXRG-UHFFFAOYSA-N':'tButylammoniumIodide',
-'GIAPQOZCVIEHNY-UHFFFAOYSA-N':'NPropylammoniumIodide',
-'QHJPGANWSLEMTI-UHFFFAOYSA-N':'FormamidiniumIodide',
-'WXTNTIQDYHIFEG-UHFFFAOYSA-N':'Dabcoiodide',
-'LCTUISCIGMWMAT-UHFFFAOYSA-N':'4FluoroBenzylammoniumIodide',
-'NOHLSFNWSBZSBW-UHFFFAOYSA-N':'4FluoroPhenethylammoniumIodide',
-'FJFIJIDZQADKEE-UHFFFAOYSA-N':'4FluoroPhenylammoniumIodide',
-'QRFXELVDJSDWHX-UHFFFAOYSA-N':'4MethoxyPhenylammoniumIodide',
-'SQXJHWOXNLTOOO-UHFFFAOYSA-N':'4TrifluoromethylBenzylammoniumIodide',
-'KOAGKPNEVYEZDU-UHFFFAOYSA-N':'4TrifluoromethylPhenylammoniumIodide',
-'MVPPADPHJFYWMZ-UHFFFAOYSA-N':'CBz',
-'CWJKVUQGXKYWTR-UHFFFAOYSA-N':'AcNH3Br',
-'QJFMCHRSDOLMHA-UHFFFAOYSA-N':'benzylammoniumbromide',
-'PPCHYMCMRUGLHR-UHFFFAOYSA-N':'BenzylammoniumIodide',
-'XAKAQFUGWUAPJN-UHFFFAOYSA-N':'betaAlanineHydroiodide',
-'KOECRLKKXSXCPB-UHFFFAOYSA-K':'BiI3',
-'XQPRBTXUXXVTKB-UHFFFAOYSA-M':'CsI',
-'ZMXDDKWLCZADIW-UHFFFAOYSA-N':'DMF',
-'BCQZYUOYVLJOPE-UHFFFAOYSA-N':'EthylenediamineDihydrobromide',
-'IWNWLPUNKAYUAW-UHFFFAOYSA-N':'EthylenediamineDihydriodide',
-'PNZDZRMOBIIQTC-UHFFFAOYSA-N':'EtNH3Br',
-'QWANGZFTSGZRPZ-UHFFFAOYSA-N':'FABr',
-'VQNVZLDDLJBKNS-UHFFFAOYSA-N':'GnNH3Br',
-'VMLAEGAAHIIWJX-UHFFFAOYSA-N':'iPropylammoniumIodide',
-'JBOIAZWJIACNJF-UHFFFAOYSA-N':'ImidazoliumIodide',
-'RFYSBVUZWGEPBE-UHFFFAOYSA-N':'iButylammoniumBromide',
-'FCTHQYIDLRRROX-UHFFFAOYSA-N':'iButylammoniumIodide',
-'UZHWWTHDRVLCJU-UHFFFAOYSA-N':'IPentylammoniumIodide',
-'MCEUZMYFCCOOQO-UHFFFAOYSA-L':'LeadAcetate',
-'ZASWJUOMEGBQCQ-UHFFFAOYSA-L':'PbBr2',
-'ISWNAMNOYHCTSB-UHFFFAOYSA-N':'Methylammoniumbromide',
-'VAWHFUNJDMQUSB-UHFFFAOYSA-N':'MorpholiniumIodide',
-'VZXFEELLBDNLAL-UHFFFAOYSA-N':'nDodecylammoniumBromide',
-'PXWSKGXEHZHFJA-UHFFFAOYSA-N':'nDodecylammoniumIodide',
-'VNAAUNTYIONOHR-UHFFFAOYSA-N':'nHexylammoniumIodide',
-'HBZSVMFYMAOGRS-UHFFFAOYSA-N':'nOctylammoniumIodide',
-'FEUPHURYMJEUIH-UHFFFAOYSA-N':'neoPentylammoniumBromide',
-'CQWGDVVCKBJLNX-UHFFFAOYSA-N':'neoPentylammoniumIodide',
-'IRAGENYJMTVCCV-UHFFFAOYSA-N':'Phenethylammoniumbromide',
-'UXWKNNJFYZFNDI-UHFFFAOYSA-N':'PiperazinediiumDiBromide',
-'QZCGFUVVXNFSLE-UHFFFAOYSA-N':'PiperazinediiumDiodide',
-'HBPSMMXRESDUSG-UHFFFAOYSA-N':'PiperidiniumIodide',
-'IMROMDMJAWUWLK-UHFFFAOYSA-N':'PVA',
-'QNBVYCDYFJUNLO-UHDJGPCESA-N':'PralidoximeIodide',
-'UMDDLGMCNFAZDX-UHFFFAOYSA-O':'Propane13diammoniumIodide',
-'VFDOIPKMSSDMCV-UHFFFAOYSA-N':'pyrrolidiniumBromide',
-'DMFMZFFIQRMJQZ-UHFFFAOYSA-N':'PyrrolidiniumIodide',
-'DYEHDACATJUKSZ-UHFFFAOYSA-N':'QuinuclidiniumBromide',
-'LYHPZBKXSHVBDW-UHFFFAOYSA-N':'QuinuclidiniumIodide',
-'UXYJHTKQEFCXBJ-UHFFFAOYSA-N':'TertOctylammoniumIodide',
-'BJDYCCHRZIFCGN-UHFFFAOYSA-N':'PyridiniumIodide',
-'ZEVRFFCPALTVDN-UHFFFAOYSA-N':'CyclohexylmethylammoniumIodide',
-'WGYRINYTHSORGH-UHFFFAOYSA-N':'CyclohexylammoniumIodide',
-'XZUCBFLUEBDNSJ-UHFFFAOYSA-N':'Butane14diammoniumIodide',
-'RYYSZNVPBLKLRS-UHFFFAOYSA-N':'Benzenediaminedihydroiodide',
-'DWOWCUCDJIERQX-UHFFFAOYSA-M':'5Azaspironoiodide',
-'YYMLRIWBISZOMT-UHFFFAOYSA-N':'Diethylammoniumiodide',
-'UVLZLKCGKYLKOR-UHFFFAOYSA-N':'2Pyrrolidin1ium1ylethylammoniumiodide',
-'BAMDIFIROXTEEM-UHFFFAOYSA-N':'NNDimethylethane12diammoniumiodide',
-'JERSPYRKVMAEJY-UHFFFAOYSA-N':'NNdimethylpropane13diammoniumiodide',
-'NXRUEVJQMBGVAT-UHFFFAOYSA-N':'NNDiethylpropane13diammoniumiodide',
-'PBGZCCFVBVEIAS-UHFFFAOYSA-N':'Diisopropylammoniumiodide',
-'QNNYEDWTOZODAS-UHFFFAOYSA-N':'4methoxyphenethylammoniumiodide',
-'N/A':'None'}
+class ReagentObject:
+    modlog = logging.getLogger('report.RegentObject')
+    ''' Reagent Object containing template, model and object information
+
+    v1 input is dataframe of the reagent information as parsed from JSON from google drive
+
+    TODO: build reagent_object at the initial parsing of the download JSON file
+    TODO: direct import of reagent_model information from Capture
+    TODO: consistency checks and validation of reagent_object concentration calculations
+
+    next generation should be closer to a json file structure of the reagent file. Ideally the reagent json itself can
+    be provided to a class and then used downstream for additional manipulation
+    '''
+
+    def __init__(self,
+                 reagent_df,
+                 reagent_name):
+        """
+        initializes ReagentObjects
+
+        TODO: generate class prior to call of concCalc
+        TODO: build reagent objects at initial import from JSON structure
+
+        Args:
+            reagent_df: dataframe as generated by concCalc
+            reagent_name: parsed name of the reagent (ex. '_raw_reagent_1')
+        """
+        self.conc_v1 = self.calc_conc_v1(reagent_df, reagent_name)
+
+
+    def calc_conc_v1(self,
+                     one_reagent_df,
+                     reagent_name):
+        """ calculate concentration of each chemical in reagent, return dataframe of chemicals and concentrations
+
+        returns dataframe columns formatted as '_raw_reagent_1_v1-conc_InChIKey', rows are default numbered indexes
+
+        Args:
+            one_reagent_df: dataframe as generated by concCalc
+            reagent_name: parsed name of the reagent (ex. '_raw_reagent_1')
+        """
+        conc = {}
+        # calculate the total volume of the reagent solution using the volume of the chemicals as an approximation
+        for index, row in one_reagent_df.iterrows():
+            if row['unit'] == 'gram':
+                one_reagent_df.at[index, 'chemical_volume'] = float(row['amount']) / \
+                                                              float(row['density'])  # converts grams to mL
+            elif row['unit'] == 'milliliter':
+                one_reagent_df.at[index, 'chemical_volume'] = row['amount']  # leaves mL well enough alone
+            elif row['unit'] == 'null':
+                one_reagent_df.at[index, 'chemical_volume'] = 0  # null is null!
+        # calculate the concentrations of each chemical using the approximated volume from above
+        final_reagent_volume = one_reagent_df['chemical_volume'].astype(float).sum()
+        for index, row in one_reagent_df.iterrows():
+            if row['unit'] == 'gram':
+                calculated_concentration = float(row['amount']) / float(row['molecularmass']) / \
+                                                 float(final_reagent_volume / 1000)  # g --> mol --> [M] (v1-conc)
+                name_space = (reagent_name + "_v1-conc_" + (one_reagent_df.loc[(index, 'InChiKey')]))
+                conc[name_space] = calculated_concentration
+            elif row['unit'] == 'milliliter':
+                calculated_concentration = float(row['amount']) * float(row['density']) / \
+                                            float(row['molecularmass']) / float(final_reagent_volume / 1000)
+                name_space = (reagent_name + "_v1-conc_" + (one_reagent_df.loc[(index, 'InChiKey')]))
+                conc[name_space] = calculated_concentration
+            elif row['unit'] == 'null':
+                calculated_concentration = 0  # null is null!
+                name_space = (reagent_name + "_v1-conc_" + (one_reagent_df.loc[(index, 'InChiKey')]))
+                conc[name_space] = calculated_concentration
+        return([conc])
+
 
 def UID_generator():
     pass
@@ -178,10 +95,12 @@ def build_conc_df(df):
     Filters are explained in code
     '''
     # Only consider runs where the workflow are equal to 1.1 (the ITC method after initial development)
-    df = df[df['_raw_ExpVer'] == 1.1].reset_index(drop=True)
+    # TODO: generalize beyond 1.1
+    # #remove this once testing is complete and the reagent models / objects are exportable
+    df = df[df['_raw_ExpVer'] == 1.1].reset_index(drop=True) # Harded coded to 1.1 for development
 
     # only reaction that use GBL as a solvent (1:1 comparisons -- DMF and other solvents could convolute analysis)    
-    #perov = perov[perov['_raw_reagent_0_chemicals_0_InChIKey'] == "YEJRWHAVMIAJKC-UHFFFAOYSA-N"].reset_index(drop=True)    
+    df = df[df['_raw_reagent_0_chemicals_0_InChIKey'] == "YEJRWHAVMIAJKC-UHFFFAOYSA-N"].reset_index(drop=True)    
 
     # removes some anomalous entries with dimethyl ammonium still listed as the organic.
     #perov = perov[perov['_rxn_organic-inchikey'] != 'JMXLWMIFDJCGBV-UHFFFAOYSA-N'].reset_index(drop=True)
@@ -244,6 +163,8 @@ def get_tray_set(perovskite_df):
     uses the combination of the tray uid and the organic inchi-key to determine if the 
     reagent preparation is unique.  Assumption is that the organic labeling in def namecleaner of report is accurate
     will need to be extended to account for variations in inorganic, solvent, etc. 
+    TODO: Extend beyond wf 1.1 assumptions
+    TODO: Generate equivalent for models (not just the reagent objects)
     
     :param perovskite_df: generated perovskite dataset using ESCALATE_report v0.8.1
     :return: tray_uids associated with unique compound ingredient objects in the dataset (see assumptions)
@@ -259,6 +180,8 @@ def get_tray_set(perovskite_df):
         experiment_uid = uid_inchi[0]
         inchi = uid_inchi[1]
         tray_uid = experiment_uid.rsplit('_', 1)[0]
+
+        # If combined value of UID and 
         tray_uids[f'{tray_uid}_{inchi}'] = experiment_uid
     return(tray_uids)
 
@@ -295,57 +218,72 @@ def get_reagent_amounts(unique_df, nominal=False):
         actuals_df = unique_df[actuals_columns]
         return actuals_df
 
+def export_reagent_objects(perovskite_df, target_naming_scheme):
+    '''
+    Exports a csv table of all reagent object data
+    
+    :param 
+
+    '''
+    all_unique_compounds_uids = get_tray_set(perovskite_df)
+
+    unique_df = perovskite_df.loc[perovskite_df['name'].isin(all_unique_compounds_uids.values())]
+    print(unique_df.shape)
+
+    reagent_volumes_df = get_unique_volumes(unique_df)
+    reagent_amounts_df = get_reagent_amounts(unique_df) # default is to return the actuals (nominals can be toggled)
+
+    vols_amounts_df = pd.concat([reagent_volumes_df,reagent_amounts_df], axis=1)
+    object_out_name = f'{target_naming_scheme}_objects.csv'
+    vols_amounts_df.to_csv(object_out_name)
+    return object_out_name
+
 def all_unique_ingredients(perovskite_df, target_naming_scheme, chem_df):
     '''
     Reads in most recent perovskite dataframe and returns dictionary 
     of structure {organic_inchi: {(Chemical-Inchi, Chemical-Name, concentration) x 3}} 
     one nested dictionary for each inorganic, organic-1, and organic-2
+    WARNING: Functionality currently restricted to wf 1.1 export and processing
 
     :param perovskite_csv: perovskite dataframe generated using version 0.82 of the report code
 
     '''
-
-    conc_df = build_conc_df(perovskite_df)
-
-    # Calls functions for organizing reagent preparations from all trays (maybe useful for table views in report?)
-    #TODO: move to report code
-    
-    all_unique_compounds_uids = get_tray_set(perovskite_df)
-
-    unique_df = perovskite_df.loc[perovskite_df['name'].isin(all_unique_compounds_uids)]
-
-    reagent_volumes_df = get_unique_volumes(unique_df)
-    reagent_amounts_df = get_reagent_amounts(unique_df) # default is to retun the actuals (nominals can be toggled)
-
-    vols_amounts_df = pd.concat([reagent_volumes_df,reagent_amounts_df], axis=1)
-    vols_amounts_df.to_csv('unique_reagents_preps.csv')
-
-
+    conc_df = build_conc_df(perovskite_df) 
     conc_df.fillna(value='null', inplace=True)
+
+    #call functions to export objects and models
+    reagent_objects_file = export_reagent_objects(perovskite_df, target_naming_scheme)
+    modlog.info(f'Generated compound ingredient (reagents) objects in {reagent_objects_file}')
+    
+
+
+    # Setup the chemical dataframe for reading out chemical names (specific for 1.1)
+    # TODO: generalize beyond 1.1 for direct reaction reproductions from reagent objects / models
     conc_dict_out = {}
-    for index, row in conc_df.iterrows():
-        conc_dict_out[index] = {}
-        conc_dict_out[index]['chemical_info'] = {}
-        conc_dict_out[index]['chemical_info']['solvent'] = (conc_df.loc[index,'_raw_reagent_0_chemicals_0_InChIKey'], 
-                                                            INCHI_TO_ABBR[conc_df.loc[index,'_raw_reagent_0_chemicals_0_InChIKey']]
+    chem_df = chem_df.fillna('null') #insert our choice placeholder for blank values --> 'null'
+    chem_df.set_index('InChI Key (ID)', inplace=True)
+
+    for exp_uid, row in conc_df.iterrows():
+        conc_dict_out[exp_uid] = {}
+        conc_dict_out[exp_uid]['chemical_info'] = {}
+        conc_dict_out[exp_uid]['chemical_info']['solvent'] = (conc_df.loc[exp_uid,'_raw_reagent_0_chemicals_0_InChIKey'], 
+                                                            chem_df.loc[conc_df.loc[exp_uid,'_raw_reagent_0_chemicals_0_InChIKey'],"Chemical Name"]
                                                             ) 
-        conc_dict_out[index]['chemical_info']['inorganic'] = (conc_df.loc[index,'_raw_reagent_1_chemicals_0_InChIKey'], 
-                                                            INCHI_TO_ABBR[conc_df.loc[index,'_raw_reagent_1_chemicals_0_InChIKey']],
-                                                            conc_df.loc[index,'_raw_reagent_1_chemicals_0_v1conc']                                                               
+        conc_dict_out[exp_uid]['chemical_info']['inorganic'] = (conc_df.loc[exp_uid,'_raw_reagent_1_chemicals_0_InChIKey'], 
+                                                            chem_df.loc[conc_df.loc[exp_uid,'_raw_reagent_1_chemicals_0_InChIKey'],"Chemical Name"],
+                                                            conc_df.loc[exp_uid,'_raw_reagent_1_chemicals_0_v1conc']                                                               
                                                             ) 
-        conc_dict_out[index]['chemical_info']['organic-1'] = (conc_df.loc[index,'_raw_reagent_1_chemicals_1_InChIKey'], 
-                                                            INCHI_TO_ABBR[conc_df.loc[index,'_raw_reagent_1_chemicals_1_InChIKey']],
-                                                            conc_df.loc[index,'_raw_reagent_1_chemicals_1_v1conc']                                                               
+        conc_dict_out[exp_uid]['chemical_info']['organic-1'] = (conc_df.loc[exp_uid,'_raw_reagent_1_chemicals_1_InChIKey'], 
+                                                            chem_df.loc[conc_df.loc[exp_uid,'_raw_reagent_1_chemicals_1_InChIKey'],"Chemical Name"],
+                                                            conc_df.loc[exp_uid,'_raw_reagent_1_chemicals_1_v1conc']                                                               
                                                             ) 
-        conc_dict_out[index]['chemical_info']['organic-2'] = (conc_df.loc[index,'_raw_reagent_2_chemicals_0_InChIKey'], 
-                                                            INCHI_TO_ABBR[conc_df.loc[index,'_raw_reagent_2_chemicals_0_InChIKey']],
-                                                            conc_df.loc[index,'_raw_reagent_2_chemicals_0_v1conc']                                                               
+        conc_dict_out[exp_uid]['chemical_info']['organic-2'] = (conc_df.loc[exp_uid,'_raw_reagent_2_chemicals_0_InChIKey'], 
+                                                            chem_df.loc[conc_df.loc[exp_uid,'_raw_reagent_2_chemicals_0_InChIKey'],"Chemical Name"],
+                                                            conc_df.loc[exp_uid,'_raw_reagent_2_chemicals_0_v1conc']                                                               
                                                             ) 
-        conc_dict_out[index]['organic_inchi'] = conc_df.loc[index, '_rxn_organic-inchikey']
+        conc_dict_out[exp_uid]['organic_inchi'] = conc_df.loc[exp_uid, '_rxn_organic-inchikey']
     return conc_dict_out
 
-#%%
-#%%
 # Section 2
 ## The following function normalizes differences in the state space concentrations
 ## and sets all of the axes to the same scale. This might allow for a different overlaying 
@@ -457,3 +395,7 @@ def _prepare(shuffle=0, deep_shuffle=0):
     successful_perov.rename(columns={"_raw_v0-M_acid": "_rxn_v0-M_acid", "_raw_v0-M_inorganic": "_rxn_v0-M_inorganic", "_raw_v0-M_organic":"_rxn_v0-M_organic"}, inplace=True)
 
     return successful_perov
+
+
+
+

@@ -2,7 +2,7 @@ import pandas as pd
 import logging
 from utils import globals
 
-from expworkup.objects.reagent import ReagentObject
+from expworkup.entity_tables.reagent_entity import ReagentObject
 from utils.file_handling import get_experimental_run_lab
 
 modlog = logging.getLogger('report.parser')
@@ -18,26 +18,8 @@ def dict_listoflists(list_lists, run_lab):
         values.append(value)
     tray_df = pd.DataFrame(values).transpose()
 
-    #if run_lab in ['LBL', 'HC', 'dev', 'ECL']:
-    #    # todo: if custom actions are added for hc/lbl, integrate here: will look something like MIT code below
-    #    # but appending _raw, dropping whitespce, special chars, etc.
-    #    tray_df.columns = ['_raw_temperatureC_nominal',
-    #                       '_rxn_stirrateRPM',
-    #                       '_rxn_mixingtime1S',
-    #                       '_rxn_mixingtime2S',
-    #                       '_rxn_reactiontimeS']
-#   # if run_lab in ['LBL_WF3_Iodides']:
-#   #     tray_df.columns = ['Temperature (C):', 
-#   #                        'Stir Rate (rpm):',
-#   #                        'Mixing time (s):',
-#   #                        'Mixing time2 (s):',
-#   #                        'Reaction time (s):',
-#   #                         'Temperature Cool (C):',
-#   #                                 userAction0,
-#   #                                 userAction1
-#   #                                 ],
-#
-    #if run_lab is ['MIT_PVLab', 'LBL_WF3_Iodides']:
+    # parses actions from robot files without having to specify things individually.  
+    # Headers are named the same as the string of the action description (action name)
     tray_df.columns = [f"_rxn_{item[0].replace(' ','').replace('(','_').replace(')', '').replace(':','')}" for item in list_lists]
 
     # todo: handle custom parameters

@@ -4,7 +4,7 @@ RELEASE HISTORY
 0.82 (2020-01-17)
 -------------------------
   * Code cleaning, synchronizing between capture and report, updates to readability
-  * 
+  * Implemented reagent_object export (Warning! wf 1.1 LBL/HC ONLY)
 
 0.8.1 (2019-10-30)
 -------------------------
