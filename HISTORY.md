@@ -3,8 +3,10 @@ RELEASE HISTORY
 
 0.82 (2020-01-17)
 -------------------------
-  * Code cleaning, synchronizing between capture and report, updates to readability
-  * Implemented reagent_object export (Warning! wf 1.1 LBL/HC ONLY)
+  * Code cleaning, synchronizing between capture and report devconfig, updates to readability
+  * Implemented reagent_object export (Warning! only tested with wf 1.1 LBL/HC ONLY)
+  * Implemented reagent_object nominals / actuals observables reporting in unique csv files
+  * Expert curated features added as default for LBL
 
 0.8.1 (2019-10-30)
 -------------------------

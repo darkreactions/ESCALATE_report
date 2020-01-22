@@ -19,23 +19,23 @@ modlog = logging.getLogger('report.googleAPI')
 
 ##Authentication for pydrive, designed globally to minimally generate token (a slow process)
 
-#gauth = GoogleAuth()
-#GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = "expworkup/creds/client_secrets.json"
-#gauth.LoadCredentialsFile("%s/expworkup/creds/mycred.txt" %cwd)
-#if gauth.credentials is None:
-#    gauth.LocalWebserverAuth() #Creates local webserver and auto handles authentication.
-#elif gauth.access_token_expired:
-#    gauth.LocalWebserverAuth() #Creates local webserver and auto handles authentication.
-#else:
-#    gauth.Authorize() #Just run because everything is loaded properly
-#gauth.SaveCredentialsFile("expworkup/creds/mycred.txt")
-#drive = GoogleDrive(gauth)
-#
-#### General Setup Information ###
-###GSpread Authorization information
-#scope = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-#credentials = ServiceAccountCredentials.from_json_keyfile_name('expworkup/creds/creds.json', scope) 
-#gc = gspread.authorize(credentials)
+gauth = GoogleAuth()
+GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = "expworkup/creds/client_secrets.json"
+gauth.LoadCredentialsFile("%s/expworkup/creds/mycred.txt" %cwd)
+if gauth.credentials is None:
+    gauth.LocalWebserverAuth() #Creates local webserver and auto handles authentication.
+elif gauth.access_token_expired:
+    gauth.LocalWebserverAuth() #Creates local webserver and auto handles authentication.
+else:
+    gauth.Authorize() #Just run because everything is loaded properly
+gauth.SaveCredentialsFile("expworkup/creds/mycred.txt")
+drive = GoogleDrive(gauth)
+
+### General Setup Information ###
+##GSpread Authorization information
+scope = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+credentials = ServiceAccountCredentials.from_json_keyfile_name('expworkup/creds/creds.json', scope) 
+gc = gspread.authorize(credentials)
 
 def ChemicalData():
     '''

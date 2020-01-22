@@ -134,8 +134,15 @@ def calcConc(reagentdf, reagent_spc):
             conc_df = pd.concat([conc_df, conc_cells_df, v1conc_cells_df], axis=1)
     return conc_df
 
-#parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information
 def flatten_json_reg(y):
+    '''
+    parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information
+
+    :param y: input json from 'reagent' key of createjson.py 
+
+    :return: dataframe of reagent data
+    '''
+
     out = {}
     def flatten(x, flatdict, name=''):
         #Flattens the dictionary type to a single column and entry
@@ -181,6 +188,7 @@ def reag_info(reagentdf,chemdf):
         ### Eventually this section of code can be replaced by class objects which describe the reagent for each experiment in line
         ### Currenlty this code is assembling a dataframe which describes the relatinship between various reagents in order
         ### to perform subsequent calcualtions.  The inchi keys for example are hard coded and should be variable
+        #TODO use types from teh chemdf to handle each of these sections with exceptions for parsing
     '''
     reagentlist=[]
     for item in list(reagentdf):
@@ -260,22 +268,20 @@ def reagentparser(firstlevel, myjson, chem_df):
     run_lab = get_experimental_run_lab(myjson)
     for reg_key,reg_value in firstlevel.items():
         modlog.info('Parsing %s to csv' %myjson)
+
         if reg_key == 'reagent':
-            reagent_df=flatten_json_reg(reg_value)
-            reagent_spec=reag_info(reagent_df,chem_df) #takes all of the infomration from the chem_df (online web information here) and puts it together with the the reagent information
-            Conc_df=calcConc(reagent_df, reagent_spec) #takes the information abot the reagents and generates ... 
+            reagent_df = flatten_json_reg(reg_value)
+            reagent_spec = reag_info(reagent_df,chem_df) #takes all of the infomration from the chem_df (online web information here) and puts it together with the the reagent information
+            concentration_df = calcConc(reagent_df, reagent_spec) #takes the information abot the reagents and generates ... 
+
         if reg_key == 'run':
             run_df=flatten_json(reg_value)
+
         if reg_key == 'tray_environment':
             tray_df=dict_listoflists(reg_value, run_lab)
-         ##### Currently ommitting this line of data as the information here does not add detail to the data structure ### 
 #        if reg_key == 'robot_reagent_handling':
 #            robo_df=robo_handling(reg_value)
-#                print(item)
-        ########### See above note, still should parse later!!! after v1.1 ###  
-        ###The following column headers are only approxpriate for workflow 1.1, if the namespace changes these lines will need to be reformmated 
-        ### rxn reagent_4 and 5 assume that the input chemicals are formic acid, the volume of which can be learned on directly 
-        ### this assumtion might not be valid in all future cases
+
         if reg_key == 'well_volumes':
             reagenttotal=(len(reg_value[0])-2)
             listcount = 0
@@ -286,12 +292,14 @@ def reagentparser(firstlevel, myjson, chem_df):
                 listcount+=1
             columnnames.append('_raw_labwareID')
             well_volumes_df=pd.DataFrame(reg_value, columns=columnnames)
+
         if reg_key == 'crys_file_data':
             crys_file_data_df = pd.DataFrame(reg_value)
             if 'Concatenated Vial site' in crys_file_data_df.columns:
                 crys_file_data_df = crys_file_data_df.rename(columns = {'Concatenated Vial site': '_raw_vialsite'})
                 experiment_df=well_volumes_df.merge(crys_file_data_df)
-    #The following code aligns and normalizes the data frames
+
+            #The following code aligns and normalizes the data frames
             elif 'Experiment Number' in crys_file_data_df.columns:
                 crys_file_data_df['_raw_vialsite'] = crys_file_data_df['Experiment Number'].astype(int)
                 well_volumes_df.dropna(inplace=True)
@@ -299,10 +307,11 @@ def reagentparser(firstlevel, myjson, chem_df):
 #                experiment_df=well_volumes_df.merge(crys_file_data_df, on='_raw_vialsite')
                 experiment_df = pd.concat([well_volumes_df.set_index('_raw_vialsite'),crys_file_data_df.set_index('_raw_vialsite')], axis=1, join='inner').reset_index()
                 experiment_df['_raw_vialsite'] = experiment_df['_raw_vialsite'].astype(str)
+
     #The following code aligns and normalizes the data frames
     wellcount=(len(experiment_df.index))-1
     fullrun_df=(run_df.append([run_df]*wellcount,ignore_index=True))
-    fullConc_df=(Conc_df.append([Conc_df]*wellcount,ignore_index=True))
+    fullConc_df=(concentration_df.append([concentration_df]*wellcount,ignore_index=True))
     fullreagent_df=(reagent_df.append([reagent_df]*wellcount,ignore_index=True))
     fulltray_df=(tray_df.append([tray_df]*wellcount, ignore_index=True))
     out_df=pd.concat([fullConc_df, experiment_df, fullreagent_df, fullrun_df, fulltray_df], axis=1)

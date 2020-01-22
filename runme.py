@@ -37,8 +37,9 @@ if __name__ == "__main__":
                         help='Please include target folder')
     parser.add_argument('-l', '--lab',
                         type=str,
-                        choices=['LBL', 'HC', 'MIT_PVLab', 'dev', 'LBL_WF3_Iodides'],
-                        help="Please specify a supported lab from the options \
+                        choices=['LBL', 'HC', 'MIT_PVLab', 'dev',\
+                        '4-Data-WF3_Iodide', '4-Data-WF3_Alloying', '4-Data-Bromides'],
+                        help="Please specify a supported lab/dataset from the options \
                               listed. Selecting 'dev' will change the \
                               directory target to the debugging folder. \
                               Selecting any other lab will target that labs\
@@ -83,24 +84,27 @@ if __name__ == "__main__":
 
     initialize(args)
 
-#    chem_df=googleio.ChemicalData()  #Grabs relevant chemical data frame from google sheets (only once no matter how many runs)
-    chem_df = pd.read_csv('chemdf.csv')
+##### FOR SOME OFFLINE SUPPORT, REQUIRES ONE RUN BEFORE OFFLINE #### 
+##### Follow the two step instructions to run post parsing code offline ####
+    chem_df=googleio.ChemicalData()                     # 2) Comment out this line
+#    chem_df.to_csv('chemdf.csv')                       # 1) Uncomment and run full_report code once
+#    chem_df = pd.read_csv('chemdf.csv')                # 2) Uncomment
+#    target_naming_scheme = 'perovskitesdata_20191209b' # 2) Uncomment and update to the generated dataset
 
-#    createjson.download_experiment_directories(args.local_directory, debug)
-#    target_naming_scheme = jsontocsv.printfinal(args.local_directory, debug, args.raw, chem_df)
+    createjson.download_experiment_directories(args.local_directory, debug)
+    target_naming_scheme = jsontocsv.printfinal(args.local_directory, debug, args.raw, chem_df)
 
-    target_naming_scheme = 'perovskitesdata_20191209b' # testing 
     if args.verdata is not None:
         export_to_repo.prepareexport(target_naming_scheme, args.state, link, args.verdata)
 
     if args.export_reagents is True:
         modlog.info(f'Exporting {target_naming_scheme}_models.csv and {target_naming_scheme}_objects.csv')
         versioned_df = export_to_repo.prepareexport(target_naming_scheme, args.state, link, args.verdata)
-        reagent_entity.all_unique_ingredients(versioned_df, target_naming_scheme, chem_df)
+        reagent_entity.all_unique_ingredients(versioned_df, target_naming_scheme, chem_df, export_observables=True)
             
     elif args.verdata == 0:
         modlog.info('No versioned data repository format generated')
 
-    else:
-        modlog.error('Unsupported verdata option! Please re-enter the CLI\
-                     request')
+    elif args.verdata == None:
+        modlog.info(f'No versioned data export selected, exiting cleanly, please use the generated {target_naming_scheme}.csv file')
+        print(f'No versioned data export selected, exiting cleanly, please use the generated {target_naming_scheme}.csv file')

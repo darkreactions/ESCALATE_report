@@ -137,28 +137,8 @@ def download_experiment_directories(local_directory, debug):
     """
 
     modlog.info('starting directory parsing')
-    if globals.get_lab() in ['LBL', 'HC']:
-        # todo this should not be hard coded
-        modlog.info('debugging disabled, running on main data directory')
-        remote_directory = '13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
-    elif globals.get_lab() in ['LBL_WF3_Iodides']:
-        modlog.info('debugging disabled, running on LBL_WF2_Iodides data directory')
-        remote_directory = '11CcFTLw7mu4tnnv8QO1opSE7XQiEP32L'
-    elif globals.get_lab() in ['dev']:
-        # todo this also shouldnt be hard coded: put both in a config file
-        modlog.warn('debugging enabled! targeting dev folder')
-        remote_directory = '1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k'
-    elif globals.get_lab() in ['MIT_PVLab']:
-        modlog.info('Pulling from MIT datafolder')
-        remote_directory = '1VNsWClt-ppg8ojUztDYssnSgfoe9XRhi'
 
-    observation_UIDs, exp_volume_UIDs, prep_UIDs, drive_run_dirnames = googleio.get_drive_UIDs(remote_directory)
-
-    # todo: what to do with these log statements? Do we drop this vocabulary
-    # modlog.info('parsing EXPERIMENTAL_OBJECT')
-    # modlog.info('parsing EXPERIMENTAL_MODEL')
-    # modlog.info('parsing REAGENT_MODEL_OBJECT')
-    # modlog.info('building runs in local directory')
+    observation_UIDs, exp_volume_UIDs, prep_UIDs, drive_run_dirnames = googleio.get_drive_UIDs(config.lab_vars[globals.get_lab()]['remote_directory'])
 
     print('Building folders ...')
     for drive_run_dirname in tqdm(drive_run_dirnames):

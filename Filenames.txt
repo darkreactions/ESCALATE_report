@@ -1,0 +1,8 @@
+0047.4-Data-Bromides.csv
+0047.4-Data-Bromides.index.csv
+0047.4-Data-Iodides.csv
+0047.4-Data-Iodides.index.csv
+0047.4-Data-WF3_Alloying.csv
+0047.4-Data-WF3_Alloying.index.csv
+0047.4-Data-WF3_Iodide.csv
+0047.4-Data-WF3_Iodide.index.csv

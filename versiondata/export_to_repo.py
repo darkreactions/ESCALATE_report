@@ -194,7 +194,7 @@ def prepareexport(dataset_name, cli_statespace, link, crank_num):#, stateinchi):
         crank_num = '0'
 
     INDEX_NAME = crank_num
-    TRAININGDATA_NAME = crank_num + ".perovskitedata"
+    TRAININGDATA_NAME = crank_num + f".{dataset_name}"
     STATESET_NAME = crank_num + ".stateset"
     LINK_NAME = crank_num + ".link"
 
@@ -210,8 +210,8 @@ def prepareexport(dataset_name, cli_statespace, link, crank_num):#, stateinchi):
     indexdf, traindf = exporttraining(dataset_filename)
     metdict = metricbuild(traindf) #retrieve dictionary of training data metrics
     if crank_num is not '0':
-        print(f'Exporting data to {crank_num}.{dataset_filename}.csv for version data upload')
-        modlog.info(f'Exporting data to {crank_num}.{dataset_filename}.csv for version data upload')
+        print(f'Exporting data to {crank_num}.{dataset_filename} for version data upload')
+        modlog.info(f'Exporting data to {crank_num}.{dataset_filename} for version data upload')
         writetrain(indexdf, traindf, metdict)
     return traindf
 
