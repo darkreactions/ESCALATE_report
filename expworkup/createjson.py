@@ -32,7 +32,8 @@ def parse_preparation_interface(fname):
     with open(fname, "r") as f:
         exp_dict = json.load(f)
         exp_str = json.dumps(exp_dict, indent=4, sort_keys=True)
-    exp_str = exp_str[:-8]  # todo Ian: why? this needs to be documented
+    f.close()
+    exp_str = exp_str[:-8]  # remove the end of the json structure from the preparation interface dump, makes concatenation later easy
     return exp_str, exp_dict
 
 

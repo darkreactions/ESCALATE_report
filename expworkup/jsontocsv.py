@@ -182,6 +182,7 @@ def augdescriptors(dataset_calcs_fill_df):
     runID_df_big.columns=['RunID_vial']
     dirty_full_df=pd.concat([runID_df_big, dirty_full_df], axis=1)
     dirty_full_df.set_index('RunID_vial', inplace=True)
+    my_descriptors.close()
     return(dirty_full_df)
 
 def printfinal(myjsonfolder, debug_bool_cli, raw_bool_cli, chem_df):
@@ -211,4 +212,5 @@ def printfinal(myjsonfolder, debug_bool_cli, raw_bool_cli, chem_df):
     with open(finaloutcsv_filename, 'w') as outfile:
         cleaned_augmented_raw_df.to_csv(outfile)
         print(f'{finaloutcsv_filename} rendered successfully')
+        outfile.close()
     return(cli_specified_name)
