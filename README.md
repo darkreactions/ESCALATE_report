@@ -81,13 +81,26 @@ To add additional target directories please see the how-to guide [here](https://
    * <`crank-number`>.<`dataset-name`>.csv
    * <`crank-number`>.<`dataset-name`>.index.csv  
 
-5. Move these files to the /pathto/versionedrepo/
+5. Move these files to the `/pathto/versioned-dataset/data/perovskite/<dataset-name>`
+
+6. Follow Readme.md instructions for versioned=datasets
+
+## Include a `state-set` file with Crank
+
+1. Obtain a [`stateset`](https://drive.google.com/open?id=1HrVSv9DN7vJCKNVZ-y4yiwg6vAXxBBw8) or generate a [`stateset`](https://github.com/darkreactions/ESCALATE_Capture)
+
+2. `python runmy.py <dataset-name> -l <workup-target> -v <crank-number> -s <state-set_file_name.csv>`
+
+3. Follow 5-6 above
+
 
 Use Examples
 ======================
 
-1. To run this code for versioned data repo file preparation execute the following 
-    `python runme.py 2019-02-13_TrainingData -v 1 -s EtNH3Istateset.csv` 
+1. Generate the latest copy of a target data folder
+2. Generate versioned repo crank with state set
+   * `python runme.py 2019-02-13_TrainingData -v 1 -s EtNH3Istateset.csv` 
+3.
 
 FAQs, Trouble Shooting, and Tutorials
 ======================
