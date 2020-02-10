@@ -1,7 +1,19 @@
 RELEASE HISTORY
 ===============
+0.83 (2020-02-09)
+------------------------
+  * Fixed windows failures (unicode parsing, and file handling issues)
+  * Updated documentation (incorporated windows install and use cases)
+  * Improved logging
 
-0.8.1 (2018-10-30)
+0.82 (2020-01-17)
+-------------------------
+  * Code cleaning, synchronizing between capture and report devconfig, updates to readability
+  * Implemented reagent_object export (Warning! only tested with wf 1.1 LBL/HC ONLY)
+  * Implemented reagent_object nominals / actuals observables reporting in unique csv files
+  * Expert curated features added as default for LBL
+
+0.8.1 (2019-10-30)
 -------------------------
   * Changed the default header `_rxn_M_*` to target v1 concentrations
   * Shifted deprecated v0 from `_rxn_M_*` to `_raw_v0-M_* 'concentrations'

@@ -18,6 +18,7 @@ from expworkup.devconfig import cwd
 modlog = logging.getLogger('report.googleAPI')
 
 ##Authentication for pydrive, designed globally to minimally generate token (a slow process)
+
 gauth = GoogleAuth()
 GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = "expworkup/creds/client_secrets.json"
 gauth.LoadCredentialsFile("%s/expworkup/creds/mycred.txt" %cwd)
@@ -37,6 +38,10 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name('expworkup/creds/
 gc = gspread.authorize(credentials)
 
 def ChemicalData():
+    '''
+    Uses google api to gather the chemical inventory targeted by labsheet 'chemsheetid' in dev config
+    '''
+
     chemsheetid = lab_vars[globals.get_lab()]['chemsheetid']
     ChemicalBook = gc.open_by_key(chemsheetid)
     chemicalsheet = ChemicalBook.get_worksheet(0)
@@ -46,6 +51,7 @@ def ChemicalData():
     chemdf=chemdf.reset_index(drop=True)
     chemdf=chemdf.set_index(['InChI Key (ID)'])
     modlog.info('Successfully loaded chemical data for processing')
+
     return(chemdf)
 
 
@@ -102,9 +108,11 @@ def save_prep_interface(prep_UID, local_data_dir, run_name):
         tsv_ready_lists = prep_workbook.get_worksheet(1)
         json_in_tsv_list = tsv_ready_lists.get_all_values()
         json_file = local_data_dir + run_name + '_ExpDataEntry.json' # todo this doesnt make sense for MIT
+        modlog.info(f'Parsing TSV to JSON from gdrive. RunID: {json_file}')
         with open(json_file, 'w') as f:
             for i in json_in_tsv_list:
                 print('\t'.join(i), file=f)
+        f.close()
 
 
 def download_run_data(obs_UID, vol_UID, prep_UID, local_data_dir, run_name):

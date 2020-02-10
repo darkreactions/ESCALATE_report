@@ -63,11 +63,14 @@ def nameCleaner(sub_dirty_df, new_prefix):
 
 def cleaner(dirty_df, raw):
     ''' cleans up the name space and the csv output for distribution
+
+    Cleans the file in different ways for post-processing analysis
     '''
     rxn_molarity_clean = nameCleaner(dirty_df.filter(like='_raw_M_'), '_raw_v0-M')
     rxn_v1molarity_clean = nameCleaner(dirty_df.filter(like='_raw_v1-M_'), '_rxn_M')
 
-    if globals.get_lab() == 'LBL' or globals.get_lab() == "HC":
+    if globals.get_lab() in ['LBL', "HC", '4-Data-WF3_Iodide', '4-Data-Bromides', '4-Data-WF3_Alloying']:
+        # TODO: Clean up the headers for associated dataframes, move these functions to devconfig (onboarding a new lab)
         dirty_df.rename(columns={'Unnamed: 2': '_raw_placeholder'}, inplace=True)
         dirty_df.rename(columns={'Bulk Actual Temp (C)': '_rxn_temperatureC_actual_bulk'}, inplace=True)
         dirty_df.rename(columns={'Crystal Score': '_out_crystalscore'}, inplace=True)
@@ -96,17 +99,17 @@ def cleaner(dirty_df, raw):
         squeaky_clean_df = dirty_df
     return(squeaky_clean_df)
 
-def unpackJSON(myjson_fol):
+def unpackJSON(myjson_fol, chem_df):
     """
     most granular data for each row of the final CSV is the well information.
     Each well will need all associated information of chemicals, run, etc.
     Unpack those values first and then copy the generated array to each of the invidual wells
     developed enough now that it should be broken up into smaller pieces!
 
+    #TODO: Break each of these off into tables for database
     :param myjson_fol:
     :return:
     """
-    chem_df=googleio.ChemicalData()  #Grabs relevant chemical data frame from google sheets (only once no matter how many runs)
     concat_df = pd.DataFrame()
     concat_df_raw = pd.DataFrame()
     for file in tqdm(sorted(os.listdir(myjson_fol))):
@@ -148,17 +151,21 @@ def augmentdataset(raw_df):
 
 def augmolarity(concat_df_final):
     ''' Perform exp object molarity calculations (ideal concentrations), grab organic inchi
+    
+    grabs all of the raw mmol data from the column header and creates a column which uniquely 
+    identifies which organic will be needed for the features in the next step
     '''
     concat_df_final.set_index('RunID_vial', inplace=True)
-    #grabs all of the raw mmol data from the column header and creates a column which uniquely identifies which organic will be needed for the features in the next step
     inchi_df = concat_df_final.filter(like='_InChIKey')
+
     #takes all of the volume data from the robot run and reduces it into two total volumes, the total prior to FAH and the total after.  Returns a 3 column array "totalvol and finalvol in title"
     molarity_df=calcmolarity.molarity_calc(concat_df_final, finalvol_entries)
+
     #Sends off the final mmol list to specifically grab the organic inchi key and expose(current version)
     OrganicInchi_df=inchigen.GrabOrganicInchi(inchi_df, molarity_df)
+    
     #Combines the new Organic inchi file and the sum volume with the main dataframe
     dataset_calcs_fill_df=pd.concat([OrganicInchi_df, concat_df_final, molarity_df], axis=1, join_axes=[concat_df_final.index])
-    #Cleans the file in different ways for post-processing analysis
     return(dataset_calcs_fill_df)
 
 def augdescriptors(dataset_calcs_fill_df):
@@ -175,18 +182,35 @@ def augdescriptors(dataset_calcs_fill_df):
     runID_df_big.columns=['RunID_vial']
     dirty_full_df=pd.concat([runID_df_big, dirty_full_df], axis=1)
     dirty_full_df.set_index('RunID_vial', inplace=True)
+    my_descriptors.close()
     return(dirty_full_df)
 
-def printfinal(myjsonfolder, debug,raw):
+def printfinal(myjsonfolder, debug_bool_cli, raw_bool_cli, chem_df):
+    '''Top level pipeline
+
+    :param myjsonfolder: target folder for run and the generated data
+    :param debug_bool_cli: debug setting (boolean) activated if run is set to target 'dev' lab
+    :param raw_bool_cli: list of cli arguments 
+
+    :return: final csv file name from dataset generation
+    '''
+    finaloutcsv_filename = myjsonfolder+'.csv'
+    cli_specified_name = myjsonfolder
+
     modlog.info('%s loaded with JSONs for parsing, starting' %myjsonfolder)
-    raw_df=unpackJSON(myjsonfolder)
-    print('Renaming headers ... almost done')
-    modlog.info('augmenting parsed JSONs with chemical calculations (concentrations)')
+    raw_df=unpackJSON(myjsonfolder, chem_df)
+    modlog.info('augmented dataframe with chemical calculations (concentrations)')
+
     augmented_raw_df = augmentdataset(raw_df)
-    modlog.info('appending features and curating dataset')
-    cleaned_augmented_raw_df= cleaner(augmented_raw_df, raw)
-    finaloutcsv_name = myjsonfolder+'.csv'
-    with open(finaloutcsv_name, 'w') as outfile:
-        print('2d dataframe rendered successfully')
+    modlog.info(f'Appending physicochemical features to {finaloutcsv_filename} dataframe')
+    print(f'Appending physicochemical features to {finaloutcsv_filename} dataframe')
+
+    cleaned_augmented_raw_df= cleaner(augmented_raw_df, raw_bool_cli)
+    modlog.info(f'Renaming dataframe headers')
+    print('Renaming dataframe headers')
+
+    with open(finaloutcsv_filename, 'w') as outfile:
         cleaned_augmented_raw_df.to_csv(outfile)
-    return(finaloutcsv_name)
+        print(f'{finaloutcsv_filename} rendered successfully')
+        outfile.close()
+    return(cli_specified_name)

@@ -32,7 +32,8 @@ def parse_preparation_interface(fname):
     with open(fname, "r") as f:
         exp_dict = json.load(f)
         exp_str = json.dumps(exp_dict, indent=4, sort_keys=True)
-    exp_str = exp_str[:-8]  # todo Ian: why? this needs to be documented
+    f.close()
+    exp_str = exp_str[:-8]  # remove the end of the json structure from the preparation interface dump, makes concatenation later easy
     return exp_str, exp_dict
 
 
@@ -137,25 +138,8 @@ def download_experiment_directories(local_directory, debug):
     """
 
     modlog.info('starting directory parsing')
-    if globals.get_lab() in ['LBL', 'HC']:
-        # todo this should not be hard coded
-        modlog.info('debugging disabled, running on main data directory')
-        remote_directory = '13xmOpwh-uCiSeJn8pSktzMlr7BaPDo7B'
-    elif globals.get_lab() in ['dev']:
-        # todo this also shouldnt be hard coded: put both in a config file
-        modlog.warn('debugging enabled! targeting dev folder')
-        remote_directory = '1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k'
-    elif globals.get_lab() in ['MIT_PVLab']:
-        modlog.info('Pulling from MIT datafolder')
-        remote_directory = '1VNsWClt-ppg8ojUztDYssnSgfoe9XRhi'
 
-    observation_UIDs, exp_volume_UIDs, prep_UIDs, drive_run_dirnames = googleio.get_drive_UIDs(remote_directory)
-
-    # todo: what to do with these log statements? Do we drop this vocabulary
-    # modlog.info('parsing EXPERIMENTAL_OBJECT')
-    # modlog.info('parsing EXPERIMENTAL_MODEL')
-    # modlog.info('parsing REAGENT_MODEL_OBJECT')
-    # modlog.info('building runs in local directory')
+    observation_UIDs, exp_volume_UIDs, prep_UIDs, drive_run_dirnames = googleio.get_drive_UIDs(config.lab_vars[globals.get_lab()]['remote_directory'])
 
     print('Building folders ...')
     for drive_run_dirname in tqdm(drive_run_dirnames):
@@ -188,9 +172,11 @@ def download_experiment_directories(local_directory, debug):
                                            workdir,
                                            drive_run_dirname)
             except APIError as e:
-
-                if not e.response.reason == 'Too Many Requests':
+                if not e.response.reason == 'Too Many Requests' or e.response.message == "The service is currently unavailable.":
                     raise e
+
+                if e.response.message == "The service is currently unavailable.":
+                    sleep_timer = 15
 
                 modlog.info(sys.exc_info())
                 modlog.info('During download of {} sever request limit was met at {} seconds'.format(run_json_filename, sleep_timer))
@@ -199,6 +185,7 @@ def download_experiment_directories(local_directory, debug):
                 if sleep_timer > 60:
                     sleep_timer = 60
                     print("Something might be wrong.. if this message displays more than once kill job and try re-running")
+                    modlog.info("Something might be wrong.. if this message displays more than once kill job and try re-running")
                 modlog.info('New sleep timer {}'.format(sleep_timer))
 
             else:
@@ -206,6 +193,7 @@ def download_experiment_directories(local_directory, debug):
                 outfile.close()
             finally:
                 if os.path.exists(run_json_filename) and os.stat(run_json_filename).st_size == 0:
+                    outfile.close()
                     os.remove(run_json_filename)
 
     print('%s associated local files created' % globals.get_lab())
