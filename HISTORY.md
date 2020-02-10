@@ -1,5 +1,10 @@
 RELEASE HISTORY
 ===============
+0.83 (2020-02-09)
+------------------------
+  * Fixed windows failures (unicode parsing, and file handling issues)
+  * Updated documentation (incorporated windows install and use cases)
+  * Improved logging
 
 0.82 (2020-01-17)
 -------------------------

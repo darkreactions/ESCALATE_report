@@ -108,9 +108,11 @@ def save_prep_interface(prep_UID, local_data_dir, run_name):
         tsv_ready_lists = prep_workbook.get_worksheet(1)
         json_in_tsv_list = tsv_ready_lists.get_all_values()
         json_file = local_data_dir + run_name + '_ExpDataEntry.json' # todo this doesnt make sense for MIT
+        modlog.info(f'Parsing TSV to JSON from gdrive. RunID: {json_file}')
         with open(json_file, 'w') as f:
             for i in json_in_tsv_list:
                 print('\t'.join(i), file=f)
+        f.close()
 
 
 def download_run_data(obs_UID, vol_UID, prep_UID, local_data_dir, run_name):

@@ -172,9 +172,11 @@ def download_experiment_directories(local_directory, debug):
                                            workdir,
                                            drive_run_dirname)
             except APIError as e:
-
-                if not e.response.reason == 'Too Many Requests':
+                if not e.response.reason == 'Too Many Requests' or e.response.message == "The service is currently unavailable.":
                     raise e
+
+                if e.response.message == "The service is currently unavailable.":
+                    sleep_timer = 15
 
                 modlog.info(sys.exc_info())
                 modlog.info('During download of {} sever request limit was met at {} seconds'.format(run_json_filename, sleep_timer))
@@ -183,6 +185,7 @@ def download_experiment_directories(local_directory, debug):
                 if sleep_timer > 60:
                     sleep_timer = 60
                     print("Something might be wrong.. if this message displays more than once kill job and try re-running")
+                    modlog.info("Something might be wrong.. if this message displays more than once kill job and try re-running")
                 modlog.info('New sleep timer {}'.format(sleep_timer))
 
             else:
@@ -190,6 +193,7 @@ def download_experiment_directories(local_directory, debug):
                 outfile.close()
             finally:
                 if os.path.exists(run_json_filename) and os.stat(run_json_filename).st_size == 0:
+                    outfile.close()
                     os.remove(run_json_filename)
 
     print('%s associated local files created' % globals.get_lab())
