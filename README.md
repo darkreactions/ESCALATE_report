@@ -72,7 +72,7 @@ To add additional target directories please see the how-to guide [here](https://
 ## Report to Versioned Data to ESCALATion
 **If you are using Windows10 please follow [these instructions](https://github.com/darkreactions/ESCALATE_Capture/wiki/User:-Configuring-Windows-Environment) on what you will need to setup your environment. Consider using Ubuntu or wsl instead!**
 
-1. Ensure that [versioned data repo]() and [escalation]() are installed
+1. Ensure that [versioned data repo](https://gitlab.sd2e.org/sd2program/versioned-datasets) and [escalation](http://escalation.sd2e.org/) are installed
 
 2. Create an issue on [versioned repo with new `crank-number`]()
 
