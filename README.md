@@ -2,7 +2,7 @@
 
 **Science Contact:** ipendleton .at. haverford.edu
 
-**Technical Debugging:** mtynes .at. fordham.edu
+**Technical Debugging:** ipendleton .at. haverford.edu
 
 ## [FAQs](https://github.com/darkreactions/ESCALATE_Capture/wiki/Users:-FAQs)
 
