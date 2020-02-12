@@ -74,7 +74,7 @@ To add additional target directories please see the how-to guide [here](https://
 
 1. Ensure that [versioned data repo](https://gitlab.sd2e.org/sd2program/versioned-datasets) and [escalation](http://escalation.sd2e.org/) are installed
 
-2. Create an issue on [versioned repo with new `crank-number`]()
+2. Create an issue on [versioned repo with new `crank-number`](https://gitlab.sd2e.org/sd2program/versioned-datasets/issues)
 
 3. `python runmy.py <dataset-name> -l <workup-target> -v <crank-number>`
 
