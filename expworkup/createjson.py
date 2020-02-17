@@ -7,11 +7,11 @@ import numpy as np
 import logging
 import json
 from pathlib import Path
-from gspread.exceptions import APIError
 
 from tqdm import tqdm
 
 import expworkup.devconfig as config
+from gspread.exceptions import APIError
 from expworkup import googleio
 from validation import validation
 from utils import globals
@@ -19,7 +19,7 @@ from utils.file_handling import get_interface_filename, get_experimental_run_lab
 
 # todo put in config
 ## Set the workflow of the code used to generate the experimental data and to process the data
-WorkupVersion = 1.0
+WorkupVersion = 1.1
 modlog = logging.getLogger('report.CreateJSON')
 
 
@@ -128,50 +128,44 @@ def parse_run_to_json(outfile, local_data_directory, run_name):
     print('}', file=outfile)
 
 
-def download_experiment_directories(local_directory, debug):
+def download_experiment_directories(target_directory, debug):
     """Gets all of the relevant folder titles from the experimental directory
     Cross references with the working directory of the final Json files send the list of jobs needing processing
 
-    :param local_directory: The local directory to which to download data. From CLI.
+    :param target_directory: The local directory in which the curated json files will be stored. From CLI.
     :param debug: 1 if debug mode, else 0. From CLI.
     :return:
     """
+    save_directory = f'{target_directory}/gdrive_files'  # Local storage for gdrive files
+    modlog.info('ensuring directories')
+    if not os.path.exists(target_directory):
+        os.mkdir(target_directory)
+    if not os.path.exists(save_directory):
+        os.mkdir(save_directory)
+    
+    #observation_UIDs, exp_volume_UIDs, prep_UIDs, 
+    #googleio.gdrive_pipeline(config.lab_vars[globals.get_lab()]['remote_directory'])
 
-    modlog.info('starting directory parsing')
+    exp_dict = googleio.parse_gdrive_folder(config.lab_vars[globals.get_lab()]['remote_directory'], save_directory)
 
-    observation_UIDs, exp_volume_UIDs, prep_UIDs, drive_run_dirnames = googleio.get_drive_UIDs(config.lab_vars[globals.get_lab()]['remote_directory'])
-
-    print('Building folders ...')
-    for drive_run_dirname in tqdm(drive_run_dirnames):
-        sleep_timer = 1
-        run_json_filename = Path(local_directory + "/{}.json".format(drive_run_dirname))
-
-        if os.path.exists(run_json_filename):
+    modlog.info('Starting Download and Directory Parsing')
+    print('Starting Download and Directory Parsing...')
+    for exp_name, exp_files in tqdm(exp_dict.items()):
+        run_json_filename = Path(target_directory + "/{}.json".format(exp_name))
+        if os.path.isfile(run_json_filename):
             if os.stat(run_json_filename).st_size == 0:
                 os.remove(run_json_filename)
-                modlog.info('{} was empty and was removed'.format(run_json_filename))
-            else:
-                continue
-
-        while not os.path.exists(run_json_filename):
-
-            time.sleep(sleep_timer)
-            outfile = open(run_json_filename, 'w')
-            workdir = 'data/datafiles/'  # todo ian whats up with this?
-            modlog.info('{} Created'.format(drive_run_dirname))
-            # todo somehow I dont think having all of is info in separate dicts makes sense...
-            # there should be a better way to pass all of this data around
-            """
-            Something like: 
-            UIDs = {'run_name': {'crys': str, 'robo': str, 'exp': str}}
-                """
+                modlog.info('{} was empty and was removed'.format(json))
+        while not os.path.isfile(run_json_filename):
+            sleep_timer = 2
             try:
-                googleio.download_run_data(observation_UIDs[drive_run_dirname],
-                                           exp_volume_UIDs[drive_run_dirname],
-                                           prep_UIDs[drive_run_dirname],
-                                           workdir,
-                                           drive_run_dirname)
+                googleio.gdrive_download(save_directory, exp_name, exp_files)
+                outfile = open(run_json_filename, 'w')
+                parse_run_to_json(outfile, save_directory, exp_name)
+                outfile.close()
             except APIError as e:
+                print(e)
+                print(e.response.reason)
                 if not e.response.reason == 'Too Many Requests' or e.response.message == "The service is currently unavailable.":
                     raise e
 
@@ -187,13 +181,8 @@ def download_experiment_directories(local_directory, debug):
                     print("Something might be wrong.. if this message displays more than once kill job and try re-running")
                     modlog.info("Something might be wrong.. if this message displays more than once kill job and try re-running")
                 modlog.info('New sleep timer {}'.format(sleep_timer))
-
-            else:
-                parse_run_to_json(outfile, workdir, drive_run_dirname)
-                outfile.close()
-            finally:
-                if os.path.exists(run_json_filename) and os.stat(run_json_filename).st_size == 0:
-                    outfile.close()
-                    os.remove(run_json_filename)
-
+            time.sleep(sleep_timer)
     print('%s associated local files created' % globals.get_lab())
+    return exp_dict
+
+

@@ -112,23 +112,28 @@ def unpackJSON(myjson_fol, chem_df):
     """
     concat_df = pd.DataFrame()
     concat_df_raw = pd.DataFrame()
-    for file in tqdm(sorted(os.listdir(myjson_fol))):
-        if file.endswith(".json"):
-            modlog.info('Unpacking %s' %file)
-            concat_df=pd.DataFrame()  
-            #appends each run to the original dataframe
-            myjson=(os.path.join(myjson_fol, file))
-            workflow1_json = json.load(open(myjson, 'r'))
-            #gathers all information from raw data in the JSON file
-            tray_df=parser.reagentparser(workflow1_json, myjson, chem_df) #generates the tray level dataframe for all wells including some calculated features
-            concat_df=pd.concat([concat_df,tray_df], ignore_index=True, sort=True)
-            #generates a well level unique ID and aligns
-            runID_df=pd.DataFrame(data=[concat_df['_raw_jobserial'] + '_' + concat_df['_raw_vialsite']]).transpose()
-            runID_df.columns=['RunID_vial']
-            #Gets the mmol of each CHEMICAL and returns them summed and uniquely indexed
-            mmol_df=calcmmol.mmol_breakoff(tray_df, runID_df)
-            #combines all operations into a final dataframe for the entire tray level view with all information
-            concat_df=pd.concat([mmol_df, concat_df, runID_df], sort=True, axis=1)
+
+    json_list = []
+    for my_exp_json in sorted(os.listdir(myjson_fol)):
+        if my_exp_json.endswith(".json"):
+            json_list.append(my_exp_json)
+    print('Unpacking JSON Files...')
+    for my_exp_json in tqdm(json_list):
+        modlog.info('Unpacking %s' %my_exp_json)
+        concat_df=pd.DataFrame()  
+        #appends each run to the original dataframe
+        myjson=(os.path.join(myjson_fol, my_exp_json))
+        workflow1_json = json.load(open(myjson, 'r'))
+        #gathers all information from raw data in the JSON file
+        tray_df=parser.reagentparser(workflow1_json, myjson, chem_df) #generates the tray level dataframe for all wells including some calculated features
+        concat_df=pd.concat([concat_df,tray_df], ignore_index=True, sort=True)
+        #generates a well level unique ID and aligns
+        runID_df=pd.DataFrame(data=[concat_df['_raw_jobserial'] + '_' + concat_df['_raw_vialsite']]).transpose()
+        runID_df.columns=['RunID_vial']
+        #Gets the mmol of each CHEMICAL and returns them summed and uniquely indexed
+        mmol_df=calcmmol.mmol_breakoff(tray_df, runID_df)
+        #combines all operations into a final dataframe for the entire tray level view with all information
+        concat_df=pd.concat([mmol_df, concat_df, runID_df], sort=True, axis=1)
         #Combines the most recent dataframe with the final dataframe which is targeted for export
         concat_df_raw = pd.concat([concat_df_raw,concat_df], sort=True)
     print('JSON to CSV conversion complete!')

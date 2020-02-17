@@ -20,11 +20,6 @@ def initialize(args):
 
     '''
     modlog = logging.getLogger('report.initialize')
-    modlog.info('ensuring directories')
-    if not os.path.exists('data/datafiles'):
-        os.mkdir('data/datafiles')
-    if not os.path.exists(args.local_directory):
-        os.mkdir(args.local_directory)
     modlog.info(args)
     modlog.info('directory exist')
 
@@ -91,7 +86,7 @@ if __name__ == "__main__":
 #    chem_df = pd.read_csv('chemdf.csv')                # 2) Uncomment
 #    target_naming_scheme = 'perovskitesdata_20191209b' # 2) Uncomment and update to the generated dataset
 
-    createjson.download_experiment_directories(args.local_directory, debug)
+    exp_dict = createjson.download_experiment_directories(args.local_directory, debug)
     target_naming_scheme = jsontocsv.printfinal(args.local_directory, debug, args.raw, chem_df)
 
     if args.verdata is not None:
@@ -108,3 +103,4 @@ if __name__ == "__main__":
     elif args.verdata == None:
         modlog.info(f'No versioned data export selected, exiting cleanly, please use the generated {target_naming_scheme}.csv file')
         print(f'No versioned data export selected, exiting cleanly, please use the generated {target_naming_scheme}.csv file')
+    os.remove('./mycred.txt')
