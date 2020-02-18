@@ -19,8 +19,7 @@ from expworkup.devconfig import cwd
 modlog = logging.getLogger('report.googleAPI')
 
 ##Authentication for pydrive, designed globally to minimally generate token (a slow process)
-
-gauth = GoogleAuth()
+gauth = GoogleAuth(settings_file='settings.yaml')
 GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = "./client_secrets.json"
 gauth.LoadCredentialsFile("./mycred.txt")
 if gauth.credentials is None:

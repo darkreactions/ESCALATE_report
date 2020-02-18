@@ -157,32 +157,20 @@ def download_experiment_directories(target_directory, debug):
                 os.remove(run_json_filename)
                 modlog.info('{} was empty and was removed'.format(json))
         while not os.path.isfile(run_json_filename):
-            sleep_timer = 2
+            sleep_timer = 0
             try:
                 googleio.gdrive_download(save_directory, exp_name, exp_files)
                 outfile = open(run_json_filename, 'w')
                 parse_run_to_json(outfile, save_directory, exp_name)
                 outfile.close()
             except APIError as e:
-                print(e)
-                print(e.response.reason)
-                if not e.response.reason == 'Too Many Requests' or e.response.message == "The service is currently unavailable.":
-                    raise e
-
-                if e.response.message == "The service is currently unavailable.":
-                    sleep_timer = 15
-
+                modlog.info(e.response)
                 modlog.info(sys.exc_info())
                 modlog.info('During download of {} sever request limit was met at {} seconds'.format(run_json_filename, sleep_timer))
-                sleep_timer = sleep_timer*2
+                sleep_timer = 15.0
 
-                if sleep_timer > 60:
-                    sleep_timer = 60
-                    print("Something might be wrong.. if this message displays more than once kill job and try re-running")
-                    modlog.info("Something might be wrong.. if this message displays more than once kill job and try re-running")
-                modlog.info('New sleep timer {}'.format(sleep_timer))
+            modlog.info('New sleep timer {}'.format(sleep_timer))
             time.sleep(sleep_timer)
-    print('%s associated local files created' % globals.get_lab())
     return exp_dict
 
 
