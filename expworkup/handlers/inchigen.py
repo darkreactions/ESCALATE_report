@@ -47,9 +47,9 @@ def GrabOrganicInchi(inchi_df, molaritydf):
 #                totalmolarity_organic = (sum(molarityorganicdf.loc[row_label].values.tolist()))
                 totalmolarity_organic = (molarityorganicdf.loc[row_label].sum()) # something fishy happens where these drop to pandas series (often a bug)
                 if isinstance(totalmolarity_organic, pd.core.series.Series):
-#                    print('total molarity organic', totalmolarity_organic)
-#                    print('the df', molarityorganicdf)
-#                    print('row_label', row_label)#(possibly useful for debugging))
+                    print('total molarity organic', totalmolarity_organic)
+                    print('the df', molarityorganicdf)
+                    print('row_label', row_label)#(possibly useful for debugging))
                     modlog.error(f'{row_label} or {lastrows} are likely corrupt, if this is unexpected try deleting this JSON and starting again')
                     modlog.error(f"Rendered JSON files in selected folder are somehow corrupt. \
                          Please delete folder and start again if you are unable to diagnose the problem")

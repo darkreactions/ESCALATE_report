@@ -1,5 +1,11 @@
 RELEASE HISTORY
 ===============
+0.84 (2020-02-17)
+------------------------
+  * Streamline workflow for gdrive and gspread authentication, less errors
+  * Deep testing with windowsOS for report functionality
+  * Updated creds handling
+
 0.83 (2020-02-09)
 ------------------------
   * Fixed windows failures (unicode parsing, and file handling issues)

@@ -41,7 +41,7 @@ Installation
    
 5. Download the securekey files and move them into the expworkup/creds/ folder. Do not distribute these keys!
 
-6. Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the 'expworkup/creds/' folder
+6. Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the main directory (directly in ESCALATE_report)
 
 ## Windows
 
@@ -106,7 +106,7 @@ Use Examples
 FAQs, Trouble Shooting, and Tutorials
 ======================
 1. [FAQs](https://github.com/darkreactions/ESCALATE_Capture/wiki/Users:-FAQs)
-2. Trouble Shooting
+2. Trouble Shooting Help: please send log file, any terminal output and a brief explanation to ipendlet .at. haverford.edu for help. 
 3. Tutorials
    1. [Adding a new target for data workup](https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:-Adding-New-Labs-to-devconfig.py)
    2. [Adding a new target for experiment generation]()
