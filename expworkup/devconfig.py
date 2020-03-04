@@ -7,7 +7,7 @@ cwd = os.getcwd()
 
 #######################################
 # version control
-RoboVersion = 2.57
+RoboVersion = 2.58
 ReportVersion = 0.83 
 
 #######################################
@@ -177,6 +177,16 @@ lab_vars = {
 }
 
 #######################################
+# ESCALATE_report settings
+
+valid_input_files = {
+    'preparation_interface': ['ExpDataEntry.json'],  # reagent prep
+    'experiment_specification': ['ExperimentSpecification.xls', 'RobotInput.xls'],  # volume file
+    'observation_interface': ['observation_interface.csv', 'CrystalScoring.csv'],  # results
+    'specification_interface': ['Template', 'SpecificationInterface']  # user input file
+}
+
+#######################################
 # Wolfram Kernel Management
 
 wolfram_kernel_path = None # ensure the value can be imported on all computers.
@@ -210,17 +220,7 @@ else:
 # Sampler Selection
 
 
-# 'wolfram' is currently experimental and unsupported
-# must be 'default' or 'wolfram'
-sampler = 'wolfram'
-
+# 'wolfram' is default, if wolfram fails, fall back to default using this toggle
+sampler = 'wolfram' # must be 'default' or 'wolfram'
 
 ######################################
-# ESCALATE_report settings
-
-valid_input_files = {
-    'preparation_interface': ['ExpDataEntry.json'],  # reagent prep
-    'experiment_specification': ['ExperimentSpecification.xls', 'RobotInput.xls'],  # volume file
-    'observation_interface': ['observation_interface.csv', 'CrystalScoring.csv'],  # results
-    'specification_interface': ['Template', 'SpecificationInterface']  # user input file
-}
