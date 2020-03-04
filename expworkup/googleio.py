@@ -18,30 +18,40 @@ from expworkup.devconfig import cwd
 
 modlog = logging.getLogger('report.googleAPI')
 
-##Authentication for pydrive, designed globally to minimally generate token (a slow process)
-gauth = GoogleAuth(settings_file='settings.yaml')
-GoogleAuth.DEFAULT_SETTINGS['client_config_file'] = "./client_secrets.json"
-gauth.LoadCredentialsFile("./mycred.txt")
-if gauth.credentials is None:
-    gauth.LocalWebserverAuth() #Creates local webserver and auto handles authentication.
-elif gauth.access_token_expired:
-    gauth.LocalWebserverAuth() #Creates local webserver and auto handles authentication.
-else:
-    gauth.Authorize() #Just run because everything is loaded properly
-gauth.SaveCredentialsFile("./mycred.txt")
-drive = GoogleDrive(gauth)
+def get_gdrive_auth():
+    gauth = GoogleAuth(settings_file='settings.yaml')
+
+    google_cred_file = "./mycred.txt"
+    if not os.path.exists(google_cred_file):
+        open(google_cred_file, 'w+').close()
+
+    gauth.LoadCredentialsFile(google_cred_file)
+    if gauth.credentials is None or gauth.access_token_expired:
+        gauth.LocalWebserverAuth()  # Creates local webserver and auto handles authentication.
+    else:
+        gauth.Authorize()  # Just run because everything is loaded properly
+    gauth.SaveCredentialsFile(google_cred_file)
+    drive = GoogleDrive(gauth)
+    return(drive)
 
 ### General Setup Information ###
 ##GSpread Authorization information
-scope = ['https://www.googleapis.com/auth/spreadsheets.readonly']
-credentials = ServiceAccountCredentials.from_json_keyfile_name('./creds.json', scope) 
-gc = gspread.authorize(credentials)
+def get_gdrive_client():
+    '''
+    returns instance of gspread client based on credentials in creds.json file
+    different scope than googlio.py in ESCALATE_Capture
+    '''
+    scope = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+    #scope = ['https://spreadsheets.google.com/feeds']
+    credentials = ServiceAccountCredentials.from_json_keyfile_name('creds.json', scope)
+    gc = gspread.authorize(credentials)
+    return gc
 
 def ChemicalData():
     '''
     Uses google api to gather the chemical inventory targeted by labsheet 'chemsheetid' in dev config
     '''
-
+    gc = get_gdrive_client()
     chemsheetid = lab_vars[globals.get_lab()]['chemsheetid']
     ChemicalBook = gc.open_by_key(chemsheetid)
     chemicalsheet = ChemicalBook.get_worksheet(0)
@@ -59,12 +69,13 @@ def save_prep_interface(prep_UID, local_data_dir, run_name):
 
     I'm not really sure what goes on with the ECL data, and the other case is Ian's JSON sheet logic
     """
+    drive = get_gdrive_auth()
     if 'ECL' in run_name:
         #TODO: Local Copy of JSON logic for testing / comparison
         prep_file = drive.CreateFile({'id': prep_UID})
         prep_file.GetContentFile(os.path.join(local_data_dir, prep_file['title']))
     else:
-
+        gc = get_gdrive_client()
         prep_workbook = gc.open_by_key(prep_UID)
         tsv_ready_lists = prep_workbook.get_worksheet(1)
         json_in_tsv_list = tsv_ready_lists.get_all_values()
@@ -81,8 +92,9 @@ def parse_gdrive_folder(remote_directory, local_directory):
     :param remote_directory: UID of the Gdrive directory containing ESCALATE runs to process.
     :return: 
     '''
-    data_directories = {}
+    drive = get_gdrive_auth()
 
+    data_directories = {}
     print('Retrieving Directory Structure...')
     remote_directory_children = drive.ListFile({'q': "'%s' in parents and trashed=false" % remote_directory}).GetList()
     for child in tqdm(remote_directory_children):
@@ -95,6 +107,7 @@ def parse_gdrive_folder(remote_directory, local_directory):
     return data_directories
 
 def gdrive_download(local_directory, child, grandchildren):
+    drive = get_gdrive_auth()
     modlog.info(f"Starting on {child} files, saving to {local_directory}")
     for grandchild in grandchildren:
         #TODO: generalize this
