@@ -11,7 +11,7 @@ modlog = logging.getLogger('report.parser')
 #parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information
 # TODO: report these from dictionary and generalize
 
-def dict_listoflists(list_lists, run_lab):
+def dict_listoflists(list_lists):
     values = []
     for item in list_lists:
         value = item[1]
@@ -278,7 +278,7 @@ def reagentparser(firstlevel, myjson, chem_df):
             run_df=flatten_json(reg_value)
 
         if reg_key == 'tray_environment':
-            tray_df=dict_listoflists(reg_value, run_lab)
+            tray_df=dict_listoflists(reg_value)
 #        if reg_key == 'robot_reagent_handling':
 #            robo_df=robo_handling(reg_value)
 

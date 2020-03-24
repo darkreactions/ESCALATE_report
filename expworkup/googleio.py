@@ -52,7 +52,7 @@ def ChemicalData():
     Uses google api to gather the chemical inventory targeted by labsheet 'chemsheetid' in dev config
     '''
     gc = get_gdrive_client()
-    chemsheetid = lab_vars[globals.get_lab()]['chemsheetid']
+    chemsheetid = lab_safeget(config.lab_vars, globals.get_lab(), 'chemsheetid')
     ChemicalBook = gc.open_by_key(chemsheetid)
     chemicalsheet = ChemicalBook.get_worksheet(0)
     chemical_list = chemicalsheet.get_all_values()

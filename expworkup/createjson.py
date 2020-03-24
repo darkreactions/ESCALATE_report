@@ -16,6 +16,7 @@ from expworkup import googleio
 from validation import validation
 from utils import globals
 from utils.file_handling import get_interface_filename, get_experimental_run_lab
+from utils.globals import lab_safeget
 
 # todo put in config
 ## Set the workflow of the code used to generate the experimental data and to process the data
@@ -47,7 +48,8 @@ def parse_exp_volumes(fname, experiment_lab):
     robot_dict = pd.read_excel(open(fname, 'rb'), header=[0], sheet_name=0)
     reagentlist = []
     for header in robot_dict.columns:
-        if config.lab_vars[experiment_lab]['reagent_alias'] in header and "ul" in header:
+        reagent_alias_name = lab_safeget(config.lab_vars, globals.get_lab(), 'reagent_alias')
+        if reagent_alias_name in header and "ul" in header:
             reagentlist.append(header)
     rnum = len(reagentlist)
 
@@ -143,10 +145,8 @@ def download_experiment_directories(target_directory, debug):
     if not os.path.exists(save_directory):
         os.mkdir(save_directory)
     
-    #observation_UIDs, exp_volume_UIDs, prep_UIDs, 
-    #googleio.gdrive_pipeline(config.lab_vars[globals.get_lab()]['remote_directory'])
-
-    exp_dict = googleio.parse_gdrive_folder(config.lab_vars[globals.get_lab()]['remote_directory'], save_directory)
+    target_data_folder = lab_safeget(config.lab_vars, globals.get_lab(), 'target_data_folder')
+    exp_dict = googleio.parse_gdrive_folder(target_data_folder, save_directory)
 
     modlog.info('Starting Download and Directory Parsing')
     print('Starting Download and Directory Parsing...')

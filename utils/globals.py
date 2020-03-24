@@ -34,3 +34,22 @@ def get_lab():
         sys.exit(1)
     return _LAB
 
+def lab_safeget(dct, lab_key, key_1):
+    '''
+    used for retrieving either the default values or lab specific if specified
+    from devconfig/lab_vars dictionary
+    
+    :param dct: lab_vars dictionary (includes default as well, from devconfig)
+    :keys: key entries that are associted with the query (i.e. chemsheetid)
+
+    :return either specified dictionary, or default lab dictionary if key error
+    '''
+    keys=[lab_key, key_1]
+    for key in keys:
+        sub_dct = dct
+        try:
+            sub_dct = sub_dct[key]
+        except KeyError:
+            dct = dct['default'][key_1]
+            return dct
+    return sub_dct
