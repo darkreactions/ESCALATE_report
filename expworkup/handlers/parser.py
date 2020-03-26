@@ -3,25 +3,41 @@ import logging
 from utils import globals
 
 from expworkup.entity_tables.reagent_entity import ReagentObject
-from utils.file_handling import get_experimental_run_lab
 
 modlog = logging.getLogger('report.parser')
 
 #Overview
 #parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information
 # TODO: report these from dictionary and generalize
+def dict_listoflists(tray_environment_lists):
+    """
+    parses the tray ennvironment list (See example)
 
-def dict_listoflists(list_lists):
+    Parameters
+    -----------
+
+    tray_environment_lists : list from the csv parser, describes the actions of a run
+    [["Spincoating Temperature ( C )", 85.0], 
+    ["Spincoating Speed (rpm):", 750.0], 
+    ["Spincoating Duration (s)", 900.0], 
+    ["Spincoating Duration 2 (s)", 1200.0], 
+    ["Annealing Temperature ( C )", 105.0], 
+    ["Annealing Duration (s)", 21600.0], 
+    ["Test Action 1", 1000.0]]
+
+    Returns
+    --------
+    tray_df : dataframe of the tray list
+    """
     values = []
-    for item in list_lists:
+    for item in tray_environment_lists:
         value = item[1]
         values.append(value)
     tray_df = pd.DataFrame(values).transpose()
 
     # parses actions from robot files without having to specify things individually.  
     # Headers are named the same as the string of the action description (action name)
-    tray_df.columns = [f"_rxn_{item[0].replace(' ','').replace('(','_').replace(')', '').replace(':','')}" for item in list_lists]
-
+    tray_df.columns = [f"_rxn_{item[0].replace(' ','').replace('(','_').replace(')', '').replace(':','')}" for item in tray_environment_lists]
     # todo: handle custom parameters
     return(tray_df)
 
@@ -264,8 +280,9 @@ def reag_info(reagentdf,chemdf):
     return(reagentlist_df)
 
 def reagentparser(firstlevel, myjson, chem_df):
+    """
 
-    run_lab = get_experimental_run_lab(myjson)
+    """
     for reg_key,reg_value in firstlevel.items():
         modlog.info('Parsing %s to csv' %myjson)
 

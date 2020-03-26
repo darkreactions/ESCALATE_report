@@ -15,6 +15,7 @@ from expworkup.handlers import parser
 from expworkup.handlers import calcmmol
 from expworkup.handlers import calcmolarity
 from expworkup.handlers import inchigen
+from utils.file_handling import get_experimental_run_lab
 from utils import globals
 
 
@@ -99,7 +100,7 @@ def cleaner(dirty_df, raw):
         squeaky_clean_df = dirty_df
     return(squeaky_clean_df)
 
-def unpackJSON(myjson_fol, chem_df):
+def unpackJSON(myjson_fol, chemdf_dict):
     """
     most granular data for each row of the final CSV is the well information.
     Each well will need all associated information of chemicals, run, etc.
@@ -125,6 +126,7 @@ def unpackJSON(myjson_fol, chem_df):
         myjson=(os.path.join(myjson_fol, my_exp_json))
         workflow1_json = json.load(open(myjson, 'r'))
         #gathers all information from raw data in the JSON file
+        chem_df = chemdf_dict[get_experimental_run_lab(my_exp_json)]
         tray_df=parser.reagentparser(workflow1_json, myjson, chem_df) #generates the tray level dataframe for all wells including some calculated features
         concat_df=pd.concat([concat_df,tray_df], ignore_index=True, sort=True)
         #generates a well level unique ID and aligns
@@ -190,20 +192,22 @@ def augdescriptors(dataset_calcs_fill_df):
     my_descriptors.close()
     return(dirty_full_df)
 
-def printfinal(myjsonfolder, debug_bool_cli, raw_bool_cli, chem_df):
-    '''Top level pipeline
+def printfinal(myjsonfolder, raw_bool_cli, chemdf_dict):
+    '''Top level json parser pipeline
 
     :param myjsonfolder: target folder for run and the generated data
-    :param debug_bool_cli: debug setting (boolean) activated if run is set to target 'dev' lab
     :param raw_bool_cli: list of cli arguments 
 
-    :return: final csv file name from dataset generation
+    Returns
+    ---------
+    cli_specified_name : final csv file name from dataset generation
+
     '''
     finaloutcsv_filename = myjsonfolder+'.csv'
     cli_specified_name = myjsonfolder
 
     modlog.info('%s loaded with JSONs for parsing, starting' %myjsonfolder)
-    raw_df=unpackJSON(myjsonfolder, chem_df)
+    raw_df=unpackJSON(myjsonfolder, chemdf_dict)
     modlog.info('augmented dataframe with chemical calculations (concentrations)')
 
     augmented_raw_df = augmentdataset(raw_df)

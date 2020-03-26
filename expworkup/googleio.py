@@ -12,6 +12,7 @@ from pydrive.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
 from tqdm import tqdm
 from expworkup.devconfig import lab_vars
+from utils.file_handling import get_experimental_run_lab
 from utils import globals
 
 from expworkup.devconfig import cwd
@@ -47,12 +48,22 @@ def get_gdrive_client():
     gc = gspread.authorize(credentials)
     return gc
 
-def ChemicalData():
-    '''
+def ChemicalData(lab):
+    """
     Uses google api to gather the chemical inventory targeted by labsheet 'chemsheetid' in dev config
-    '''
+
+    Parameters
+    ----------
+    lab : abbreviation of the lab
+        lab is specified as the suffix of a folder and the available
+        options are included in the lab_vars of the devconfig.py file
+
+    Returns 
+    --------
+    chemdf : pandas df of the chemical inventory
+    """
     gc = get_gdrive_client()
-    chemsheetid = lab_safeget(config.lab_vars, globals.get_lab(), 'chemsheetid')
+    chemsheetid = globals.lab_safeget(lab_vars, lab, 'chemsheetid')
     ChemicalBook = gc.open_by_key(chemsheetid)
     chemicalsheet = ChemicalBook.get_worksheet(0)
     chemical_list = chemicalsheet.get_all_values()
@@ -89,8 +100,20 @@ def save_prep_interface(prep_UID, local_data_dir, run_name):
 def parse_gdrive_folder(remote_directory, local_directory):
     ''' Handle the download and local management of files when interacting with gdrive
 
-    :param remote_directory: UID of the Gdrive directory containing ESCALATE runs to process.
-    :return: 
+    Parameters
+    ----------
+    remote_directory : Gdrive UID
+        UID of the Gdrive parent directory containing ESCALATE runs to process. ESCALATE 
+        runs are the child folders of the parent directory.
+    local_directory: local folder for saving downloaded files
+
+    Returns
+    -----------
+
+    data_directories : dict {<folder_name> : folder_children uids}
+        dict keyed on the child foldernames with values being all of the grandchildren 
+        gdrive objects (these objects are dictionaries as well with defined structure)
+    lablist : list of all unique labs included in the parent directory
     '''
     drive = get_gdrive_auth()
 

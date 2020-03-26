@@ -8,6 +8,7 @@ import pandas as pd
 
 from expworkup import jsontocsv
 from expworkup import createjson
+from expworkup import devconfig
 from expworkup import googleio
 from versiondata import export_to_repo
 from expworkup.entity_tables import reagent_entity
@@ -32,8 +33,7 @@ if __name__ == "__main__":
                         help='Please include target folder')
     parser.add_argument('-l', '--lab',
                         type=str,
-                        choices=['LBL', 'HC', 'MIT_PVLab', 'dev',\
-                        '4-Data-WF3_Iodide', '4-Data-WF3_Alloying', '4-Data-Bromides'],
+                        choices=[lab for lab in devconfig.workup_targets.keys()],
                         help="Please specify a supported lab/dataset from the options \
                               listed. Selecting 'dev' will change the \
                               directory target to the debugging folder. \
@@ -72,22 +72,12 @@ if __name__ == "__main__":
     globals.set_lab(args.lab)
     modlog.info('%s selected as the laboratory for this run' % globals.get_lab())
     print('%s selected as the laboratory for this run' % globals.get_lab())
-    if globals.get_lab() == 'dev':
-        debug = 1
-    else:
-        debug = 0
 
     initialize(args)
 
-##### FOR SOME OFFLINE SUPPORT, REQUIRES ONE RUN BEFORE OFFLINE #### 
-##### Follow the two step instructions to run post parsing code offline ####
-    chem_df=googleio.ChemicalData()                     # 2) Comment out this line
-#    chem_df.to_csv('chemdf.csv')                       # 1) Uncomment and run full_report code once
-#    chem_df = pd.read_csv('chemdf.csv')                # 2) Uncomment
-#    target_naming_scheme = 'perovskitesdata_20191209b' # 2) Uncomment and update to the generated dataset
-
-    exp_dict = createjson.download_experiment_directories(args.local_directory, debug)
-    target_naming_scheme = jsontocsv.printfinal(args.local_directory, debug, args.raw, chem_df)
+    exp_dict = createjson.download_experiment_directories(args.local_directory)
+    chem_df_dict = createjson.inventory_assembly(exp_dict)
+    target_naming_scheme = jsontocsv.printfinal(args.local_directory, args.raw, chem_df_dict)
 
     if args.verdata is not None:
         export_to_repo.prepareexport(target_naming_scheme, args.state, link, args.verdata)
@@ -95,7 +85,7 @@ if __name__ == "__main__":
     if args.export_reagents is True:
         modlog.info(f'Exporting {target_naming_scheme}_models.csv and {target_naming_scheme}_objects.csv')
         versioned_df = export_to_repo.prepareexport(target_naming_scheme, args.state, link, args.verdata)
-        reagent_entity.all_unique_ingredients(versioned_df, target_naming_scheme, chem_df, export_observables=True)
+        reagent_entity.all_unique_ingredients(versioned_df, target_naming_scheme, chem_df_dict, export_observables=True)
             
     elif args.verdata == 0:
         modlog.info('No versioned data repository format generated')

@@ -44,12 +44,8 @@ def lab_safeget(dct, lab_key, key_1):
 
     :return either specified dictionary, or default lab dictionary if key error
     '''
-    keys=[lab_key, key_1]
-    for key in keys:
-        sub_dct = dct
-        try:
-            sub_dct = sub_dct[key]
-        except KeyError:
-            dct = dct['default'][key_1]
-            return dct
-    return sub_dct
+    try:
+        dct = dct[lab_key][key_1]
+    except KeyError:
+        dct = dct['default'][key_1]
+    return dct
