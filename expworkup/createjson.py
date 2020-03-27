@@ -16,6 +16,7 @@ from expworkup import googleio
 from validation import validation
 from utils import globals
 from utils.file_handling import get_interface_filename, get_experimental_run_lab
+from utils.globals import lab_safeget
 
 # todo put in config
 ## Set the workflow of the code used to generate the experimental data and to process the data
@@ -44,13 +45,17 @@ def parse_exp_volumes(fname, experiment_lab):
     :return:
     """
 
+    #TODO parse based on folder suffix, no lab spec
     robot_dict = pd.read_excel(open(fname, 'rb'), header=[0], sheet_name=0)
     reagentlist = []
     for header in robot_dict.columns:
-        if config.lab_vars[experiment_lab]['reagent_alias'] in header and "ul" in header:
+        reagent_alias_name = lab_safeget(config.lab_vars, experiment_lab, 'reagent_alias')
+        if reagent_alias_name in header and "ul" in header:
             reagentlist.append(header)
     rnum = len(reagentlist)
 
+    #MIT_PVLab has an additional column in the second row 'Experiment Name' in additiona
+    # to the 'Experiment Index'.  The +1 accounts for that during parsing
     if experiment_lab == 'MIT_PVLab':
         rnum += 1
 
@@ -80,6 +85,7 @@ def parse_observation_interface(fname):
 
 def parse_run_to_json(outfile, local_data_directory, run_name):
     """Parse data from one ESCALATE run into json and write to
+
 
     TODO: this is the T in ETL,
         * separate out the (Download, Read, (these are extract)), Transform, and Validate functionalty
@@ -128,12 +134,12 @@ def parse_run_to_json(outfile, local_data_directory, run_name):
     print('}', file=outfile)
 
 
-def download_experiment_directories(target_directory, debug):
+def download_experiment_directories(target_directory, dataset):
     """Gets all of the relevant folder titles from the experimental directory
     Cross references with the working directory of the final Json files send the list of jobs needing processing
 
     :param target_directory: The local directory in which the curated json files will be stored. From CLI.
-    :param debug: 1 if debug mode, else 0. From CLI.
+
     :return:
     """
     save_directory = f'{target_directory}/gdrive_files'  # Local storage for gdrive files
@@ -143,10 +149,9 @@ def download_experiment_directories(target_directory, debug):
     if not os.path.exists(save_directory):
         os.mkdir(save_directory)
     
-    #observation_UIDs, exp_volume_UIDs, prep_UIDs, 
-    #googleio.gdrive_pipeline(config.lab_vars[globals.get_lab()]['remote_directory'])
+    target_data_folder = config.workup_targets[dataset]['target_data_folder']
+    exp_dict  = googleio.parse_gdrive_folder(target_data_folder, save_directory)
 
-    exp_dict = googleio.parse_gdrive_folder(config.lab_vars[globals.get_lab()]['remote_directory'], save_directory)
 
     modlog.info('Starting Download and Directory Parsing')
     print('Starting Download and Directory Parsing...')
@@ -173,4 +178,35 @@ def download_experiment_directories(target_directory, debug):
             time.sleep(sleep_timer)
     return exp_dict
 
+def inventory_assembly(exp_dict, chemdf_dict):
+    """ 
+    Gather chemical inventories used to generate runs for labs in exp_dict
 
+    Parameters
+    ----------
+    exp_dict : dict {<folder_name> : folder_children uids}
+        dict keyed on the child foldernames with values being all of the 
+        grandchildren gdrive objects (these objects are dictionaries as 
+        well with defined structure)
+
+    Returns
+    ----------
+    chemdf_dict : dict {<lab name>: chemdf}
+        labs specified in 'lab name' (keys) must be included in the 
+        devconfig lab_vars dictionary the chemdf is targeted based on 
+        the specifed google uid of the 'chemsheetid' key in the 
+        lab_vars dictionary subsequent code will be automated to target
+        the default if no lab specific chemdf uid is provided.
+    """
+
+    lablist = [] 
+    for title in exp_dict.keys():
+        run_lab = get_experimental_run_lab(title)
+        if run_lab not in lablist:
+            lablist.append(run_lab)
+    
+    for lab in lablist:
+        chem_df = googleio.ChemicalData(lab)                    
+        chemdf_dict[lab] = chem_df
+
+    return chemdf_dict 

@@ -8,6 +8,7 @@ import pandas as pd
 
 from expworkup import jsontocsv
 from expworkup import createjson
+from expworkup import devconfig
 from expworkup import googleio
 from versiondata import export_to_repo
 from expworkup.entity_tables import reagent_entity
@@ -30,28 +31,25 @@ if __name__ == "__main__":
     parser = ap.ArgumentParser(description='Target Folder')
     parser.add_argument('local_directory', type=str,
                         help='Please include target folder')
-    parser.add_argument('-l', '--lab',
+    parser.add_argument('-d',
                         type=str,
-                        choices=['LBL', 'HC', 'MIT_PVLab', 'dev',\
-                        '4-Data-WF3_Iodide', '4-Data-WF3_Alloying', '4-Data-Bromides'],
-                        help="Please specify a supported lab/dataset from the options \
-                              listed. Selecting 'dev' will change the \
-                              directory target to the debugging folder. \
-                              Selecting any other lab will target that labs\
-                              folders which are specified in devconfig.py\
+                        nargs='+',
+                        choices=[dataset for dataset in devconfig.workup_targets.keys()],
+                        help="Please specify one or more supported datasets from the options \
+                              listed. The dataset(s) require the correct credentials to access.\
                               ||default = LBL||",
                         default='LBL'
                         )
     parser.add_argument('--raw', type=int, default=1, choices=[0, 1],
                         help='final dataframe is printed with all raw values\
                         included ||default = 1||')
-    parser.add_argument('-e', '--export_reagents', type=bool, default=False, choices=[True, False],
+    parser.add_argument('--export_reagents', type=bool, default=False, choices=[True, False],
                         help='generates <target folder>_models.csv and <target_folder>_objects.csv\
-                        corresponding to all compound ingredients in the target dataset ||default = False||')
-    parser.add_argument('-v', '--verdata', type=str, 
+                        corresponding to all compound ingredients in the target dataset (only works for wf11.1) ||default = False||')
+    parser.add_argument('--verdata', type=str, 
                         help='Enter numerical value such as "0001". Generates <0001>.perovskitedata.csv output\
                         in a form ready for upload to the versioned data repo ||default = None||')
-    parser.add_argument('-s', '--state', type=str,
+    parser.add_argument('--state', type=str,
                         help='title of state set file to be used at the state set for \
                         this iteration of the challenge problem, no entry will result in no processing')
 
@@ -69,25 +67,18 @@ if __name__ == "__main__":
                      upload preparation!')
         sys.exit()
 
-    globals.set_lab(args.lab)
-    modlog.info('%s selected as the laboratory for this run' % globals.get_lab())
-    print('%s selected as the laboratory for this run' % globals.get_lab())
-    if globals.get_lab() == 'dev':
-        debug = 1
-    else:
-        debug = 0
+    dataset_list = args.d
+    modlog.info(f'{dataset_list} selected as the dataset target(s) for this run')
+    print(f'{dataset_list} selected as the dataset target(s) for this run')
+    print(f'{len(dataset_list)} set(s) of downloads will occur, one per dataset, please be patient!')
+    modlog.info(f'{len(dataset_list)} set(s) of downloads will occur, one for dataset, please be patient!')
 
     initialize(args)
-
-##### FOR SOME OFFLINE SUPPORT, REQUIRES ONE RUN BEFORE OFFLINE #### 
-##### Follow the two step instructions to run post parsing code offline ####
-    chem_df=googleio.ChemicalData()                     # 2) Comment out this line
-#    chem_df.to_csv('chemdf.csv')                       # 1) Uncomment and run full_report code once
-#    chem_df = pd.read_csv('chemdf.csv')                # 2) Uncomment
-#    target_naming_scheme = 'perovskitesdata_20191209b' # 2) Uncomment and update to the generated dataset
-
-    exp_dict = createjson.download_experiment_directories(args.local_directory, debug)
-    target_naming_scheme = jsontocsv.printfinal(args.local_directory, debug, args.raw, chem_df)
+    chemdf_dict = {}
+    for dataset in dataset_list:
+        exp_dict = createjson.download_experiment_directories(args.local_directory, dataset)
+        chem_df_dict = createjson.inventory_assembly(exp_dict, chemdf_dict)
+    target_naming_scheme = jsontocsv.printfinal(args.local_directory, args.raw, chem_df_dict, dataset_list)
 
     if args.verdata is not None:
         export_to_repo.prepareexport(target_naming_scheme, args.state, link, args.verdata)
@@ -95,7 +86,7 @@ if __name__ == "__main__":
     if args.export_reagents is True:
         modlog.info(f'Exporting {target_naming_scheme}_models.csv and {target_naming_scheme}_objects.csv')
         versioned_df = export_to_repo.prepareexport(target_naming_scheme, args.state, link, args.verdata)
-        reagent_entity.all_unique_ingredients(versioned_df, target_naming_scheme, chem_df, export_observables=True)
+        reagent_entity.all_unique_ingredients(versioned_df, target_naming_scheme, chem_df_dict, export_observables=True)
             
     elif args.verdata == 0:
         modlog.info('No versioned data repository format generated')

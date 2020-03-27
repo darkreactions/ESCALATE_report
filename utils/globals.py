@@ -11,26 +11,19 @@ import sys
 
 modlog = logging.getLogger('utils.globals')
 
-_LAB = None
-_LAB_has_been_set = False
 
+def lab_safeget(dct, lab_key, key_1):
+    '''
+    used for retrieving either the default values or lab specific if specified
+    from devconfig/lab_vars dictionary
+    
+    :param dct: lab_vars dictionary (includes default as well, from devconfig)
+    :keys: key entries that are associted with the query (i.e. chemsheetid)
 
-def set_lab(lab):
-    global _LAB, _LAB_has_been_set
-
-    if _LAB_has_been_set:
-        modlog.error('dev tried to run set_lab more than once')
-        #modlog.error('An unexpected error occurred')
-        sys.exit(1)
-
-    _LAB = lab
-    _LAB_has_been_set = True
-
-
-def get_lab():
-    if _LAB is None:
-        modlog.error('get_lab called before set_lab')
-        #modlog.error('An unexpected error occurd')re
-        sys.exit(1)
-    return _LAB
-
+    :return either specified dictionary, or default lab dictionary if key error
+    '''
+    try:
+        dct = dct[lab_key][key_1]
+    except KeyError:
+        dct = dct['default'][key_1]
+    return dct

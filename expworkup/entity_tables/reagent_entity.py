@@ -6,7 +6,9 @@ import os
 import sys
 
 from utils import globals
-from expworkup import devconfig
+from expworkup import devconfig as config
+from utils.globals import lab_safeget
+from utils.file_handling import get_experimental_run_lab
 
 modlog = logging.getLogger('report.reagent_entities')
 
@@ -106,9 +108,6 @@ def build_conc_df(df):
     # TODO: generalize beyond 1.1
     # #remove this once testing is complete and the reagent nominals / objects are exportable
     df = df[df['_raw_ExpVer'] == 1.1].reset_index(drop=True) # Harded coded to 1.1 for development
-
-    # only reaction that use GBL as a solvent (1:1 comparisons -- DMF and other solvents could convolute analysis)    
-    df = df[df['_raw_reagent_0_chemicals_0_InChIKey'] == "YEJRWHAVMIAJKC-UHFFFAOYSA-N"].reset_index(drop=True)    
 
     # removes some anomalous entries with dimethyl ammonium still listed as the organic.
     #perov = perov[perov['_rxn_organic-inchikey'] != 'JMXLWMIFDJCGBV-UHFFFAOYSA-N'].reset_index(drop=True)
@@ -251,11 +250,13 @@ def curate_reagent_objects(reagent_details_df, nominal=False, export_observables
     if nominal is True:
         actual = 'nominal'
 
-    while reagent_count < devconfig.lab_vars[globals.get_lab()]['max_reagents']:
+    #TODO: dataset general hangling, not based on laboratory information etc
+    maxreagentchemicals = lab_safeget(config.lab_vars, globals.get_lab(), 'maxreagentchemicals')
+    while reagent_count < lab_safeget(config.lab_vars, globals.get_lab(), 'max_reagents'):
         reagent_amounts_df = (reagent_details_df.loc[:,f'_raw_reagent_{str(reagent_count)}_chemicals_0_{actual}_amount':\
-                                                 f'_raw_reagent_{str(reagent_count)}_chemicals_{str(devconfig.maxreagentchemicals-1)}_{actual}_amount_units'])
+                                                 f'_raw_reagent_{str(reagent_count)}_chemicals_{str(maxreagentchemicals-1)}_{actual}_amount_units'])
         reagent_inchis_df = (reagent_details_df.loc[:,f'_raw_reagent_{str(reagent_count)}_chemicals_0_InChIKey':\
-                                                f'_raw_reagent_{str(reagent_count)}_chemicals_{str(devconfig.maxreagentchemicals-1)}_InChIKey'])
+                                                f'_raw_reagent_{str(reagent_count)}_chemicals_{str(maxreagentchemicals-1)}_InChIKey'])
         single_reagent_df = pd.concat([reagent_amounts_df, reagent_inchis_df], axis=1)
         single_reagent_df.fillna(0, inplace=True)
         if export_observables is True: 
@@ -327,7 +328,7 @@ def export_reagent_objects(perovskite_df, target_naming_scheme, nominal=False, e
 
     return out_name
 
-def all_unique_ingredients(perovskite_df, target_naming_scheme, chem_df, export_observables=False):
+def all_unique_ingredients(perovskite_df, target_naming_scheme, chemdf_dict, export_observables=False):
     '''
     Reads in most recent perovskite dataframe and returns dictionary 
     of structure {organic_inchi: {(Chemical-Inchi, Chemical-Name, concentration) x 3}} 
@@ -353,10 +354,11 @@ def all_unique_ingredients(perovskite_df, target_naming_scheme, chem_df, export_
     # Setup the chemical dataframe for reading out chemical names (specific for 1.1)
     # TODO: generalize beyond 1.1 for direct reaction reproductions from reagent objects --> to models (harder, hypothesis)
     conc_dict_out = {}
-    chem_df = chem_df.fillna('null') #insert our choice placeholder for blank values --> 'null'
 
     for exp_uid, row in conc_df.iterrows():
         conc_dict_out[exp_uid] = {}
+        chem_df = chemdf_dict[get_experimental_run_lab(exp_uid)]
+        chem_df = chem_df.fillna('null') #insert our choice placeholder for blank values --> 'null'
         conc_dict_out[exp_uid]['chemical_info'] = {}
         conc_dict_out[exp_uid]['chemical_info']['solvent'] = (conc_df.loc[exp_uid,'_raw_reagent_0_chemicals_0_InChIKey'], 
                                                             chem_df.loc[conc_df.loc[exp_uid,'_raw_reagent_0_chemicals_0_InChIKey'],"Chemical Name"]

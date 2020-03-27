@@ -1,7 +1,7 @@
 import os
 import re
 
-from expworkup.devconfig import valid_input_files, SUPPORTED_LABS
+from expworkup.devconfig import valid_input_files, workup_targets, lab_vars
 
 
 def get_interface_filename(interface_type, working_directory, runID):
@@ -19,7 +19,7 @@ def get_experimental_run_lab(run_filename):
     :param run_filename: either the remote run directory name or the local json that is generated from it
     :return: the labname
     """
-    for lab in SUPPORTED_LABS:
+    for lab in lab_vars.keys():
         lab_pat = re.compile(f'_({lab})($|.json$)')
         match = lab_pat.search(run_filename.strip())
         if match:
