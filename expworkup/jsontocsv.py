@@ -62,15 +62,17 @@ def nameCleaner(sub_dirty_df, new_prefix):
     return(cleaned_M)
 
 
-def cleaner(dirty_df, raw):
+def cleaner(dirty_df, raw, lab_list):
     ''' cleans up the name space and the csv output for distribution
 
     Cleans the file in different ways for post-processing analysis
     '''
     rxn_molarity_clean = nameCleaner(dirty_df.filter(like='_raw_M_'), '_raw_v0-M')
     rxn_v1molarity_clean = nameCleaner(dirty_df.filter(like='_raw_v1-M_'), '_rxn_M')
+    print(lab_list)
 
-    if globals.get_lab() in ['LBL', "HC", '4-Data-WF3_Iodide', '4-Data-Bromides', '4-Data-WF3_Alloying']:
+    postprocess_1 = ['LBL', "HC", '4-Data-WF3_Iodide', '4-Data-Bromides', '4-Data-WF3_Alloying']
+    if all(elem in postprocess_1 for elem in lab_list):
         # TODO: Clean up the headers for associated dataframes, move these functions to devconfig (onboarding a new lab)
         dirty_df.rename(columns={'Unnamed: 2': '_raw_placeholder'}, inplace=True)
         dirty_df.rename(columns={'Bulk Actual Temp (C)': '_rxn_temperatureC_actual_bulk'}, inplace=True)
@@ -94,9 +96,7 @@ def cleaner(dirty_df, raw):
             squeaky_clean_df = pd.concat([out_df, rxn_molarity_clean,
                                           rxn_v1molarity_clean, rxn_df,
                                           feat_df, proto_df], axis=1)
-    elif globals.get_lab() == 'MIT_PVLab':
-        squeaky_clean_df = dirty_df
-    elif globals.get_lab() == 'dev':    
+    elif all(elem in ['MIT_PVLab', 'dev'] for elem in lab_list):
         squeaky_clean_df = dirty_df
     return(squeaky_clean_df)
 
@@ -118,7 +118,7 @@ def unpackJSON(myjson_fol, chemdf_dict):
     for my_exp_json in sorted(os.listdir(myjson_fol)):
         if my_exp_json.endswith(".json"):
             json_list.append(my_exp_json)
-    print('Unpacking JSON Files...')
+    print('Dataset download complete. Unpacking JSON Files...')
     for my_exp_json in tqdm(json_list):
         modlog.info('Unpacking %s' %my_exp_json)
         concat_df=pd.DataFrame()  
@@ -192,7 +192,7 @@ def augdescriptors(dataset_calcs_fill_df):
     my_descriptors.close()
     return(dirty_full_df)
 
-def printfinal(myjsonfolder, raw_bool_cli, chemdf_dict):
+def printfinal(myjsonfolder, raw_bool_cli, chemdf_dict, dataset_list):
     '''Top level json parser pipeline
 
     :param myjsonfolder: target folder for run and the generated data
@@ -214,7 +214,7 @@ def printfinal(myjsonfolder, raw_bool_cli, chemdf_dict):
     modlog.info(f'Appending physicochemical features to {finaloutcsv_filename} dataframe')
     print(f'Appending physicochemical features to {finaloutcsv_filename} dataframe')
 
-    cleaned_augmented_raw_df= cleaner(augmented_raw_df, raw_bool_cli)
+    cleaned_augmented_raw_df= cleaner(augmented_raw_df, raw_bool_cli, dataset_list)
     modlog.info(f'Renaming dataframe headers')
     print('Renaming dataframe headers')
 

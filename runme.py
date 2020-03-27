@@ -31,27 +31,25 @@ if __name__ == "__main__":
     parser = ap.ArgumentParser(description='Target Folder')
     parser.add_argument('local_directory', type=str,
                         help='Please include target folder')
-    parser.add_argument('-l', '--lab',
+    parser.add_argument('-d',
                         type=str,
-                        choices=[lab for lab in devconfig.workup_targets.keys()],
-                        help="Please specify a supported lab/dataset from the options \
-                              listed. Selecting 'dev' will change the \
-                              directory target to the debugging folder. \
-                              Selecting any other lab will target that labs\
-                              folders which are specified in devconfig.py\
+                        nargs='+',
+                        choices=[dataset for dataset in devconfig.workup_targets.keys()],
+                        help="Please specify one or more supported datasets from the options \
+                              listed. The dataset(s) require the correct credentials to access.\
                               ||default = LBL||",
                         default='LBL'
                         )
     parser.add_argument('--raw', type=int, default=1, choices=[0, 1],
                         help='final dataframe is printed with all raw values\
                         included ||default = 1||')
-    parser.add_argument('-e', '--export_reagents', type=bool, default=False, choices=[True, False],
+    parser.add_argument('--export_reagents', type=bool, default=False, choices=[True, False],
                         help='generates <target folder>_models.csv and <target_folder>_objects.csv\
-                        corresponding to all compound ingredients in the target dataset ||default = False||')
-    parser.add_argument('-v', '--verdata', type=str, 
+                        corresponding to all compound ingredients in the target dataset (only works for wf11.1) ||default = False||')
+    parser.add_argument('--verdata', type=str, 
                         help='Enter numerical value such as "0001". Generates <0001>.perovskitedata.csv output\
                         in a form ready for upload to the versioned data repo ||default = None||')
-    parser.add_argument('-s', '--state', type=str,
+    parser.add_argument('--state', type=str,
                         help='title of state set file to be used at the state set for \
                         this iteration of the challenge problem, no entry will result in no processing')
 
@@ -69,15 +67,18 @@ if __name__ == "__main__":
                      upload preparation!')
         sys.exit()
 
-    globals.set_lab(args.lab)
-    modlog.info('%s selected as the laboratory for this run' % globals.get_lab())
-    print('%s selected as the laboratory for this run' % globals.get_lab())
+    dataset_list = args.d
+    modlog.info(f'{dataset_list} selected as the dataset target(s) for this run')
+    print(f'{dataset_list} selected as the dataset target(s) for this run')
+    print(f'{len(dataset_list)} set(s) of downloads will occur, one for dataset, please be patient!')
+    modlog.info(f'{len(dataset_list)} set(s) of downloads will occur, one for dataset, please be patient!')
 
     initialize(args)
-
-    exp_dict = createjson.download_experiment_directories(args.local_directory)
-    chem_df_dict = createjson.inventory_assembly(exp_dict)
-    target_naming_scheme = jsontocsv.printfinal(args.local_directory, args.raw, chem_df_dict)
+    chemdf_dict = {}
+    for dataset in dataset_list:
+        exp_dict = createjson.download_experiment_directories(args.local_directory, dataset)
+        chem_df_dict = createjson.inventory_assembly(exp_dict, chemdf_dict)
+    target_naming_scheme = jsontocsv.printfinal(args.local_directory, args.raw, chem_df_dict, dataset_list)
 
     if args.verdata is not None:
         export_to_repo.prepareexport(target_naming_scheme, args.state, link, args.verdata)

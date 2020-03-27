@@ -126,7 +126,7 @@ workup_targets = {
         },
     '4-Data-WF3_Iodide':
         {
-            'target_data_folder' : '11CcFTLw7mu4tnnv8QO1oSE7XQiEP32L',
+            'target_data_folder' : '11CcFTLw7mu4tnnv8QO1opSE7XQiEP32L',
         },
     '4-Data-WF3_Alloying':
         {

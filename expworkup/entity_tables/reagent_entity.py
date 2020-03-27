@@ -107,7 +107,7 @@ def build_conc_df(df):
     # Only consider runs where the workflow are equal to 1.1 (the ITC method after initial development)
     # TODO: generalize beyond 1.1
     # #remove this once testing is complete and the reagent nominals / objects are exportable
-    #df = df[df['_raw_ExpVer'] == 1.1].reset_index(drop=True) # Harded coded to 1.1 for development
+    df = df[df['_raw_ExpVer'] == 1.1].reset_index(drop=True) # Harded coded to 1.1 for development
 
     # removes some anomalous entries with dimethyl ammonium still listed as the organic.
     #perov = perov[perov['_rxn_organic-inchikey'] != 'JMXLWMIFDJCGBV-UHFFFAOYSA-N'].reset_index(drop=True)
@@ -250,6 +250,7 @@ def curate_reagent_objects(reagent_details_df, nominal=False, export_observables
     if nominal is True:
         actual = 'nominal'
 
+    #TODO: dataset general hangling, not based on laboratory information etc
     maxreagentchemicals = lab_safeget(config.lab_vars, globals.get_lab(), 'maxreagentchemicals')
     while reagent_count < lab_safeget(config.lab_vars, globals.get_lab(), 'max_reagents'):
         reagent_amounts_df = (reagent_details_df.loc[:,f'_raw_reagent_{str(reagent_count)}_chemicals_0_{actual}_amount':\

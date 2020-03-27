@@ -134,7 +134,7 @@ def parse_run_to_json(outfile, local_data_directory, run_name):
     print('}', file=outfile)
 
 
-def download_experiment_directories(target_directory):
+def download_experiment_directories(target_directory, dataset):
     """Gets all of the relevant folder titles from the experimental directory
     Cross references with the working directory of the final Json files send the list of jobs needing processing
 
@@ -149,7 +149,7 @@ def download_experiment_directories(target_directory):
     if not os.path.exists(save_directory):
         os.mkdir(save_directory)
     
-    target_data_folder = config.workup_targets[globals.get_lab()]['target_data_folder']
+    target_data_folder = config.workup_targets[dataset]['target_data_folder']
     exp_dict  = googleio.parse_gdrive_folder(target_data_folder, save_directory)
 
 
@@ -178,7 +178,7 @@ def download_experiment_directories(target_directory):
             time.sleep(sleep_timer)
     return exp_dict
 
-def inventory_assembly(exp_dict):
+def inventory_assembly(exp_dict, chemdf_dict):
     """ 
     Gather chemical inventories used to generate runs for labs in exp_dict
 
@@ -205,7 +205,6 @@ def inventory_assembly(exp_dict):
         if run_lab not in lablist:
             lablist.append(run_lab)
     
-    chemdf_dict = {}
     for lab in lablist:
         chem_df = googleio.ChemicalData(lab)                    
         chemdf_dict[lab] = chem_df
