@@ -70,7 +70,7 @@ if __name__ == "__main__":
     dataset_list = args.d
     modlog.info(f'{dataset_list} selected as the dataset target(s) for this run')
     print(f'{dataset_list} selected as the dataset target(s) for this run')
-    print(f'{len(dataset_list)} set(s) of downloads will occur, one for dataset, please be patient!')
+    print(f'{len(dataset_list)} set(s) of downloads will occur, one per dataset, please be patient!')
     modlog.info(f'{len(dataset_list)} set(s) of downloads will occur, one for dataset, please be patient!')
 
     initialize(args)

@@ -1,5 +1,13 @@
 RELEASE HISTORY
 ===============
+
+0.85 (2020-03-27)
+------------------------
+  * Wrapped all authentication, only activates when needed
+  * Added support for multi-folder, multi-lab data collation
+  * Improved lab vs. dataset distinction (lab is where capture runs, datasets are targets for report code)
+  * Documentation, docstrings, code readability changes
+
 0.84 (2020-02-17)
 ------------------------
   * Streamline workflow for gdrive and gspread authentication, less errors

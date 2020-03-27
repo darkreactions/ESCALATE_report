@@ -96,7 +96,11 @@ def cleaner(dirty_df, raw, lab_list):
             squeaky_clean_df = pd.concat([out_df, rxn_molarity_clean,
                                           rxn_v1molarity_clean, rxn_df,
                                           feat_df, proto_df], axis=1)
+    #TODO: default handling of specific labs
     elif all(elem in ['MIT_PVLab', 'dev'] for elem in lab_list):
+        squeaky_clean_df = dirty_df
+    #TODO: default handling of everything else
+    else:
         squeaky_clean_df = dirty_df
     return(squeaky_clean_df)
 

@@ -7,7 +7,7 @@ cwd = os.getcwd()
 #######################################
 # Version Control
 RoboVersion = 2.59
-ReportVersion = 0.84
+ReportVersion = 0.85
 ######################################
 # Sampler Selection
 sampler = 'wolfram' # options are 'default' or 'wolfram'
