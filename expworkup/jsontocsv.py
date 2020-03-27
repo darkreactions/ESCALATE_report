@@ -7,7 +7,7 @@ import logging
 
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from tqdm import tqdm
+import tqdm
 
 from tests import logger
 from expworkup import googleio
