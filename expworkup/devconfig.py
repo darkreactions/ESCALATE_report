@@ -7,7 +7,7 @@ cwd = os.getcwd()
 #######################################
 # Version Control
 RoboVersion = 2.59
-ReportVersion = 0.85
+
 ######################################
 # Sampler Selection
 sampler = 'wolfram' # options are 'default' or 'wolfram'
@@ -115,6 +115,9 @@ this isn't magic just plumbing. An example of the correct structure can be found
 https://drive.google.com/open?id=1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k
 
 '''
+#TODO: assign desired calculations to each dataset, add a safe/generalizable default 
+# .   The dict of desired calculations should only toggle on options, not specify
+# .   The default should not include 'target_data_folder", these should always be assigned
 workup_targets = {
     '4-Data-Bromides':
         {
@@ -141,7 +144,6 @@ workup_targets = {
             'target_data_folder' : '1VNsWClt-ppg8ojUztDYssnSgfoe9XRhi',
         }
 }
-
 
 #######################################
 # Wolfram Kernel Management

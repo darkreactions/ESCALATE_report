@@ -1,5 +1,13 @@
 RELEASE HISTORY
 ===============
+### Be sure to update the version number in 'runme.py'!
+
+0.86 (2020-03-30)
+-----------------
+  * separated baseline parsing from all calcs and feats
+  * added dev test on baseline parseing
+  * debug now exports dataframes at every step
+  * all columns exported as lowercase (as much as possible)
 
 0.85 (2020-03-27)
 ------------------------

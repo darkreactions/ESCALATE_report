@@ -18,11 +18,9 @@ from utils import globals
 from utils.file_handling import get_interface_filename, get_experimental_run_lab
 from utils.globals import lab_safeget
 
-# todo put in config
 ## Set the workflow of the code used to generate the experimental data and to process the data
-WorkupVersion = 1.1
-modlog = logging.getLogger('report.CreateJSON')
 
+modlog = logging.getLogger('report.CreateJSON')
 
 def parse_preparation_interface(fname):
     """

@@ -20,4 +20,5 @@ __pycache__/
 !OriginalTestCase.csv
 !perov_desc_edited.csv
 !ExpertCurated_20191121.csv
+!dataset_rename.json
 .idea/*

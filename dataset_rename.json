@@ -1,0 +1,45 @@
+{
+    "comment1" : "for a new postprocessing scheme, create a new group of datatasets",
+    "comment2" : "add datasets with similar postprocess to an existing group",
+    "comment3" : "if no grouping exists for a specified dataset, code will target 'default'",
+    "comment4" : "if a column does not have a suitable prefix it will be ommitted from the dataset",
+    "comment5" : "all columns (including undefined) can be viewed by toggling 'raw' from the command line",
+    "default" : {
+        "columns" : {}
+    },
+    "group_1": {
+        "datasets" : ["LBL", "HC", "4-Data-WF3_Iodide", "4-Data-Bromides", "4-Data-WF3_Alloying"],
+        "columns" : {
+            "Unnamed: 2" : "_raw_placeholder",
+            "Bulk Actual Temp (C)" : "_rxn_temperatureC_actual_bulk",
+            "Crystal Score" : "_out_crystalscore",
+            "_out_predicted" : "_raw_model_predicted",
+            "modelname" : "_raw_modelname",
+            "participantname" : "_raw_participantname",
+            "notes" : "_raw_notes"
+        }
+    },
+    "group_2": {
+        "datasets" : ["dev", "MIT_PVLab"],
+        "columns" : {
+            "Bulk Actual Temp (C)" : "_rxn_temperature_C_actual_bulk",
+            "Crystal Score" : "_out_crystalscore",
+            "modelname" : "_raw_modelname",
+            "participantname" : "_raw_participantname",
+            "notes" : "_raw_notes",
+            "Experiment Number" : "_raw_experimentNumber",
+            "Experiment Name" : "_raw_experimentName",
+            "Linked Data" : "_raw_linkeddata",
+            "User defined tag" : "_raw_userdefinedtag",
+            "Robot Number" : "_raw_robotnumber",
+            "Vial Site (1)" : "_raw_microplate_row",
+            "Vial Site (2)" : "_raw_microplate_column",
+            "_out_predicted" : "_raw_model_predicted",
+            "class_probability" : "_raw_classprobability",
+            "films_made_success" : "_rxn_filmmade_bool",
+            "identifier" : "_raw_identifier",
+            "shiny?" : "_rxn_shiny_bool",
+            "transparent?": "_rxn_tranparent_bool"
+        }
+    }
+}

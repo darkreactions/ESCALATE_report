@@ -55,7 +55,7 @@ Please report any failures of the above message to the repo admins
  
 Running The Code
 =================
-Currently supported `workup targets` (folder names): 
+Currently supported `dataset targets` (folder names): 
   * **MIT Data:** MIT_PVLab
   * **HC and LBL Data:** LBL, 4-Data-WF3_Iodide, 4-Data-WF3_Alloying, 4-Data-Bromides
   * **Development:** dev
@@ -66,6 +66,8 @@ To add additional target directories please see the how-to guide [here](https://
 1. `python runme.py <dataset-name> -l <workup target>` 
   
 2. For additional command line options see `python runme.py --help`
+
+3. If you want to change column headers specify them in the `dataset_rename.json` file
   
 5. A file named <directory>.csv will contain the 2d CSV of the dataset using the configured headers from the data or the mapping developed for the lab.  The `data/` folder will contain the generated JSONs.
 

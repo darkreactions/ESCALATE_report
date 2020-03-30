@@ -1,4 +1,7 @@
 import pandas as pd
+import logging
+
+modlog = logging.getLogger(__name__)
 
 def combine(portioned_df):
     combined_df=pd.DataFrame()
@@ -111,15 +114,19 @@ def volcheck(vol_series, reagent_name, JsonParsed_df,runID_df):
 
 #splits of the reagents to analyze the volumes of the important reagents for the current workflows (wkflow1.1 is 2,3,4)
 def mmol_breakoff(JsonParsed_df, runID_df):
+
     out_df = pd.DataFrame()
     reagent_mmol_df=pd.DataFrame()
+
     for columnname in list(JsonParsed_df):
         if ("_raw_reagent_" in columnname) and ("_volume" in columnname):
             if columnname == "_raw_reagent_0_volume":
                 pass
             else:
                 reagent_name=columnname[:-6]
-                reagent_mmol_df=(volcheck(JsonParsed_df[columnname], reagent_name, JsonParsed_df, runID_df))
+                reagent_mmol_df = volcheck(JsonParsed_df[columnname], reagent_name, JsonParsed_df, runID_df)
+
             out_df=pd.concat([out_df, reagent_mmol_df], axis=1, sort=False)
+
     out_combined_df=combine(out_df)  
     return(out_combined_df)

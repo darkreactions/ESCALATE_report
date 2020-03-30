@@ -10,7 +10,8 @@ from expworkup import devconfig as config
 from utils.globals import lab_safeget
 from utils.file_handling import get_experimental_run_lab
 
-modlog = logging.getLogger('report.reagent_entities')
+
+modlog = logging.getLogger(__name__)
 
 class ReagentObject:
     modlog = logging.getLogger('report.RegentObject')
@@ -18,12 +19,8 @@ class ReagentObject:
 
     v1 input is dataframe of the reagent information as parsed from JSON from google drive
 
-    TODO: build reagent_object at the initial parsing of the download JSON file
     TODO: direct import of reagent_model information from Capture
     TODO: consistency checks and validation of reagent_object concentration calculations
-
-    next generation should be closer to a json file structure of the reagent file. Ideally the reagent json itself can
-    be provided to a class and then used downstream for additional manipulation
     '''
 
     def __init__(self,

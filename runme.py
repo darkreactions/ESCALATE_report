@@ -3,11 +3,15 @@ import logging
 import argparse as ap
 import os
 import sys
+import datetime
 
 import pandas as pd
 
-from expworkup import jsontocsv
-from expworkup import createjson
+from expworkup.jsonparser import json_pipeline
+from expworkup.createjson import download_experiment_directories
+from expworkup.createjson import inventory_assembly
+from expworkup.report_calcs import calc_pipeline
+from expworkup.report_feats import feat_pipeline
 from expworkup import devconfig
 from expworkup import googleio
 from versiondata import export_to_repo
@@ -15,6 +19,7 @@ from expworkup.entity_tables import reagent_entity
 from tests import logger
 from utils import globals
 
+__version__ = 0.86 #should match latest HISTORY.md entry
 
 def initialize(args):
     ''' Refreshes working environment - logs initialization
@@ -40,7 +45,7 @@ if __name__ == "__main__":
                               ||default = LBL||",
                         default='LBL'
                         )
-    parser.add_argument('--raw', type=int, default=1, choices=[0, 1],
+    parser.add_argument('--raw', type=bool, default=False, choices=[True, False],
                         help='final dataframe is printed with all raw values\
                         included ||default = 1||')
     parser.add_argument('--export_reagents', type=bool, default=False, choices=[True, False],
@@ -52,6 +57,8 @@ if __name__ == "__main__":
     parser.add_argument('--state', type=str,
                         help='title of state set file to be used at the state set for \
                         this iteration of the challenge problem, no entry will result in no processing')
+    parser.add_argument('--debug', type=bool, default=False, choices=[True, False],
+                        help='exports all dataframes as csvfiles with default names')
 
     args = parser.parse_args()
 
@@ -76,9 +83,35 @@ if __name__ == "__main__":
     initialize(args)
     chemdf_dict = {}
     for dataset in dataset_list:
-        exp_dict = createjson.download_experiment_directories(args.local_directory, dataset)
-        chem_df_dict = createjson.inventory_assembly(exp_dict, chemdf_dict)
-    target_naming_scheme = jsontocsv.printfinal(args.local_directory, args.raw, chem_df_dict, dataset_list)
+        exp_dict = download_experiment_directories(args.local_directory, dataset)
+        chemdf_dict = inventory_assembly(exp_dict, chemdf_dict)
+
+    target_naming_scheme, report_df = json_pipeline(args.local_directory,
+                                                    args.raw,
+                                                    chemdf_dict,
+                                                    dataset_list)
+
+    calc_df = calc_pipeline(target_naming_scheme, report_df, chemdf_dict)
+    #feat_df = feat_pipeline(target_naming_scheme, report_df, calc_df, chemdf_dict)
+
+
+    if args.debug is True:
+        
+        report_csv_filename = target_naming_scheme+'_debug.csv'
+        if os.path.isfile(report_csv_filename):
+            os.remove(report_csv_filename)
+        f = open(report_csv_filename, 'a')
+        f.write(f"# Generated using report version {__version__} on {datetime.datetime.now()} targeting dataset(s) {dataset_list}\n")
+        report_df.to_csv(f)
+        f.close()
+
+        #calc_df.to_csv(f'{target_naming_scheme}_calcs.csv')
+        #calc_df.to_csv(f'{target_naming_scheme}_feats.csv')
+
+        #with open(finaloutcsv_filename, 'w') as outfile:
+        #    cleaned_augmented_raw_df.to_csv(outfile)
+        #    print(f'{finaloutcsv_filename} rendered successfully')
+        #    outfile.close()
 
     if args.verdata is not None:
         export_to_repo.prepareexport(target_naming_scheme, args.state, link, args.verdata)
@@ -86,7 +119,7 @@ if __name__ == "__main__":
     if args.export_reagents is True:
         modlog.info(f'Exporting {target_naming_scheme}_models.csv and {target_naming_scheme}_objects.csv')
         versioned_df = export_to_repo.prepareexport(target_naming_scheme, args.state, link, args.verdata)
-        reagent_entity.all_unique_ingredients(versioned_df, target_naming_scheme, chem_df_dict, export_observables=True)
+        reagent_entity.all_unique_ingredients(versioned_df, target_naming_scheme, chemdf_dict, export_observables=True)
             
     elif args.verdata == 0:
         modlog.info('No versioned data repository format generated')
@@ -94,4 +127,4 @@ if __name__ == "__main__":
     elif args.verdata == None:
         modlog.info(f'No versioned data export selected, exiting cleanly, please use the generated {target_naming_scheme}.csv file')
         print(f'No versioned data export selected, exiting cleanly, please use the generated {target_naming_scheme}.csv file')
-    os.remove('./mycred.txt')
+    #os.remove('./mycred.txt')
