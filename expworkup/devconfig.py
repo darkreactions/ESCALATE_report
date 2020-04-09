@@ -3,11 +3,9 @@ import os
 import sys
 
 cwd = os.getcwd()
-
 #######################################
 # Version Control
 RoboVersion = 2.59
-
 ######################################
 # Sampler Selection
 sampler = 'wolfram' # options are 'default' or 'wolfram'
@@ -174,3 +172,8 @@ elif system == "Darwin" or system == 'Windows':
 # Other
 else:
     raise OSError("Your system is likely not supported if it's not Linux, MAC, or Windows")
+
+###################################
+#Chemdescriptor management
+os.environ['CXCALC_PATH'] = '/Applications/JChemSuite/bin/'
+os.environ['STANDARDIZE_PATH'] = '/Applications/JChemSuite/bin/'

@@ -1,0 +1,598 @@
+2020-04-08 16:02:01,623 INFO Starting cxcalc
+2020-04-08 16:02:02,841 INFO List of standardized smiles: ['OC=O']
+2020-04-08 16:02:02,842 INFO Command list: ['aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa_p', '-H', '3.0']
+2020-04-08 16:02:03,927 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:02:03,928 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:02:03,928 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:02:03,942 INFO Starting cxcalc
+2020-04-08 16:02:03,942 INFO Starting cxcalc
+2020-04-08 16:02:05,215 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 16:02:05,215 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 16:02:05,215 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'avgpol', 'molecularsurfacearea', '-t', 'asa+', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa_p', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa_h', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa-', '-H', '3.0', 'donorcount', '-H', '3.0', '-H', '3.0', 'acceptorcount', '-H', '3.0', '-H', '3.0', 'psa', '-H', '3.0', '-H', '3.0']
+2020-04-08 16:02:05,215 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'avgpol', 'molecularsurfacearea', '-t', 'asa+', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa_p', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa_h', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa-', '-H', '3.0', 'donorcount', '-H', '3.0', '-H', '3.0', 'acceptorcount', '-H', '3.0', '-H', '3.0', 'psa', '-H', '3.0', '-H', '3.0']
+2020-04-08 16:07:49,793 INFO Starting cxcalc
+2020-04-08 16:07:50,906 INFO List of standardized smiles: ['OC=O']
+2020-04-08 16:07:50,906 INFO Command list: ['aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa_p', '-H', '3.0']
+2020-04-08 16:07:51,902 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:07:51,902 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:07:51,902 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:07:51,912 INFO Starting cxcalc
+2020-04-08 16:07:51,912 INFO Starting cxcalc
+2020-04-08 16:07:53,018 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 16:07:53,018 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 16:07:53,019 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'avgpol', 'molecularsurfacearea', '-t', 'asa+', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa_p', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa_h', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa-', '-H', '3.0', 'donorcount', '-H', '3.0', '-H', '3.0', 'acceptorcount', '-H', '3.0', '-H', '3.0', 'psa', '-H', '3.0', '-H', '3.0']
+2020-04-08 16:07:53,019 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'avgpol', 'molecularsurfacearea', '-t', 'asa+', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa_p', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa_h', '-H', '3.0', 'molecularsurfacearea', '-t', 'asa-', '-H', '3.0', 'donorcount', '-H', '3.0', '-H', '3.0', 'acceptorcount', '-H', '3.0', '-H', '3.0', 'psa', '-H', '3.0', '-H', '3.0']
+2020-04-08 16:50:54,036 INFO Starting cxcalc
+2020-04-08 16:51:21,785 INFO Starting cxcalc
+2020-04-08 16:51:23,447 INFO List of standardized smiles: ['OC=O']
+2020-04-08 16:51:23,448 INFO Command list: ['molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'aliphaticatomcount']
+2020-04-08 16:51:24,559 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:51:24,559 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:51:24,559 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:51:24,574 INFO Starting cxcalc
+2020-04-08 16:51:24,574 INFO Starting cxcalc
+2020-04-08 16:51:25,756 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 16:51:25,756 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 16:51:25,756 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 16:51:25,756 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 16:51:28,589 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:51:28,589 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:51:28,589 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:51:28,589 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:51:28,589 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:51:28,589 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:51:28,589 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:51:28,589 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:51:28,589 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:51:28,589 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:51:28,589 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:51:28,589 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:51:28,589 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 16:51:28,589 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 16:51:28,589 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 16:51:28,589 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 16:51:28,589 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 16:51:28,589 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 16:51:28,589 INFO ('molecular', '_feat_avgpol')
+2020-04-08 16:51:28,589 INFO ('molecular', '_feat_avgpol')
+2020-04-08 16:51:28,599 INFO Starting cxcalc
+2020-04-08 16:51:28,599 INFO Starting cxcalc
+2020-04-08 16:51:28,599 INFO Starting cxcalc
+2020-04-08 16:51:29,743 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 16:51:29,743 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 16:51:29,743 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 16:51:29,743 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 16:51:29,743 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 16:51:29,743 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 16:51:31,376 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:51:31,376 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:51:31,376 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:51:31,376 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:51:31,376 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:51:31,376 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:51:31,377 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:51:31,377 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:51:31,377 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:51:31,377 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:51:31,377 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:51:31,377 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:51:31,377 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:51:31,377 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:51:31,377 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:51:31,377 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:51:31,377 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:51:31,377 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:56:26,466 INFO Starting cxcalc
+2020-04-08 16:56:27,643 INFO List of standardized smiles: ['OC=O']
+2020-04-08 16:56:27,643 INFO Command list: ['molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'aliphaticatomcount']
+2020-04-08 16:56:28,720 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:56:28,720 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:56:28,720 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:56:28,735 INFO Starting cxcalc
+2020-04-08 16:56:28,735 INFO Starting cxcalc
+2020-04-08 16:56:30,006 INFO List of standardized smiles: ['[NH3+]CCC1=CC=CC=C1', 'CCCC[NH3+]', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 16:56:30,006 INFO List of standardized smiles: ['[NH3+]CCC1=CC=CC=C1', 'CCCC[NH3+]', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 16:56:30,006 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 16:56:30,006 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 16:56:32,763 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:56:32,763 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:56:32,764 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:56:32,764 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:56:32,764 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:56:32,764 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:56:32,764 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:56:32,764 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:56:32,764 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:56:32,764 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:56:32,764 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 16:56:32,764 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 16:56:32,764 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 16:56:32,764 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 16:56:32,764 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 16:56:32,764 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 16:56:32,764 INFO ('molecular', '_feat_avgpol')
+2020-04-08 16:56:32,764 INFO ('molecular', '_feat_avgpol')
+2020-04-08 16:56:32,774 INFO Starting cxcalc
+2020-04-08 16:56:32,774 INFO Starting cxcalc
+2020-04-08 16:56:32,774 INFO Starting cxcalc
+2020-04-08 16:56:33,947 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 16:56:33,947 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 16:56:33,947 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 16:56:33,948 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 16:56:33,948 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 16:56:33,948 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 16:56:35,729 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:56:35,729 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:56:35,729 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:56:35,729 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:56:35,729 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:56:35,729 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:56:35,730 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:56:35,730 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:56:35,730 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:56:35,730 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:56:35,730 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:56:35,730 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:56:35,730 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:56:35,730 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:56:35,730 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:56:35,730 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:56:35,730 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:56:35,730 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:59:30,884 INFO Starting cxcalc
+2020-04-08 16:59:32,659 INFO List of standardized smiles: ['CCCC[NH3+]', 'OC=O']
+2020-04-08 16:59:32,660 INFO Command list: ['molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'aliphaticatomcount']
+2020-04-08 16:59:33,850 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:59:33,850 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:59:33,850 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:59:33,865 INFO Starting cxcalc
+2020-04-08 16:59:33,865 INFO Starting cxcalc
+2020-04-08 16:59:35,147 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 16:59:35,147 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 16:59:35,147 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 16:59:35,147 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 16:59:37,952 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:59:37,952 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:59:37,952 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:59:37,952 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:59:37,953 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:59:37,953 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:59:37,953 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:59:37,953 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:59:37,953 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:59:37,953 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:59:37,953 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 16:59:37,953 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 16:59:37,953 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 16:59:37,953 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 16:59:37,953 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 16:59:37,953 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 16:59:37,953 INFO ('molecular', '_feat_avgpol')
+2020-04-08 16:59:37,953 INFO ('molecular', '_feat_avgpol')
+2020-04-08 16:59:37,963 INFO Starting cxcalc
+2020-04-08 16:59:37,963 INFO Starting cxcalc
+2020-04-08 16:59:37,963 INFO Starting cxcalc
+2020-04-08 16:59:39,162 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 16:59:39,162 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 16:59:39,162 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 16:59:39,162 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 16:59:39,162 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 16:59:39,162 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 16:59:40,960 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:59:40,960 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:59:40,960 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 16:59:40,960 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:59:40,960 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:59:40,960 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 16:59:40,960 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:59:40,960 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:59:40,960 INFO ('ASA+', '_feat_asa+')
+2020-04-08 16:59:40,960 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:59:40,960 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:59:40,960 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 16:59:40,960 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:59:40,960 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:59:40,960 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 16:59:40,960 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:59:40,960 INFO ('ASA-', '_feat_asa-')
+2020-04-08 16:59:40,960 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:14:02,841 INFO Starting cxcalc
+2020-04-08 17:14:04,616 INFO List of standardized smiles: ['OC=O']
+2020-04-08 17:14:04,617 INFO Command list: ['molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'aliphaticatomcount']
+2020-04-08 17:14:05,693 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:14:05,694 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:14:05,694 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:14:05,708 INFO Starting cxcalc
+2020-04-08 17:14:05,708 INFO Starting cxcalc
+2020-04-08 17:14:06,986 INFO List of standardized smiles: ['[NH3+]CCC1=CC=CC=C1', 'CCCC[NH3+]', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 17:14:06,986 INFO List of standardized smiles: ['[NH3+]CCC1=CC=CC=C1', 'CCCC[NH3+]', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 17:14:06,987 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 17:14:06,987 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 17:14:09,806 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:14:09,806 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:14:09,806 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:14:09,806 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:14:09,806 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:14:09,806 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:14:09,806 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:14:09,806 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:14:09,806 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:14:09,806 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:14:09,806 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 17:14:09,806 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 17:14:09,806 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 17:14:09,806 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 17:14:09,806 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 17:14:09,806 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 17:14:09,806 INFO ('molecular', '_feat_avgpol')
+2020-04-08 17:14:09,806 INFO ('molecular', '_feat_avgpol')
+2020-04-08 17:14:09,816 INFO Starting cxcalc
+2020-04-08 17:14:09,816 INFO Starting cxcalc
+2020-04-08 17:14:09,816 INFO Starting cxcalc
+2020-04-08 17:14:11,078 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 17:14:11,078 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 17:14:11,078 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 17:14:11,079 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 17:14:11,079 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 17:14:11,079 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 17:14:12,827 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:14:12,827 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:14:12,827 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:14:12,827 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:14:12,827 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:14:12,827 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:14:12,827 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:14:12,827 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:14:12,827 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:14:12,827 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:14:12,827 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:14:12,827 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:14:12,827 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:14:12,827 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:14:12,827 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:14:12,827 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:14:12,827 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:14:12,827 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:15:07,549 INFO Starting cxcalc
+2020-04-08 17:15:08,857 INFO List of standardized smiles: ['OC=O']
+2020-04-08 17:15:08,858 INFO Command list: ['molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'aliphaticatomcount']
+2020-04-08 17:15:10,044 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:15:10,044 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:15:10,044 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:15:10,060 INFO Starting cxcalc
+2020-04-08 17:15:10,060 INFO Starting cxcalc
+2020-04-08 17:15:11,364 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 17:15:11,364 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 17:15:11,365 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 17:15:11,365 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 17:15:14,111 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:15:14,111 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:15:14,111 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:15:14,111 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:15:14,111 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:15:14,111 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:15:14,111 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:15:14,111 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:15:14,112 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:15:14,112 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:15:14,112 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 17:15:14,112 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 17:15:14,112 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 17:15:14,112 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 17:15:14,112 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 17:15:14,112 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 17:15:14,112 INFO ('molecular', '_feat_avgpol')
+2020-04-08 17:15:14,112 INFO ('molecular', '_feat_avgpol')
+2020-04-08 17:15:14,121 INFO Starting cxcalc
+2020-04-08 17:15:14,121 INFO Starting cxcalc
+2020-04-08 17:15:14,121 INFO Starting cxcalc
+2020-04-08 17:15:15,366 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 17:15:15,366 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 17:15:15,366 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 17:15:15,367 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 17:15:15,367 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 17:15:15,367 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 17:15:17,189 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:15:17,189 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:15:17,189 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:15:17,190 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:15:17,190 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:15:17,190 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:15:17,190 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:15:17,190 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:15:17,190 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:15:17,190 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:15:17,190 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:15:17,190 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:15:17,190 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:15:17,190 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:15:17,190 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:15:17,190 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:15:17,190 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:15:17,190 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:17:12,980 INFO Starting cxcalc
+2020-04-08 17:17:14,278 INFO List of standardized smiles: ['CCCC[NH3+]', 'OC=O']
+2020-04-08 17:17:14,279 INFO Command list: ['molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'aliphaticatomcount']
+2020-04-08 17:17:15,397 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:17:15,397 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:17:15,397 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:17:15,412 INFO Starting cxcalc
+2020-04-08 17:17:15,412 INFO Starting cxcalc
+2020-04-08 17:17:16,719 INFO List of standardized smiles: ['[NH3+]CCC1=CC=CC=C1', 'CCCC[NH3+]', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 17:17:16,719 INFO List of standardized smiles: ['[NH3+]CCC1=CC=CC=C1', 'CCCC[NH3+]', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 17:17:16,720 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 17:17:16,720 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 17:17:19,536 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:17:19,536 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:17:19,536 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:17:19,536 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:17:19,536 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:17:19,536 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:17:19,536 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:17:19,536 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:17:19,536 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:17:19,536 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:17:19,536 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 17:17:19,536 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 17:17:19,537 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 17:17:19,537 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 17:17:19,537 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 17:17:19,537 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 17:17:19,537 INFO ('molecular', '_feat_avgpol')
+2020-04-08 17:17:19,537 INFO ('molecular', '_feat_avgpol')
+2020-04-08 17:17:19,546 INFO Starting cxcalc
+2020-04-08 17:17:19,546 INFO Starting cxcalc
+2020-04-08 17:17:19,546 INFO Starting cxcalc
+2020-04-08 17:17:20,821 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 17:17:20,821 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 17:17:20,821 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 17:17:20,822 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 17:17:20,822 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 17:17:20,822 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 17:17:22,683 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:17:22,683 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:17:22,683 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:17:22,683 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:17:22,683 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:17:22,683 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:17:22,683 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:17:22,683 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:17:22,683 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:17:22,683 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:17:22,683 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:17:22,683 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:17:22,683 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:17:22,683 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:17:22,683 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:17:22,684 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:17:22,684 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:17:22,684 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:29:58,809 INFO Starting cxcalc
+2020-04-08 17:30:00,173 INFO List of standardized smiles: ['OC=O', 'CCCC[NH3+]']
+2020-04-08 17:30:00,174 INFO Command list: ['molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'aliphaticatomcount']
+2020-04-08 17:30:01,309 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:30:01,309 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:30:01,309 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:30:01,325 INFO Starting cxcalc
+2020-04-08 17:30:01,325 INFO Starting cxcalc
+2020-04-08 17:30:02,627 INFO List of standardized smiles: ['[NH3+]CCC1=CC=CC=C1', 'CCCC[NH3+]', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 17:30:02,627 INFO List of standardized smiles: ['[NH3+]CCC1=CC=CC=C1', 'CCCC[NH3+]', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-08 17:30:02,628 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 17:30:02,628 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-08 17:30:05,436 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:30:05,436 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:30:05,436 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:30:05,436 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:30:05,436 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:30:05,436 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:30:05,436 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:30:05,436 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:30:05,436 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:30:05,436 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:30:05,436 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 17:30:05,436 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-08 17:30:05,436 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 17:30:05,436 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-08 17:30:05,436 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 17:30:05,436 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-08 17:30:05,436 INFO ('molecular', '_feat_avgpol')
+2020-04-08 17:30:05,436 INFO ('molecular', '_feat_avgpol')
+2020-04-08 17:30:05,446 INFO Starting cxcalc
+2020-04-08 17:30:05,446 INFO Starting cxcalc
+2020-04-08 17:30:05,446 INFO Starting cxcalc
+2020-04-08 17:30:06,702 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 17:30:06,702 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 17:30:06,702 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-08 17:30:06,703 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 17:30:06,703 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 17:30:06,703 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-08 17:30:08,444 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:30:08,444 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:30:08,444 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-08 17:30:08,444 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:30:08,444 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:30:08,444 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-08 17:30:08,444 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:30:08,444 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:30:08,444 INFO ('ASA+', '_feat_asa+')
+2020-04-08 17:30:08,444 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:30:08,444 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:30:08,444 INFO ('ASA_P', '_feat_asa_p')
+2020-04-08 17:30:08,444 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:30:08,444 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:30:08,444 INFO ('ASA_H', '_feat_asa_h')
+2020-04-08 17:30:08,444 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:30:08,444 INFO ('ASA-', '_feat_asa-')
+2020-04-08 17:30:08,444 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:04:15,784 INFO Starting cxcalc
+2020-04-09 07:04:38,389 INFO Starting cxcalc
+2020-04-09 07:04:39,647 INFO List of standardized smiles: ['OC=O', 'CCCC[NH3+]']
+2020-04-09 07:04:39,648 INFO Command list: ['molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'aliphaticatomcount']
+2020-04-09 07:04:40,822 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:04:40,822 INFO ('ASA_P', '_feat_asa_p')
+2020-04-09 07:04:40,822 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:04:40,837 INFO Starting cxcalc
+2020-04-09 07:04:40,837 INFO Starting cxcalc
+2020-04-09 07:04:42,119 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-09 07:04:42,119 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-09 07:04:42,120 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-09 07:04:42,120 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-09 07:04:45,067 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:04:45,067 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:04:45,067 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:04:45,067 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:04:45,067 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:04:45,067 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:04:45,067 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:04:45,067 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:04:45,067 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:04:45,067 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:04:45,067 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-09 07:04:45,067 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-09 07:04:45,067 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-09 07:04:45,067 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-09 07:04:45,067 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-09 07:04:45,067 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-09 07:04:45,067 INFO ('molecular', '_feat_avgpol')
+2020-04-09 07:04:45,067 INFO ('molecular', '_feat_avgpol')
+2020-04-09 07:04:45,077 INFO Starting cxcalc
+2020-04-09 07:04:45,077 INFO Starting cxcalc
+2020-04-09 07:04:45,077 INFO Starting cxcalc
+2020-04-09 07:04:46,287 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-09 07:04:46,287 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-09 07:04:46,287 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-09 07:04:46,287 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-09 07:04:46,287 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-09 07:04:46,287 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-09 07:04:48,208 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:04:48,208 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:04:48,208 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:04:48,208 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:04:48,208 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:04:48,208 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:04:48,208 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:04:48,208 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:04:48,208 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:04:48,208 INFO ('ASA_P', '_feat_asa_p')
+2020-04-09 07:04:48,208 INFO ('ASA_P', '_feat_asa_p')
+2020-04-09 07:04:48,208 INFO ('ASA_P', '_feat_asa_p')
+2020-04-09 07:04:48,208 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:04:48,208 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:04:48,208 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:04:48,208 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:04:48,208 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:04:48,208 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:06:06,885 INFO Starting cxcalc
+2020-04-09 07:06:08,155 INFO List of standardized smiles: ['OC=O', 'CCCC[NH3+]']
+2020-04-09 07:06:08,156 INFO Command list: ['molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'aliphaticatomcount']
+2020-04-09 07:06:09,327 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:06:09,327 INFO ('ASA_P', '_feat_asa_p')
+2020-04-09 07:06:09,327 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:06:09,342 INFO Starting cxcalc
+2020-04-09 07:06:09,342 INFO Starting cxcalc
+2020-04-09 07:06:10,626 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-09 07:06:10,626 INFO List of standardized smiles: ['CCCC[NH3+]', '[NH3+]CCC1=CC=CC=C1', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-09 07:06:10,627 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-09 07:06:10,627 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-09 07:06:13,317 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:06:13,317 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:06:13,317 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:06:13,317 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:06:13,317 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:06:13,317 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:06:13,317 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:06:13,317 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:06:13,317 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:06:13,317 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:06:13,317 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-09 07:06:13,317 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-09 07:06:13,317 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-09 07:06:13,317 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-09 07:06:13,317 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-09 07:06:13,317 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-09 07:06:13,317 INFO ('molecular', '_feat_avgpol')
+2020-04-09 07:06:13,317 INFO ('molecular', '_feat_avgpol')
+2020-04-09 07:06:13,327 INFO Starting cxcalc
+2020-04-09 07:06:13,327 INFO Starting cxcalc
+2020-04-09 07:06:13,327 INFO Starting cxcalc
+2020-04-09 07:06:14,572 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-09 07:06:14,572 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-09 07:06:14,572 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-09 07:06:14,573 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-09 07:06:14,573 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-09 07:06:14,573 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-09 07:06:16,317 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:06:16,317 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:06:16,317 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:06:16,317 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:06:16,317 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:06:16,317 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:06:16,317 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:06:16,317 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:06:16,317 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:06:16,317 INFO ('ASA_P', '_feat_asa_p')
+2020-04-09 07:06:16,317 INFO ('ASA_P', '_feat_asa_p')
+2020-04-09 07:06:16,317 INFO ('ASA_P', '_feat_asa_p')
+2020-04-09 07:06:16,317 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:06:16,317 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:06:16,317 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:06:16,317 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:06:16,317 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:06:16,317 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:06:39,483 INFO Starting cxcalc
+2020-04-09 07:06:40,695 INFO List of standardized smiles: ['CCCC[NH3+]', 'OC=O']
+2020-04-09 07:06:40,696 INFO Command list: ['molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'aliphaticatomcount']
+2020-04-09 07:06:41,843 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:06:41,843 INFO ('ASA_P', '_feat_asa_p')
+2020-04-09 07:06:41,843 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:06:41,858 INFO Starting cxcalc
+2020-04-09 07:06:41,858 INFO Starting cxcalc
+2020-04-09 07:06:43,169 INFO List of standardized smiles: ['[NH3+]CCC1=CC=CC=C1', 'CCCC[NH3+]', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-09 07:06:43,169 INFO List of standardized smiles: ['[NH3+]CCC1=CC=CC=C1', 'CCCC[NH3+]', 'CC(C)C[NH3+]', 'CC[NH3+]', '[NH3+]CC1=CC=CC=C1', 'C[NH3+]', 'C[NH3+]', 'NC=[NH2+]', 'CC(C)(C)C[NH3+]', '[NH3+]CC1CCCCC1', 'C1COCC[NH2+]1', 'C1COCC[NH2+]1', 'CC(N)=[NH2+]', '[NH3+]CC[NH+]1CCCC1', '[NH3+]c1ccc([NH3+])cc1', 'C1C[NH2+]CC[NH2+]1']
+2020-04-09 07:06:43,169 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-09 07:06:43,169 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-', 'donorcount', '-H', '3.0', 'acceptorcount', '-H', '3.0', 'psa', '-H', '3.0', 'avgpol']
+2020-04-09 07:06:45,962 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:06:45,962 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:06:45,962 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:06:45,962 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:06:45,962 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:06:45,962 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:06:45,962 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:06:45,962 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:06:45,963 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:06:45,963 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:06:45,963 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-09 07:06:45,963 INFO ('donorcount', '_feat_hdonorcount')
+2020-04-09 07:06:45,963 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-09 07:06:45,963 INFO ('acceptorcount', '_feat_hacceptorcount')
+2020-04-09 07:06:45,963 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-09 07:06:45,963 INFO ('Polar surface area', '_feat_protpsa')
+2020-04-09 07:06:45,963 INFO ('molecular', '_feat_avgpol')
+2020-04-09 07:06:45,963 INFO ('molecular', '_feat_avgpol')
+2020-04-09 07:06:45,973 INFO Starting cxcalc
+2020-04-09 07:06:45,973 INFO Starting cxcalc
+2020-04-09 07:06:45,973 INFO Starting cxcalc
+2020-04-09 07:06:47,251 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-09 07:06:47,251 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-09 07:06:47,251 INFO List of standardized smiles: ['O=C1CCCO1', 'CN(C)C=O', 'ClCCl', 'CS(C)=O']
+2020-04-09 07:06:47,251 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-09 07:06:47,251 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-09 07:06:47,251 INFO Command list: ['heteroaromaticringcount', 'aliphaticatomcount', 'molecularsurfacearea', '-t', 'asa+', 'molecularsurfacearea', '-t', 'asa_p', 'molecularsurfacearea', '-t', 'asa_h', 'molecularsurfacearea', '-t', 'asa-']
+2020-04-09 07:06:49,031 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:06:49,031 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:06:49,031 INFO ('Heteroaromatic ring count', '_feat_heteroaromaticringcount')
+2020-04-09 07:06:49,031 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:06:49,031 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:06:49,031 INFO ('Aliphatic atom count', '_feat_aliphaticatomcount')
+2020-04-09 07:06:49,031 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:06:49,031 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:06:49,031 INFO ('ASA+', '_feat_asa+')
+2020-04-09 07:06:49,031 INFO ('ASA_P', '_feat_asa_p')
+2020-04-09 07:06:49,031 INFO ('ASA_P', '_feat_asa_p')
+2020-04-09 07:06:49,031 INFO ('ASA_P', '_feat_asa_p')
+2020-04-09 07:06:49,031 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:06:49,031 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:06:49,031 INFO ('ASA_H', '_feat_asa_h')
+2020-04-09 07:06:49,031 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:06:49,031 INFO ('ASA-', '_feat_asa-')
+2020-04-09 07:06:49,031 INFO ('ASA-', '_feat_asa-')

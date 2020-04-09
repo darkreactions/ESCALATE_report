@@ -2,7 +2,7 @@
 
 Here is a quick demo of using cerberus style schemas for the crystal file
 and
-
+TODO: Not clear if this is accurate anymore (April 6, 2020), clarify, update
 """
 CRYSTAL_FILE = {
 

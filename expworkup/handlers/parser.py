@@ -2,8 +2,6 @@ import pandas as pd
 import logging
 from utils import globals
 
-from expworkup.entity_tables.reagent_entity import ReagentObject
-
 modlog = logging.getLogger('report.parser')
 
 #Overview
@@ -56,7 +54,7 @@ def flatten_json(y):
         else:
             out[str('_raw_'+ name[:-1])] = str(x)
     flatten(y)
-    return(pd.io.json.json_normalize(out))
+    return(pd.json_normalize(out))
 
 def flatten_json_reg(y):
     '''
@@ -105,9 +103,9 @@ def flatten_json_reg(y):
         oldkey = (('_'.join(oldkeylist)))
         newkey = namesdict[oldkey] + '_' + headerend
         finaldict[newkey] = v
-    return(pd.io.json.json_normalize(finaldict)) # normalizes the data and reads into a single row data frame
+    return(pd.json_normalize(finaldict)) # normalizes the data and reads into a single row data frame
 
-def reagentparser(firstlevel, myjson, chem_df):
+def tray_parser(firstlevel, myjson):
     """
 
     """

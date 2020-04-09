@@ -43,7 +43,6 @@ def parse_exp_volumes(fname, experiment_lab):
     :return:
     """
 
-    #TODO parse based on folder suffix, no lab spec
     robot_dict = pd.read_excel(open(fname, 'rb'), header=[0], sheet_name=0)
     reagentlist = []
     for header in robot_dict.columns:
@@ -52,13 +51,17 @@ def parse_exp_volumes(fname, experiment_lab):
             reagentlist.append(header)
     rnum = len(reagentlist)
 
+    pipette_list = range(0,rnum+2)
+
     #MIT_PVLab has an additional column in the second row 'Experiment Name' in additiona
     # to the 'Experiment Index'.  The +1 accounts for that during parsing
     if experiment_lab == 'MIT_PVLab':
         rnum += 1
+        pipette_list = [0]
+        pipette_list.extend(range(1,rnum+2))
 
     pipette_volumes = pd.read_excel(fname, sheet_name=0,
-                                    usecols=range(0, rnum+2))
+                                    usecols=pipette_list)
     reaction_parameters = pd.read_excel(fname, sheet_name=0,
                                         usecols=[rnum+2, rnum+3]).dropna()
     reagent_info = pd.read_excel(fname, sheet_name=0,
@@ -176,7 +179,7 @@ def download_experiment_directories(target_directory, dataset):
             time.sleep(sleep_timer)
     return exp_dict
 
-def inventory_assembly(exp_dict, chemdf_dict):
+def inventory_assembly(exp_dict):
     """ 
     Gather chemical inventories used to generate runs for labs in exp_dict
 
@@ -196,7 +199,7 @@ def inventory_assembly(exp_dict, chemdf_dict):
         lab_vars dictionary subsequent code will be automated to target
         the default if no lab specific chemdf uid is provided.
     """
-
+    chemdf_dict = {}
     lablist = [] 
     for title in exp_dict.keys():
         run_lab = get_experimental_run_lab(title)

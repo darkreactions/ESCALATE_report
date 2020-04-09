@@ -72,7 +72,6 @@ def ChemicalData(lab):
     chemdf=chemdf.reset_index(drop=True)
     chemdf=chemdf.set_index(['InChI Key (ID)'])
     modlog.info('Successfully loaded chemical data for processing')
-
     return(chemdf)
 
 def save_prep_interface(prep_UID, local_data_dir, run_name):
