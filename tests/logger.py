@@ -1,21 +1,15 @@
-import sys
 import logging
 
-def mylogfunc(args):
-    logger = logging.getLogger('report')
-    logger.setLevel(logging.DEBUG)
-    # create file handler which logs event debug messages
-    fh = logging.FileHandler('%s_LogFile.log'%args.local_directory)
-    fh.setLevel(logging.DEBUG)
-    # create console handler with a higher log level
-    wh = logging.StreamHandler()
-    wh.setLevel(logging.WARN)
-    # create error formatter with the highest log level
-    # create formatter and add it to the handlers
+def setup_logger(logger_name, log_file, level=logging.INFO, stream=False):
+    l = logging.getLogger(logger_name)
     formatter = logging.Formatter('%(asctime)s> %(name)s ; %(levelname)s - %(message)s')
-    warning_formatter = logging.Formatter('%(asctime)s> %(name)s ; %(levelname)s - %(message)s')
-    fh.setFormatter(formatter)
-    wh.setFormatter(warning_formatter)
-    logger.addHandler(fh)
-    logger.addHandler(wh) 
-    return('%s_Logfile.log'%args.local_directory)
+    fileHandler = logging.FileHandler(log_file, mode='w')
+    fileHandler.setFormatter(formatter)
+
+    l.setLevel(level)
+    l.addHandler(fileHandler)
+
+    if stream:
+        streamHandler = logging.StreamHandler()
+        streamHandler.setFormatter(formatter)
+        l.addHandler(streamHandler)   

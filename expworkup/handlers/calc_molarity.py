@@ -1,6 +1,6 @@
 import logging
 
-modlog = logging.getLogger(__name__)
+modlog = logging.getLogger('report.calc_molarity')
 import pandas as pd
 
 def get_molarity_df(mmol_df):

@@ -2,16 +2,13 @@ import logging
 import pandas as pd
 
 from tqdm import tqdm
-
 from utils.file_handling import get_experimental_run_lab
-
-
 #This should be the default in pandas IMO
 pd.options.mode.chained_assignment = None
 
 from expworkup.ingredients.compound_ingredient import CompoundIngredient
 
-modlog = logging.getLogger(__name__)
+modlog = logging.getLogger('report.ingredient.pipeline')
 
 def ingredient_pipeline(report_df, chemdf_dict):
     """
@@ -179,7 +176,6 @@ def get_compound_ingredient_objects_df(all_ingredients_df, chemdf_dict):
     """
 
     compound_ingredient_objects_df = pd.DataFrame()
-    #reagent_entity.all_unique_ingredients(versioned_df, target_naming_scheme, chemdf_dict, export_observables=True)
 
     compound_ingredient_list = []
     for column in all_ingredients_df.columns:
@@ -190,130 +186,18 @@ def get_compound_ingredient_objects_df(all_ingredients_df, chemdf_dict):
     compound_ingredient_list = set(compound_ingredient_list)
 
     modlog.info('Preparing Reagent Objects')
-    print('Preparing reagent objects...')
+    print('(4/4) Preparing reagent objects...')
     for compound_ingredient_label in tqdm(compound_ingredient_list):
+        modlog.info(f'Preparing {compound_ingredient_label}')
         df = all_ingredients_df.filter(regex=compound_ingredient_label)
         df['name'] = all_ingredients_df['name'].values
         compound_ingredient_objects_df[compound_ingredient_label] = \
-            df.apply(lambda row:  one_compound_ingredient(row, compound_ingredient_label, chemdf_dict), axis=1)
-
+            df.apply(lambda row:  one_compound_ingredient(row,
+                                                          compound_ingredient_label,
+                                                          chemdf_dict),
+                                                          axis=1)
+        modlog.info(f'Completed {compound_ingredient_label} reagent objects')
     compound_ingredient_objects_df['name'] = df['name'].values
     compound_ingredient_objects_df.set_index('name', inplace=True)
     return(compound_ingredient_objects_df)
 
-    # Send out each row of the ingretients as a lambda, parse by reagent, build class objects, return to new df with compound ingredient objects
-    
-
-
-    #reagent_spec = reag_info(reagent_df,chem_df) #takes all of the infomration from the chem_df (online web information here) and puts it together with the the reagent information
-    #concentration_df = calcConc(reagent_df, reagent_spec) #takes the information abot the reagents and generates ... 
-
-    #reagent_objects_df = curate_reagent_objects(reagent_details_df, nominal=False, export_observables=export_observables)
-    #build smarts for object distinction here
-    #representative_tray_uids = entity.get_tray_uids(report_df)
-    #modlog.info(f'Generated compound ingredient (reagents) objects in {reagent_objects_file}')
-
-
-    #build smarts for model distinction here
-    #reagent_details_nominal_df = get_reagent_df(report_df, nominal=False)# default is to return the actuals (nominals can be toggled)
-    #reagent_nominal_file = export_reagent_objects(perovskite_df, target_naming_scheme, nominal=True)
-
-    #modlog.info(f'Generated compound ingredient (reagents) nominals in {reagent_nominal_file}')
-    
-    # Setup the chemical dataframe for reading out chemical names (specific for 1.1)
-    # TODO: generalize beyond 1.1 for direct reaction reproductions from reagent objects --> to models (harder, hypothesis)
-
-    #conc_dict_out = {}
-    #for exp_uid, row in conc_df.iterrows():
-    #    conc_dict_out[exp_uid] = {}
-    #    chem_df = chemdf_dict[get_experimental_run_lab(exp_uid)]
-    #    chem_df = chem_df.fillna('null') #insert our choice placeholder for blank values --> 'null'
-    #    conc_dict_out[exp_uid]['chemical_info'] = {}
-    #    conc_dict_out[exp_uid]['chemical_info']['solvent'] = (conc_df.loc[exp_uid,'_raw_reagent_0_chemicals_0_InChIKey'], 
-    #                                                        chem_df.loc[conc_df.loc[exp_uid,'_raw_reagent_0_chemicals_0_InChIKey'],"Chemical Name"]
-    #                                                        ) 
-    #    conc_dict_out[exp_uid]['chemical_info']['inorganic'] = (conc_df.loc[exp_uid,'_raw_reagent_1_chemicals_0_InChIKey'], 
-    #                                                        chem_df.loc[conc_df.loc[exp_uid,'_raw_reagent_1_chemicals_0_InChIKey'],"Chemical Name"],
-    #                                                        conc_df.loc[exp_uid,'_raw_reagent_1_chemicals_0_v1conc']                                                               
-    #                                                        ) 
-    #    conc_dict_out[exp_uid]['chemical_info']['organic-1'] = (conc_df.loc[exp_uid,'_raw_reagent_1_chemicals_1_InChIKey'], 
-    #                                                        chem_df.loc[conc_df.loc[exp_uid,'_raw_reagent_1_chemicals_1_InChIKey'],"Chemical Name"],
-    #                                                        conc_df.loc[exp_uid,'_raw_reagent_1_chemicals_1_v1conc']                                                               
-    #                                                        ) 
-    #    conc_dict_out[exp_uid]['chemical_info']['organic-2'] = (conc_df.loc[exp_uid,'_raw_reagent_2_chemicals_0_InChIKey'], 
-    #                                                        chem_df.loc[conc_df.loc[exp_uid,'_raw_reagent_2_chemicals_0_InChIKey'],"Chemical Name"],
-    #                                                        conc_df.loc[exp_uid,'_raw_reagent_2_chemicals_0_v1conc']                                                               
-    #                                                        ) 
-    #    conc_dict_out[exp_uid]['organic_inchi'] = conc_df.loc[exp_uid, '_rxn_organic-inchikey']
-
-
-def build_conc_df(df):
-    '''
-    Takes in perovskite dataframe and returns a list of "first runs" for a given set of reagents.  
-    These 'first runs' are often representative of the maximum solubility limits of a given space.  
-    Likely there will be some strangeness in the first iteration that requires tuning of these filters.
-
-    Assumptions: 
-    1. ommitting reagents 4-5 for "uniqueness" comparison
-    2. need to generalize to use experimental volumes to determing which experiments use which reagents
-    3. definitely is missing some of the unique reagents (some are performed at various concetnrations, not just hte first)
-    
-    Filters are explained in code
-    '''
-    # Only consider runs where the workflow are equal to 1.1 (the ITC method after initial development)
-    # TODO: generalize beyond 1.1
-    # #remove this once testing is complete and the reagent nominals / objects are exportable
-    df = df[df['_raw_ExpVer'] == 1.1].reset_index(drop=True) # Harded coded to 1.1 for development
-
-    # removes some anomalous entries with dimethyl ammonium still listed as the organic.
-    #perov = perov[perov['_rxn_organic-inchikey'] != 'JMXLWMIFDJCGBV-UHFFFAOYSA-N'].reset_index(drop=True)
-
-    # build a list of all unique combinations of inchi keys for the remaining dataset
-    experiment_inchis_df = df.filter(regex='_raw_reagent.*.InChIKey')
-    experiment_inchis = (experiment_inchis_df.columns.values)
-    experiment_inchis_df = pd.concat([df['name'], experiment_inchis_df], axis=1)
-    ignore_list = ['name']
-
-    df.set_index('name', inplace=True)
-
-    # clean up blanks, and bad entries for inchikeys, return date sorted df
-    experiment_inchis_df.replace(0.0, np.nan, inplace=True)
-    experiment_inchis_df.replace(str(0), np.nan, inplace=True)
-    experiment_inchis_df.set_index('name', inplace=True)
-    experiment_inchis_df.sort_index(axis=0, inplace=True)
-
-    # find extra reagents (not present in any initial testing runs) (i.e. experiments with zeroindex-reagents 2 < x > 5)
-    secondary_reagent_columns = []
-    for column in experiment_inchis_df.columns:
-        if column in ignore_list:
-            pass
-        else:
-            reagent_num = int(column.split("_")[3]) # 3 is the value of the split for reagent num
-            if reagent_num > 10 and reagent_num < 11:
-                secondary_reagent_columns.append(column)
-    experiment_inchis_df.drop(secondary_reagent_columns, axis=1, inplace=True) 
-    experiment_inchis_df.drop_duplicates(inplace=True)
-#    experiment_inchis_df = pd.concat([df, experiment_inchis_df], axis=1, join='inner')
-    experiment_inchis_df['name'] = experiment_inchis_df.index
-
-    # get the concentration of the relevant associated inchi keys for all included reageagents
-
-    def get_chemical_conc(reagent, inchi, index):
-        reagent_inorg_header = f'_raw_reagent_{reagent}_v1-conc_{inchi}'
-        try:
-            inorg_conc = df.loc[index, reagent_inorg_header]
-        except:
-            inorg_conc = 0
-        return inorg_conc
-    
-    prototype_df = experiment_inchis_df.copy()
-    for column in experiment_inchis_df.columns:
-        if column in ignore_list:
-            pass
-        else:
-            column_name_split = column.split("_")
-            new_column_name = '_'.join(column_name_split[:6]) + '_v1conc'
-            reagent_num = column.split("_")[3]
-            prototype_df[new_column_name] = experiment_inchis_df.apply(lambda x: get_chemical_conc(reagent_num, x[column], x['name']), axis=1)
-    prototype_df = pd.concat([df['_rxn_organic-inchikey'], prototype_df], axis=1, join='inner')
-    return prototype_df

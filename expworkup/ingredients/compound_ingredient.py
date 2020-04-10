@@ -9,7 +9,8 @@ from utils import globals
 from expworkup import devconfig as config
 from utils import globals
 
-modlog = logging.getLogger(__name__)
+ingredlog = logging.getLogger('ingredient')
+warnlog = logging.getLogger('warning')
 
 class CompoundIngredient():
     """ Calculates, stores, manages ingredients of a dataset
@@ -182,7 +183,7 @@ class CompoundIngredient():
         for row in comp_ingredient_df.itertuples():
             if 'solvent' in row.type:
                 if row.unit == 'gram':
-                    modlog.error(f'experiment with {ingredient_uid_name} specifies solvent in grams, verify this is the desired unit!')
+                    warnlog.error(f'experiment with {ingredient_uid_name} specifies solvent in grams, verify this is the desired unit!')
                     chemical_volume.append(float(row.amount) / float(row.density))  # converts grams to mL
                 #    comp_ingredient_df.at[row.Index, 'solv_chemical_volume'] = chemical_volume
                 elif row.unit == 'milliliter':
@@ -194,7 +195,7 @@ class CompoundIngredient():
 
         # if no volume of a defined 'solvent' is identified, default to any other liquids
         if sum(chemical_volume) == 0:
-            modlog.info(f'experiment with {ingredient_uid_name} has no specified solvent, using sum of liquids for SolV concentration model!')
+            ingredlog.info(f'experiment with {ingredient_uid_name} has no specified solvent, using sum of liquids for SolV concentration model!')
             for row in comp_ingredient_df.itertuples():
                 if row.unit == 'milliliter':
                 #    comp_ingredient_df.at[row.Index, 'solv_chemical_volume'] = row.amount  # leaves mL well enough alone
@@ -204,7 +205,7 @@ class CompoundIngredient():
         if sum(chemical_volume) == 0:
             for row in comp_ingredient_df.itertuples():
                 if row.unit == 'gram':
-                    modlog.warn(f'experiment with {ingredient_uid_name} has no liquids! using the solids volume.. FIX THIS!')
+                    warnlog.error(f'experiment with {ingredient_uid_name} has no liquids! using the solids volume.. FIX THIS!')
                     chemical_volume.append(float(row.amount) / float(row.density))  # converts grams to mL
 
         return(sum(chemical_volume))

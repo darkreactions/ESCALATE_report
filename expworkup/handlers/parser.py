@@ -109,8 +109,8 @@ def tray_parser(firstlevel, myjson):
     """
 
     """
+    modlog.info('Parsing %s to csv' %myjson)
     for reg_key,reg_value in firstlevel.items():
-        modlog.info('Parsing %s to csv' %myjson)
 
         if reg_key == 'reagent':
             reagent_df = flatten_json_reg(reg_value)

@@ -15,7 +15,7 @@ from expworkup.handlers import parser
 from utils.file_handling import get_experimental_run_lab
 from utils import globals
 
-modlog = logging.getLogger(__name__)
+modlog = logging.getLogger('report.jsonparser')
 
 def renamer(dirty_df, dataset_list):
     """Eats clean datasets and renames them according to rename_list.json
@@ -131,7 +131,7 @@ def unpackJSON(myjson_fol, chemdf_dict):
         if my_exp_json.endswith(".json"):
             json_list.append(my_exp_json)
     for my_exp_json in tqdm(json_list):
-        modlog.info('Unpacking %s' %my_exp_json)
+        modlog.info('(3/4) Unpacking %s' %my_exp_json)
         concat_df = pd.DataFrame()  
         #appends each run to the original dataframe
         myjson = (os.path.join(myjson_fol, my_exp_json))

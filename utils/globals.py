@@ -12,7 +12,7 @@ import pandas as pd
 
 from expworkup.ingredients.compound_ingredient import CompoundIngredient
 
-modlog = logging.getLogger(__name__)
+modlog = logging.getLogger('report.globals')
 
 def lab_safeget(dct, lab_key, key_1):
     '''

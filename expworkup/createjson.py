@@ -58,7 +58,7 @@ def parse_exp_volumes(fname, experiment_lab):
     if experiment_lab == 'MIT_PVLab':
         rnum += 1
         pipette_list = [0]
-        pipette_list.extend(range(1,rnum+2))
+        pipette_list.extend(range(2,rnum+2))
 
     pipette_volumes = pd.read_excel(fname, sheet_name=0,
                                     usecols=pipette_list)
@@ -145,8 +145,6 @@ def download_experiment_directories(target_directory, dataset):
     """
     save_directory = f'{target_directory}/gdrive_files'  # Local storage for gdrive files
     modlog.info('ensuring directories')
-    if not os.path.exists(target_directory):
-        os.mkdir(target_directory)
     if not os.path.exists(save_directory):
         os.mkdir(save_directory)
     
@@ -155,7 +153,7 @@ def download_experiment_directories(target_directory, dataset):
 
 
     modlog.info('Starting Download and Directory Parsing')
-    print('Starting Download and Directory Parsing...')
+    print('(2/4) Starting Download and Directory Parsing...')
     for exp_name, exp_files in tqdm(exp_dict.items()):
         run_json_filename = Path(target_directory + "/{}.json".format(exp_name))
         if os.path.isfile(run_json_filename):

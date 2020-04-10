@@ -117,7 +117,7 @@ def parse_gdrive_folder(remote_directory, local_directory):
     drive = get_gdrive_auth()
 
     data_directories = {}
-    print('Retrieving Directory Structure...')
+    print('(1/4) Retrieving Directory Structure...')
     remote_directory_children = drive.ListFile({'q': "'%s' in parents and trashed=false" % remote_directory}).GetList()
     for child in tqdm(remote_directory_children):
         if child['mimeType'] == 'application/vnd.google-apps.folder':
