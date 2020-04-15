@@ -17,17 +17,20 @@ from utils import globals
 
 from expworkup.devconfig import cwd
 
-modlog = logging.getLogger('report.googleAPI')
+modlog = logging.getLogger(f'mainlog.{__name__}')
+warnlog = logging.getLogger(f'warning.{__name__}')
 
 def get_gdrive_auth():
-    gauth = GoogleAuth(settings_file='settings.yaml')
+    gauth = GoogleAuth(settings_file='./expworkup/settings.yaml')
 
     google_cred_file = "./mycred.txt"
     if not os.path.exists(google_cred_file):
+        modlog.info(f'Temp authentication file {google_cred_file} created')
         open(google_cred_file, 'w+').close()
 
     gauth.LoadCredentialsFile(google_cred_file)
     if gauth.credentials is None or gauth.access_token_expired:
+        modlog.info(f'Temp authentication file {google_cred_file} required refresh')
         gauth.LocalWebserverAuth()  # Creates local webserver and auto handles authentication.
     else:
         gauth.Authorize()  # Just run because everything is loaded properly
@@ -117,13 +120,13 @@ def parse_gdrive_folder(remote_directory, local_directory):
     drive = get_gdrive_auth()
 
     data_directories = {}
-    print('(1/4) Retrieving Directory Structure...')
+    print('(1/6) Retrieving Directory Structure...')
     remote_directory_children = drive.ListFile({'q': "'%s' in parents and trashed=false" % remote_directory}).GetList()
     for child in tqdm(remote_directory_children):
         if child['mimeType'] == 'application/vnd.google-apps.folder':
             modlog.info('downloaded file structure for {} from google drive'.format(child['title']))
-
-            grandchildren = drive.ListFile({'q': "'{}' in parents and trashed=false".format(child['id'])}).GetList()
+            grandchildren = \
+                drive.ListFile({'q': "'{}' in parents and trashed=false".format(child['id'])}).GetList()
             data_directories[child['title']] = grandchildren
 
     return data_directories

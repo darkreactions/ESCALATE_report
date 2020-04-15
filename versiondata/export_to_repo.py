@@ -19,7 +19,8 @@ INDEX_NAME = None
 STATESET_NAME = None
 LINK_NAME = None
 
-modlog = logging.getLogger('report.export_to_repo')
+modlog = logging.getLogger(f'mainlog.{__name__}')
+warnlog = logging.getLogger(f'warning.{__name__}')
 
 ### HEADER PREPARATION INFORMATION
 ## Header for state set data

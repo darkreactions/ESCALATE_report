@@ -9,8 +9,8 @@ from utils import globals
 from expworkup import devconfig as config
 from utils import globals
 
-ingredlog = logging.getLogger('ingredient')
-warnlog = logging.getLogger('warning')
+warnlog = logging.getLogger(f'warning.{__name__}')
+ingredlog = logging.getLogger(f'ilog.{__name__}')
 
 class CompoundIngredient():
     """ Calculates, stores, manages ingredients of a dataset

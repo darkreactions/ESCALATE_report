@@ -15,7 +15,8 @@ from expworkup.handlers import parser
 from utils.file_handling import get_experimental_run_lab
 from utils import globals
 
-modlog = logging.getLogger('report.jsonparser')
+modlog = logging.getLogger(f'mainlog.{__name__}')
+warnlog = logging.getLogger(f'warning.{__name__}')
 
 def renamer(dirty_df, dataset_list):
     """Eats clean datasets and renames them according to rename_list.json
@@ -110,8 +111,6 @@ def cleaner(clean_df, raw_bool_cli):
     squeaky_clean_df.columns = map(str.lower, squeaky_clean_df.columns)
     return(squeaky_clean_df)
 
-    
-
 def unpackJSON(myjson_fol, chemdf_dict):
     """
     most granular data for each row of the final CSV is the well information.
@@ -141,12 +140,11 @@ def unpackJSON(myjson_fol, chemdf_dict):
         concat_df = pd.concat([concat_df,tray_df], ignore_index=True, sort=True)
         #generates a well level unique ID and aligns
         runID_df=pd.DataFrame(data=[concat_df['_raw_jobserial'] + '_' + concat_df['_raw_vialsite']]).transpose()
-        runID_df.columns=['RunID_vial']
+        runID_df.columns=['runid_vial']
         #combines all operations into a final dataframe for the entire tray level view with all information
         concat_df = pd.concat([concat_df, runID_df], sort=True, axis=1)
         #Combines the most recent dataframe with the final dataframe which is targeted for export
         concat_df_raw = pd.concat([concat_df_raw,concat_df], sort=True)
-    print('JSON to CSV conversion complete!')
     return(concat_df_raw) #this contains all of the raw values from the processed JSON files.  No additional data has been calculated
 
 def json_pipeline(myjsonfolder, raw_bool_cli, chemdf_dict, dataset_list):
@@ -168,13 +166,13 @@ def json_pipeline(myjsonfolder, raw_bool_cli, chemdf_dict, dataset_list):
     Note: unlike older code this does not perform ANY calcs.  See report_calcs.py
 
     '''
-    print('Dataset download complete. Unpacking JSON Files...')
+    print('(3/6) Dataset download complete. Unpacking JSON Files...')
     modlog.info('%s loaded with JSONs for parsing, starting' %myjsonfolder)
 
     raw_df = unpackJSON(myjsonfolder, chemdf_dict)
     renamed_raw_df = renamer(raw_df, dataset_list)
     report_df = cleaner(renamed_raw_df, raw_bool_cli)
-    report_df['name'] = report_df['runid_vial']
+    report_df['name'] = raw_df['runid_vial']
     #TODO: add validation to dev here
 
     return(report_df)

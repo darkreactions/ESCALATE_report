@@ -3,14 +3,16 @@ import pandas as pd
 
 from tqdm import tqdm
 from utils.file_handling import get_experimental_run_lab
+from utils.file_handling import write_debug_file
 #This should be the default in pandas IMO
 pd.options.mode.chained_assignment = None
 
 from expworkup.ingredients.compound_ingredient import CompoundIngredient
 
-modlog = logging.getLogger('report.ingredient.pipeline')
+modlog = logging.getLogger(f'mainlog.{__name__}')
+warnlog = logging.getLogger(f'warning.{__name__}')
 
-def ingredient_pipeline(report_df, chemdf_dict):
+def ingredient_pipeline(report_df, chemdf_dict, debug_bool):
     """
     This needs to read in the experiments, chemicals and assemble all unique reagents
 
@@ -41,16 +43,30 @@ def ingredient_pipeline(report_df, chemdf_dict):
         * the difference between objects (e.g., actuals) and models (e.g., nominals) 
           indicates how well a hyptothesis was executed
     """
+    report_copy = report_df.set_index('name')
     
     #TODO: Fix to only implement a new CompoundIngredient as needed (currently implements for all instances)
     ingredients_actual_df = get_ingredients_df(report_df, nominal=False)# default is to return the actuals (nominals can be toggled)
     ingredients_actual_df['name'] = report_df['name']
+    ingredients_actual_df_copy = ingredients_actual_df.set_index('name')
+    reagent_volumes_df = report_copy.filter(regex='reagent_._volume')
+    temperature_df = report_copy.filter(regex='temperature')
+    measures_df = reagent_volumes_df.join(ingredients_actual_df_copy, how='left', on='name')
+    measures_df = measures_df.join(temperature_df, how='left', on='name')
+    if debug_bool:
+        measures_df_file = 'REPORT_MEASURES.csv'
+        # converts to 'name' indexed and unpacks with each inchikey as a column
+        write_debug_file(measures_df.sort_index(axis=1),
+                         measures_df_file)
+
     compound_ingredient_objects_df = get_compound_ingredient_objects_df(ingredients_actual_df, chemdf_dict)
+    # TODO: export reagent objects/actuals df with concentrations, recipes, etc
 
     #TODO: repeat the object process but use the nominal values and return the models
     #ingredients_nominals_df = get_ingredients_df(report_df, nominal=True)# default is to return the actuals (nominals can be toggled)
     #ingredients_nominals_df['name'] = report_df['name']
     #compound_ingredient_models_df = get_compound_ingredient_objects_df(ingredients_actual_df, chemdf_dict)
+    # TODO: export reagent models df with concentrations, recipes, etc
 
     return(compound_ingredient_objects_df)#, compound_ingredient_models_df)
 
@@ -185,8 +201,8 @@ def get_compound_ingredient_objects_df(all_ingredients_df, chemdf_dict):
             compound_ingredient_list.append(ingredient_instance)
     compound_ingredient_list = set(compound_ingredient_list)
 
-    modlog.info('Preparing Reagent Objects')
-    print('(4/4) Preparing reagent objects...')
+    modlog.info('Preparing Reagent Objects, details for ingredient preparation are in separate logfile')
+    print('(4/6) Preparing reagent objects...')
     for compound_ingredient_label in tqdm(compound_ingredient_list):
         modlog.info(f'Preparing {compound_ingredient_label}')
         df = all_ingredients_df.filter(regex=compound_ingredient_label)
@@ -197,6 +213,7 @@ def get_compound_ingredient_objects_df(all_ingredients_df, chemdf_dict):
                                                           chemdf_dict),
                                                           axis=1)
         modlog.info(f'Completed {compound_ingredient_label} reagent objects')
+    modlog.info("Completed: 'Preparing Reagent Objects'")
     compound_ingredient_objects_df['name'] = df['name'].values
     compound_ingredient_objects_df.set_index('name', inplace=True)
     return(compound_ingredient_objects_df)

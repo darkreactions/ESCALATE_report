@@ -2,8 +2,8 @@ import pandas as pd
 import sys
 import logging
 
-
-modlog = logging.getLogger('report.feature_augmentation')
+modlog = logging.getLogger(f'mainlog.{__name__}')
+warnlog = logging.getLogger(f'warning.{__name__}')
 
 def GrabOrganicInchi(inchi_df, molaritydf):
     """ Converts dataframe of inchi keys to a single column of 'organic' Inchis

@@ -2,7 +2,8 @@ import pandas as pd
 import logging
 from utils import globals
 
-modlog = logging.getLogger('report.parser')
+modlog = logging.getLogger(f'mainlog.{__name__}')
+warnlog = logging.getLogger(f'warning.{__name__}')
 
 #Overview
 #parases each index of the json file and returns a normalized data frame with each experiment (well) containing all relevant information

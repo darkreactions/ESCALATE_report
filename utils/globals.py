@@ -12,7 +12,11 @@ import pandas as pd
 
 from expworkup.ingredients.compound_ingredient import CompoundIngredient
 
-modlog = logging.getLogger('report.globals')
+modlog = logging.getLogger(f'mainlog.{__name__}')
+warnlog = logging.getLogger(f'warning.{__name__}')
+
+_DEBUG_HEADER = None
+_DEBUG_SET = False
 
 def lab_safeget(dct, lab_key, key_1):
     '''
@@ -62,3 +66,17 @@ def compound_ingredient_chemical_return(ingredient, chemical_count, compoundingr
         return(pd.Series(ordered_conc_list))
     else:
         return(pd.Series([0]*chemical_count))
+
+def set_debug_header(header_string):
+    global _DEBUG_HEADER, _DEBUG_SET
+    if _DEBUG_SET:
+        modlog.error('dev tried to run set_debug_header more than once')
+        sys.exit(1)
+    _DEBUG_HEADER = header_string
+    _DEBUG_SET = True
+
+def get_debug_header():
+    if _DEBUG_HEADER is None:
+        modlog.error('get_debug_header called before set_debug_header')
+        sys.exit(1)
+    return _DEBUG_HEADER

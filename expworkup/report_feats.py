@@ -1,10 +1,15 @@
 #Copyright (c) 2020 Ian Pendleton - MIT License
-
+import os
 import logging
 import pandas as pd
-from chemdescriptor.generator.chemaxon import ChemAxonDescriptorGenerator as cag
+from tqdm import tqdm
 
-modlog = logging.getLogger('report.feats')
+from expworkup.handlers.chemical_types import get_chemical_types
+from chemdescriptor.generator.chemaxon import ChemAxonDescriptorGenerator as cag
+from utils.file_handling import write_debug_file
+
+modlog = logging.getLogger(f'mainlog.{__name__}')
+warnlog = logging.getLogger(f'warning.{__name__}')
 
 def get_command_dict(command_type_df, one_type, application):
     """Converts expworkup.type_command.csv to dict for chemdescriptor
@@ -94,15 +99,16 @@ def get_features(unique_types, experiment_inchi_df, target_name, log_folder):
 
     """
     #TODO: fix logging issues
-    modlog.info(f'Generating physicochemical features to {target_name} dataset')
-    print(f'Generating physicochemical features to {target_name} dataset')
 
     # TODO: insert validation of the type_command df
     # type_command df should be treated as code!
     type_command_df = pd.read_csv('./expworkup/type_command.csv')
-
     type_feat_dict = {}
-    for one_type in unique_types:
+
+    modlog.info(f'Generating physicochemical features to {target_name} dataset')
+    modlog.info(f'Log files for this process are in CXCALC_LOG.txt')
+    print(f'(5/6) Gathering physicochemical features for {len(unique_types)} chemical type(s) in {target_name}...')
+    for one_type in tqdm(unique_types):
         #only grabs EXACT string matches for the type
         correct_type =\
             experiment_inchi_df[experiment_inchi_df['types']\
@@ -123,14 +129,13 @@ def get_features(unique_types, experiment_inchi_df, target_name, log_folder):
                            command_dict=type_command_dict,
                            logfile=f'{log_folder}/CXCALC_LOG.txt',
                            standardize=True)
-            type_features_df = features.generate('output.csv',
+            type_features_df = features.generate(f'./{target_name}/offline/SMILES_FEATURES.csv',
                                                  dataframe=True,
                                                  lec=False)
             type_feat_dict[one_type] =  pd.concat([inchi_smiles, type_features_df], axis=1)
             type_feat_dict[one_type].rename(columns={"Compound": "smiles_standardize"}, inplace=True)
 
-    modlog.info(f'Appending physicochemical features to {target_name} dataframe')
-    print(f'Appending physicochemical features to {target_name} dataframe')
+    modlog.info(f"Completed: 'Generating physicochemical features to {target_name} dataset'")
     return(type_feat_dict)
 
 def unpack_features(type_feat_dict):
@@ -163,36 +168,7 @@ def unpack_features(type_feat_dict):
             inchi_key_indexed_features_df.combine_first(df)
     return(inchi_key_indexed_features_df)
 
-def get_chemical_types(inchi, lab, chem_df_dict):
-    """ Retrieve lab specified chemical types for a given inchi key
-
-    Parameters
-    ----------
-    inchi : inchikey to be used in lookup
-
-    lab : target lab to read types
-
-    chemdf_dict : dict of pandas.DataFrames assembled from all lab inventories
-        reads in all of the chemical inventories which describe the chemical content
-        from each lab used across the dataset construction 
-    
-    Returns
-    ----------
-    pd.Series(<list of types>, <smiles string associated with inchikey>)
-
-    Notes
-    ----------
-    * TODO: add more 'human nonsense' removal / general string cleaning
-    """
-    smiles = chem_df_dict[lab].loc[inchi, 'Canonical SMILES String']
-
-    # Convert all to lowercase entries for string matching
-    types = chem_df_dict[lab].loc[inchi, 'Chemical Category'].strip(' ').lower()
-    #clean the list before returning
-    types_list = [x.strip(' ') for x in types.split(',')]
-    return(pd.Series((types_list, smiles)))
-
-def feat_pipeline(target_name, report_df, chem_df_dict, debug, log_folder):
+def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
     """ Manage ingest of lab content and return feature dataframes
 
     Parameters
@@ -208,6 +184,7 @@ def feat_pipeline(target_name, report_df, chem_df_dict, debug, log_folder):
         from each lab used across the dataset construction
 
     debug_bool : CLI argument, True=Enable debugging
+        if toggled on, code will export CSV files of each dataframe
 
     log_folder : folder location to stores logs
 
@@ -244,38 +221,41 @@ def feat_pipeline(target_name, report_df, chem_df_dict, debug, log_folder):
         [','.join(map(str, l)) for l in expanded_unique_inchis_df['types']]
     # Get only the unique instances of each chemical types in the dataset
     ugh_list = list(entry for entry in expanded_unique_inchis_df['types'].values.tolist())
-    #Unpack potential list of lists and return uniques
+    #Unpack potential list of lists from 'types' column and return uniques
     unique_types = list(set([x for l in ugh_list for x in l.split(',')]))
     unique_types.sort()
     type_feat_dict = get_features(unique_types,
                                   expanded_unique_inchis_df,
                                   target_name,
                                   log_folder)
-
-
-    ###### Dataframe Export Begins Here ####### 
-    #TODO: add the garysmod export option
-
+    
     ## Output dataframe with association between unique inchikeys and features
     inchi_key_indexed_features_df = unpack_features(type_feat_dict)
     inchi_key_indexed_features_df.groupby("inchikeys").ffill()\
                                  .groupby("inchikeys").last()\
                                  .reset_index(inplace=True)
-    inchi_key_indexed_features_df.to_csv('perov_desc.csv')
 
     ## Output dataframe with runID x inchi column(s)
     # rename list of inchis to a column / inchi 
-    tags = unique_inchis_df['inchikeys'].apply(pd.Series)
-    tags = tags.rename(columns = lambda x : 'inchikey_' + str(x))
+    runUID_indexed_inchikey_df = \
+        unique_inchis_df['inchikeys'].apply(pd.Series)
+    #unpack set(type=list) of inchis into unique columns
+    runUID_indexed_inchikey_df = \
+        runUID_indexed_inchikey_df.rename(columns = \
+                                          lambda x : 'inchikey_' + str(x))
+    runUID_indexed_inchikey_df['name'] = unique_inchis_df['name']
+    runUID_indexed_inchikey_df.set_index('name',
+                                         inplace=True)
 
-    tags['name'] = unique_inchis_df['name']
-    tags.set_index('name', inplace=True)
-    tags.to_csv('runUID_inchi_loadtable.csv')
-
-    """
-    export a load table with the set of all the inchikeys associated with a dataframe
-    export a type table which can be used to downselect to particular reagents/inchis
-    export all features indexed on the set of inchikeys
-    """
-
+    ###### Dataframe Export Begins Here ####### 
+    if debug_bool:
+        # Export dataframes physicochemical features and load tables for ETL to ESCALATEV3
+        inchi_key_indexed_features_df_file = 'REPORT_INCHI_FEATURES_TABLE.csv'
+        write_debug_file(inchi_key_indexed_features_df,
+                         inchi_key_indexed_features_df_file)
+        # Export dataframe for linking inchikeys to runUIDS for V3 ETL
+        runUID_inchi_file = 'REPORT_UID_LOADTABLE.csv'
+        write_debug_file(runUID_indexed_inchikey_df,
+                         runUID_inchi_file)
 #    return feat_df
+

@@ -20,7 +20,7 @@ from utils.globals import lab_safeget
 
 ## Set the workflow of the code used to generate the experimental data and to process the data
 
-modlog = logging.getLogger('report.CreateJSON')
+modlog = logging.getLogger(f'mainlog.{__name__}')
 
 def parse_preparation_interface(fname):
     """
@@ -153,7 +153,7 @@ def download_experiment_directories(target_directory, dataset):
 
 
     modlog.info('Starting Download and Directory Parsing')
-    print('(2/4) Starting Download and Directory Parsing...')
+    print('(2/6) Starting Download and Directory Parsing...')
     for exp_name, exp_files in tqdm(exp_dict.items()):
         run_json_filename = Path(target_directory + "/{}.json".format(exp_name))
         if os.path.isfile(run_json_filename):

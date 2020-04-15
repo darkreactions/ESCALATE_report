@@ -8,7 +8,8 @@ import datetime
 import pandas as pd
 import numpy as np
 
-
+from utils.globals import set_debug_header, get_debug_header
+from utils.file_handling import write_debug_file
 from expworkup.jsonparser import json_pipeline
 from expworkup.createjson import download_experiment_directories
 from expworkup.createjson import inventory_assembly
@@ -27,9 +28,8 @@ def initialize(args):
     ''' Refreshes working environment - logs initialization
 
     '''
-    modlog = logging.getLogger('report.initialize')
+    modlog = logging.getLogger(f'mainlog.{__name__}')
     modlog.info(args)
-    modlog.info('directory exist')
 
 if __name__ == "__main__":
     ''' Initialize the main body of the code
@@ -72,12 +72,12 @@ if __name__ == "__main__":
     main_logger = f'{log_directory}/REPORT_LOG.txt' 
     warning_logger = f'{log_directory}/REPORT_WARNING_LOG.txt' 
     ingredient_logger = f'{log_directory}/REPORT_INGREDIENT_LOG.txt' 
-    logger.setup_logger('report', main_logger)
+    logger.setup_logger('mainlog', main_logger)
     logger.setup_logger('warning', main_logger, level=logging.WARN, stream=True)
-    logger.setup_logger('ingredient', ingredient_logger)
-    modlog = logging.getLogger('report')
-    warnlog = logging.getLogger('warning')
-    ingredlog = logging.getLogger('ingredient')
+    logger.setup_logger('ilog', ingredient_logger) #ingredient log
+    modlog = logging.getLogger(f'mainlog.{__name__}')
+    warnlog = logging.getLogger(f'warning.{__name__}')
+    ingredlog = logging.getLogger(f'ilog.{__name__}')
 
     dataset_list = args.d
     target_naming_scheme = args.local_directory
@@ -91,11 +91,16 @@ if __name__ == "__main__":
     initialize(args)
 
     # A dev toggle to bypass google downloads after a local iteration
-    offline_toggle = 1
+    # Requires targeting 'dev' dataset on the first iteration (to get chemical inventories)
+    offline_toggle = 2
     # First iteration, set to '1' to save files locally
     # Second iteration, set to '2' to load local files and continue    
     offline_folder = f'./{args.local_directory}/offline'
+    modlog.info(f'Developer Option: "offline_toggle" set to {offline_toggle}')
     if offline_toggle == 1 or offline_toggle == 0:
+        # Always create offline folder to store cxcalc outputs
+        if not os.path.exists(offline_folder):
+            os.mkdir(offline_folder)
         for dataset in dataset_list:
             exp_dict = download_experiment_directories(target_naming_scheme, dataset)
             chemdf_dict = inventory_assembly(exp_dict)
@@ -107,13 +112,12 @@ if __name__ == "__main__":
         report_df.replace('', np.nan, inplace=True)
         report_df.replace(' ', np.nan, inplace=True)
         if offline_toggle == 1:
-            modlog.info(f'Ensuring {offline_folder} exists')
-            if not os.path.exists(offline_folder):
-                os.mkdir(offline_folder)
+            modlog.info(f'Writing intermediate files locally, ensuring {offline_folder} exists')
             report_df.to_csv(f'{offline_folder}/REPORT.csv')
             for name, chemicaldf in chemdf_dict.items():
                 chemicaldf.to_csv(f'{offline_folder}/{name}.csv')
     if offline_toggle == 2:
+        print('offline_toggle enabled, skipping steps 1-3')
         if not os.path.exists(offline_folder):
             modlog.error('Developer offline_toggle set before downloading files.. EXITING')
             sys.exit()
@@ -130,35 +134,28 @@ if __name__ == "__main__":
                                       index_col='InChI Key (ID)')
         }
 
-    if args.debug is True:
-        report_csv_filename = target_naming_scheme+'_debug.csv'
-        if os.path.isfile(report_csv_filename):
-            os.remove(report_csv_filename)
-        f = open(report_csv_filename, 'a')
-        f.write(f"# Generated using report version {__version__} on {datetime.datetime.now()} targeting dataset(s) {dataset_list}\n")
-        report_df.to_csv(f)
-        f.write(f"# Generated using report version {__version__} on {datetime.datetime.now()} targeting dataset(s) {dataset_list}\n")
-        f.close()
+    debug_header = f"# Report version {__version__}; Created on {datetime.datetime.now()}; Dataset(s) targeted {dataset_list}\n"
+    set_debug_header(debug_header)
 
-    compound_ingredient_objects_df = ingredient_pipeline(report_df, chemdf_dict)
-    calc_pipeline(report_df, compound_ingredient_objects_df, target_naming_scheme, args.debug) 
-    feat_pipeline(target_naming_scheme, report_df, chemdf_dict, args.debug, log_directory)
+    if args.debug:
+        # Export dataframes of initial parsing and chemical inventories for ETL to ESCALATEV3
+        report_csv_filename = f'REPORT_{target_naming_scheme.upper()}.csv'
+        write_debug_file(report_df, report_csv_filename)
+        for name, chemicaldf in chemdf_dict.items():
+            inventory_name = f'REPORT_{name.upper()}_INVENTORY.csv'
+            write_debug_file(chemicaldf, inventory_name)
 
-        #modlog.info(f'Exporting {target_naming_scheme}_models.csv and {target_naming_scheme}_objects.csv')
-        #versioned_df = export_to_repo.prepareexport(target_naming_scheme, args.state, link, args.verdata)
-        #if nominal is False:
-        #    out_name = f'{target_naming_scheme}_objects.csv'
+    compound_ingredient_objects_df = ingredient_pipeline(report_df,
+                                                         chemdf_dict,
+                                                         args.debug)
+    #feat_pipeline(target_naming_scheme, report_df, chemdf_dict, args.debug, log_directory)
+    calc_pipeline(report_df,
+                  compound_ingredient_objects_df,
+                  chemdf_dict,
+                  args.debug) 
 
-        #elif nominal is True:
-        #    out_name = f'{target_naming_scheme}_nominals.csv'
-    
-        #calc_df.to_csv(f'{target_naming_scheme}_calcs.csv')
-        #calc_df.to_csv(f'{target_naming_scheme}_feats.csv')
-
-        #with open(finaloutcsv_filename, 'w') as outfile:
-        #    cleaned_augmented_raw_df.to_csv(outfile)
-        #    print(f'{finaloutcsv_filename} rendered successfully')
-        #    outfile.close()
+    # TODO: cleanup documentation and export pipeline for statesets
+    # TODO: create final export of a 2d CSV file from the data above
 
     if ('state' in vars(args)):
         templink = str(args.state)
@@ -177,6 +174,8 @@ if __name__ == "__main__":
 
     elif args.verdata == None:
         modlog.info(f'No versioned data export selected, exiting cleanly, please use the generated {target_naming_scheme}.csv file')
-        print(f'No versioned data export selected, exiting cleanly, please use the generated {target_naming_scheme}.csv file')
-    #os.remove('./mycred.txt')
+        print(f'Exiting cleanly, please use the generated {target_naming_scheme}.csv file')
+
+    if offline_toggle == 0: 
+        os.remove('./mycred.txt') #cleanup automatic authorization
 

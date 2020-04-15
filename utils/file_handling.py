@@ -2,7 +2,7 @@ import os
 import re
 
 from expworkup.devconfig import valid_input_files, workup_targets, lab_vars
-
+from utils.globals import get_debug_header
 
 def get_interface_filename(interface_type, working_directory, runID):
     for suffix in valid_input_files[interface_type]:
@@ -11,7 +11,6 @@ def get_interface_filename(interface_type, working_directory, runID):
             return filename
 
     raise FileNotFoundError(f'Could not find any of {valid_input_files[interface_type]} file for {runID}')
-
 
 def get_experimental_run_lab(run_filename):
     """
@@ -26,3 +25,13 @@ def get_experimental_run_lab(run_filename):
             return match.group(1)
 
     raise RuntimeError(f'{run_filename} does not specify a supported lab')
+
+def write_debug_file(df, filename):
+    if os.path.isfile(filename):
+        os.remove(filename)
+    f = open(filename, 'a')
+    f.write(get_debug_header())
+    df.to_csv(f)
+    f.write(get_debug_header())
+    f.close()
+
