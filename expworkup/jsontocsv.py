@@ -71,7 +71,7 @@ def cleaner(dirty_df, raw, lab_list):
     rxn_v1molarity_clean = nameCleaner(dirty_df.filter(like='_raw_v1-M_'), '_rxn_M')
     print(lab_list)
 
-    postprocess_1 = ['LBL', "HC", '4-Data-WF3_Iodide', '4-Data-Bromides', '4-Data-WF3_Alloying']
+    postprocess_1 = ['4-Data-Iodides', "LBL", "HC", '4-Data-WF3_Iodide', '4-Data-Bromides', '4-Data-WF3_Alloying']
     if all(elem in postprocess_1 for elem in lab_list):
         # TODO: Clean up the headers for associated dataframes, move these functions to devconfig (onboarding a new lab)
         dirty_df.rename(columns={'Unnamed: 2': '_raw_placeholder'}, inplace=True)
