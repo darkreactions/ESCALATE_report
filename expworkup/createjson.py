@@ -151,7 +151,6 @@ def download_experiment_directories(target_directory, dataset):
     target_data_folder = config.workup_targets[dataset]['target_data_folder']
     exp_dict  = googleio.parse_gdrive_folder(target_data_folder, save_directory)
 
-
     modlog.info('Starting Download and Directory Parsing')
     print('(2/6) Starting Download and Directory Parsing...')
     for exp_name, exp_files in tqdm(exp_dict.items()):
