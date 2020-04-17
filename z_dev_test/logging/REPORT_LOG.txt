@@ -1,28 +1,30 @@
-2020-04-14 10:58:01,618> mainlog.__main__ ; INFO - ['dev'] selected as the dataset target(s) for this run
-2020-04-14 10:58:01,618> mainlog.__main__ ; INFO - 1 set(s) of downloads will occur, one for dataset, please be patient!
-2020-04-14 10:58:01,618> mainlog.__main__ ; INFO - Namespace(d=['dev'], debug=True, local_directory='z_dev_test', raw=False, state=None, verdata=None)
-2020-04-14 10:58:01,619> mainlog.__main__ ; INFO - Developer Option: "offline_toggle" set to 2
-2020-04-14 10:58:01,808> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing Reagent Objects, details for ingredient preparation are in separate logfile
-2020-04-14 10:58:01,815> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_5
-2020-04-14 10:58:04,617> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_5 reagent objects
-2020-04-14 10:58:04,618> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_1
-2020-04-14 10:58:08,389> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_1 reagent objects
-2020-04-14 10:58:08,390> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_3
-2020-04-14 10:58:09,923> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_3 reagent objects
-2020-04-14 10:58:09,923> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_4
-2020-04-14 10:58:11,709> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_4 reagent objects
-2020-04-14 10:58:11,709> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_7
-2020-04-14 10:58:11,921> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_7 reagent objects
-2020-04-14 10:58:11,921> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_0
-2020-04-14 10:58:14,251> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_0 reagent objects
-2020-04-14 10:58:14,252> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_8
-2020-04-14 10:58:14,479> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_8 reagent objects
-2020-04-14 10:58:14,479> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_2
-2020-04-14 10:58:17,441> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_2 reagent objects
-2020-04-14 10:58:17,441> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_6
-2020-04-14 10:58:18,226> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_6 reagent objects
-2020-04-14 10:58:18,226> mainlog.expworkup.ingredients.pipeline ; INFO - Completed: 'Preparing Reagent Objects'
-2020-04-14 10:58:18,229> mainlog.expworkup.report_calcs ; INFO - Starting calc_pipeline on target datasets
-2020-04-14 10:58:18,232> mainlog.expworkup.handlers.calc_mols ; INFO - mmol calculations and df creation
-2020-04-14 10:58:18,576> mainlog.expworkup.handlers.calc_mols ; INFO - Completed: 'mmol calculations and df creation'
-2020-04-14 10:58:18,889> mainlog.__main__ ; INFO - No versioned data export selected, exiting cleanly, please use the generated z_dev_test.csv file
+2020-04-17 10:33:38,793> mainlog.__main__ ; INFO - ['dev'] selected as the dataset target(s) for this run
+2020-04-17 10:33:38,793> mainlog.__main__ ; INFO - 1 set(s) of downloads will occur, one for dataset, please be patient!
+2020-04-17 10:33:38,793> mainlog.__main__ ; INFO - Namespace(d=['dev'], debug=True, local_directory='z_dev_test', raw=False, state=None, verdata=None)
+2020-04-17 10:33:38,793> mainlog.__main__ ; INFO - Developer Option: "offline_toggle" set to 2
+2020-04-17 10:33:38,889> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing Reagent Objects, details for ingredient preparation are in separate logfile
+2020-04-17 10:33:38,897> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_2
+2020-04-17 10:33:39,351> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_2 reagent objects
+2020-04-17 10:33:39,351> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_5
+2020-04-17 10:33:39,664> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_5 reagent objects
+2020-04-17 10:33:39,664> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_6
+2020-04-17 10:33:40,034> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_6 reagent objects
+2020-04-17 10:33:40,049> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_7
+2020-04-17 10:33:40,065> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_7 reagent objects
+2020-04-17 10:33:40,065> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_0
+2020-04-17 10:33:40,455> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_0 reagent objects
+2020-04-17 10:33:40,455> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_8
+2020-04-17 10:33:40,469> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_8 reagent objects
+2020-04-17 10:33:40,469> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_4
+2020-04-17 10:33:40,890> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_4 reagent objects
+2020-04-17 10:33:40,891> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_3
+2020-04-17 10:33:41,352> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_3 reagent objects
+2020-04-17 10:33:41,352> mainlog.expworkup.ingredients.pipeline ; INFO - Preparing raw_reagent_1
+2020-04-17 10:33:41,773> mainlog.expworkup.ingredients.pipeline ; INFO - Completed raw_reagent_1 reagent objects
+2020-04-17 10:33:41,773> mainlog.expworkup.ingredients.pipeline ; INFO - Completed: 'Preparing Reagent Objects'
+2020-04-17 10:33:41,774> mainlog.expworkup.report_calcs ; INFO - Starting calc_pipeline on target datasets
+2020-04-17 10:33:41,776> mainlog.expworkup.handlers.calc_mols ; INFO - mmol calculations and df creation
+2020-04-17 10:33:41,851> mainlog.expworkup.handlers.calc_mols ; INFO - Completed: 'mmol calculations and df creation'
+2020-04-17 10:33:41,851> mainlog.expworkup.report_calcs ; INFO - generating a dataframe of combined mmol and inchi data
+2020-04-17 10:33:41,878> mainlog.expworkup.report_calcs ; INFO - applying chemical type information to each experiment
+2020-04-17 10:33:42,095> mainlog.__main__ ; INFO - No versioned data export selected, exiting cleanly, please use the generated z_dev_test.csv file

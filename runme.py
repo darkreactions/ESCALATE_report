@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     # A dev toggle to bypass google downloads after a local iteration
     # Requires targeting 'dev' dataset on the first iteration (to get chemical inventories)
-    offline_toggle = 2
+    offline_toggle = 0
     # First iteration, set to '1' to save files locally
     # Second iteration, set to '2' to load local files and continue    
     offline_folder = f'./{args.local_directory}/offline'
@@ -148,12 +148,14 @@ if __name__ == "__main__":
     compound_ingredient_objects_df = ingredient_pipeline(report_df,
                                                          chemdf_dict,
                                                          args.debug)
-    #feat_pipeline(target_naming_scheme, report_df, chemdf_dict, args.debug, log_directory)
-    calc_pipeline(report_df,
-                  compound_ingredient_objects_df,
-                  chemdf_dict,
-                  args.debug) 
+    feat_pipeline(target_naming_scheme, report_df, chemdf_dict, args.debug, log_directory)
+    sum_molarity_df = calc_pipeline(report_df,
+                                    compound_ingredient_objects_df,
+                                    chemdf_dict,
+                                    args.debug) 
 
+    #augmented_raw_df = augmentdataset(report_df)
+    #rxn_v1molarity_clean = nameCleaner(clean_df.filter(like='_raw_v1-M_'), '_rxn_M')
     # TODO: cleanup documentation and export pipeline for statesets
     # TODO: create final export of a 2d CSV file from the data above
 

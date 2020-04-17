@@ -118,7 +118,6 @@ def unpackJSON(myjson_fol, chemdf_dict):
     Unpack those values first and then copy the generated array to each of the invidual wells
     developed enough now that it should be broken up into smaller pieces!
 
-    #TODO: Break each of these off into tables for database
     :param myjson_fol:
     :return:
     """
