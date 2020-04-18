@@ -7,6 +7,7 @@ import sys
 import os
 
 import gspread
+from gspread.exceptions import APIError
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 from oauth2client.service_account import ServiceAccountCredentials
@@ -65,16 +66,26 @@ def ChemicalData(lab):
     --------
     chemdf : pandas df of the chemical inventory
     """
-    gc = get_gdrive_client()
-    chemsheetid = globals.lab_safeget(lab_vars, lab, 'chemsheetid')
-    ChemicalBook = gc.open_by_key(chemsheetid)
-    chemicalsheet = ChemicalBook.get_worksheet(0)
-    chemical_list = chemicalsheet.get_all_values()
-    chemdf=pd.DataFrame(chemical_list, columns=chemical_list[0])
-    chemdf=chemdf.iloc[1:]
-    chemdf=chemdf.reset_index(drop=True)
-    chemdf=chemdf.set_index(['InChI Key (ID)'])
-    modlog.info('Successfully loaded chemical data for processing')
+    sleep_timer = 0
+    chemdf = 0 #just create a fake instance
+    while not isinstance(chemdf, pd.DataFrame):
+        try:
+            gc = get_gdrive_client()
+            chemsheetid = globals.lab_safeget(lab_vars, lab, 'chemsheetid')
+            ChemicalBook = gc.open_by_key(chemsheetid)
+            chemicalsheet = ChemicalBook.get_worksheet(0)
+            chemical_list = chemicalsheet.get_all_values()
+            chemdf=pd.DataFrame(chemical_list, columns=chemical_list[0])
+            chemdf=chemdf.iloc[1:]
+            chemdf=chemdf.reset_index(drop=True)
+            chemdf=chemdf.set_index(['InChI Key (ID)'])
+        except APIError as e:
+            modlog.info(e.response)
+            modlog.info(sys.exc_info())
+            modlog.info('During download of {} chemical inventory sever request limit was met'.format(lab))
+            sleep_timer = 15.0
+            time.sleep(sleep_timer)
+    modlog.info(f'Successfully loaded the chemical inventory from {lab}')
     return(chemdf)
 
 def save_prep_interface(prep_UID, local_data_dir, run_name):

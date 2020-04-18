@@ -148,7 +148,7 @@ if __name__ == "__main__":
     compound_ingredient_objects_df = ingredient_pipeline(report_df,
                                                          chemdf_dict,
                                                          args.debug)
-    #feat_pipeline(target_naming_scheme, report_df, chemdf_dict, args.debug, log_directory)
+    feat_pipeline(target_naming_scheme, report_df, chemdf_dict, args.debug, log_directory)
     sum_molarity_df = calc_pipeline(report_df,
                                     compound_ingredient_objects_df,
                                     chemdf_dict,
