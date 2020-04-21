@@ -32,7 +32,7 @@ def construct_2d_view(report_df,
     if debug_bool:
         sumbytype_molarity_df_file = 'REPORT_MOLARITY_BYTYPE_CALCS.csv'
         write_debug_file(sumbytype_molarity_df, sumbytype_molarity_df_file)
-    sumbytype_molarity_df = sumbytype_molarity_df.add_prefix('_rxn_')
+    sumbytype_molarity_df = sumbytype_molarity_df.add_prefix('_rxn_molarity_')
 
     sumbytype_byinstance_molarity_df = get_unique_chemicals_types_byinstance(res) ##**
     sumbytype_byinstance_molarity_df = \
@@ -45,7 +45,6 @@ def construct_2d_view(report_df,
 
     feats_df = runuid_feat_merge(sumbytype_byinstance_molarity_df,
                                  inchi_key_indexed_features_df)
-
 
     # Generate a _raw_mmol_inchikey value for each inchikey in dataset
     mmol_inchi_df = calc_out_df.pivot_table(index=['name'],
@@ -72,10 +71,10 @@ def construct_2d_view(report_df,
                               feats_df]
 
     escalate_final_df = report_df
-    escalate_final_df.set_index('runid_vial', drop=True, inplace=True)
+    escalate_final_df.set_index('name', drop=True, inplace=True)
     for num, dataframe in enumerate(additional_default_dfs):
         try:
-            dataframe.set_index('runid_vial', drop=True, inplace=True)
+            dataframe.set_index('name', drop=True, inplace=True)
             modlog.info(f'{num} in additional dataframes reindexed by runid_vial')
         except KeyError:
             modlog.info(f'{num} in additional dataframes already correctly indexed')
@@ -100,14 +99,12 @@ def runuid_feat_merge(sumbytype_byinstance_molarity_df, inchi_key_indexed_featur
     chemical_type_inchi = \
         sumbytype_byinstance_molarity_df.filter(regex='_inchikey')
     for type_inchi_col in chemical_type_inchi.columns:
-        chemical_type = type_inchi_col.split('_')[0] # inorganic_0_inchikey to inorganic
-        feature_prefix = type_inchi_col.rsplit('_', 1)[0] # inorganic_0_inchikey to inorganic_0
+        chemical_type = type_inchi_col.split('_')[2].strip() # _raw_inorganic_0_inchikey to inorganic
+        feature_prefix = type_inchi_col.rsplit('_', 1)[0].strip() # inorganic_0_inchikey to inorganic_0
         bulk_features = inchi_key_indexed_features_df.copy()
         bulk_features = bulk_features[bulk_features['types'].str.contains(pat=f'(?:^|\W){chemical_type}(?:$|\W)', regex=True)]
-
         #Drop anycolumns which are not full (likely due to specifying multiple types)
         bulk_features.dropna(axis=1, how='any', inplace=True)
-
         #Rename columns to fit with ESCALATE naming scheme (Brute force, not elegant)
         column_rename = {}
         drop_list = []

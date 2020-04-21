@@ -43,7 +43,7 @@ def ingredient_pipeline(report_df, chemdf_dict, debug_bool):
         * the difference between objects (e.g., actuals) and models (e.g., nominals) 
           indicates how well a hyptothesis was executed
     """
-    report_copy = report_df.set_index('name')
+    report_copy = report_df.copy().set_index('name')
     
     #TODO: Fix to only implement a new CompoundIngredient as needed (currently implements for all instances)
     ingredients_actual_df = get_ingredients_df(report_df, nominal=False)# default is to return the actuals (nominals can be toggled)

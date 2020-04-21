@@ -6,7 +6,6 @@ from utils.file_handling import write_debug_file
 from expworkup.handlers.chemical_types import get_chemical_types
 from expworkup.handlers.chemical_types import get_unique_chemicals_types_byinstance
 from expworkup.handlers import calc_mols
-from expworkup.handlers import inchigen
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')

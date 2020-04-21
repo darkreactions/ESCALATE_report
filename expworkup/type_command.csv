@@ -1,12 +1,63 @@
-m_descriptor_def_id,short_name,calc_definition,description,input,alternative_input,actor_org,actor_systemtool_name,actor_systemtool_version
-69,heteroaromaticringcount,heteroaromaticringcount,heteroaromatic ring count,organic,,ChemAxon,cxcalc,19.27.0
-68,aliphaticatomcount,aliphaticatomcount,aliphatic atom count,organic,,ChemAxon,cxcalc,19.27.0
-60,asa+,molecularsurfacearea -t asa+,asa+,organic,,ChemAxon,cxcalc,19.27.0
-59,asa_p,molecularsurfacearea -t asa_p,asa_p,organic,,ChemAxon,cxcalc,19.27.0
-58,asa_h,molecularsurfacearea -t asa_h,asa_h,organic,,ChemAxon,cxcalc,19.27.0
-57,asa-,molecularsurfacearea -t asa-,asa-,organic,,ChemAxon,cxcalc,19.27.0
-53,fr_guanido,fr_guanido,number of guanidine groups,organic,,RDKit open source software,RDKit,19.03.4
-52,fr_dihydropyridine,fr_dihydropyridine,number of dihydropyridines,organic,,RDKit open source software,RDKit,19.03.4
-51,fr_amidine,fr_amidine,number of amidine groups,organic,,RDKit open source software,RDKit,19.03.4
-69,heteroaromaticringcount,heteroaromaticringcount,heteroaromatic ring count,solvent,,ChemAxon,cxcalc,19.27.0
-68,aliphaticatomcount,aliphaticatomcount,aliphatic atom count,acid,,ChemAxon,cxcalc,19.27.0
+short_name,calc_definition,human readable description,input,alternative_input,actor_org,actor_systemtool_name,actor_systemtool_version
+heteroaromaticringcount,heteroaromaticringcount,heteroaromatic ring count,organic,,ChemAxon,cxcalc,19.27.0
+aliphaticatomcount,aliphaticatomcount,aliphatic atom count,organic,,ChemAxon,cxcalc,19.27.0
+asa+,molecularsurfacearea -t asa+ -H 3.0,asa+,organic,,ChemAxon,cxcalc,19.27.0
+asa_p,molecularsurfacearea -t asa_p -H 3.0,asa_p,organic,,ChemAxon,cxcalc,19.27.0
+asa_h,molecularsurfacearea -t asa_h -H 3.0,asa_h,organic,,ChemAxon,cxcalc,19.27.0
+asa-,molecularsurfacearea -t asa- -H 3.0,asa-,organic,,ChemAxon,cxcalc,19.27.0
+hdonorcount,donorcount -H 3.0,hydrogen bond donor atom count in molecule,organic,,ChemAxon,cxcalc,19.27.0
+hacceptorcount,acceptorcount -H 3.0,hydrogen bond acceptor atom count in molecule,organic,,ChemAxon,cxcalc,19.27.0
+protpsa,psa -H 3.0,topological polar surface area calculation (2d),organic,,ChemAxon,cxcalc,19.27.0
+molsurfaceareaasap,msa -t ASA+ -H 3.0,molecular surface area calculation (3d),organic,,ChemAxon,cxcalc,19.27.0
+molsurfaceareavdwp,msa -t vanderwaals -H 3.0,molecular surface area calculation (3d),organic,,ChemAxon,cxcalc,19.27.0
+minimalprojectionsize,minimalprojectionsize,calculates the size of the molecule perpendicular to the minimal projection area surface,organic,,ChemAxon,cxcalc,19.27.0
+maximalprojectionsize,maximalprojectionsize,calculates the size of the molecule perpendicular to the maximal projection area surface,organic,,ChemAxon,cxcalc,19.27.0
+donsitecount,donorsitecount -H 3.0,hydrogen bond donor multiplicity in molecule,organic,,ChemAxon,cxcalc,19.27.0
+donorcount,donorcount -H 3.0,hydrogen bond donor atom count in molecule,organic,,ChemAxon,cxcalc,19.27.0
+accsitecount,acceptorsitecount -H 3.0,hydrogen bond acceptor multiplicity in molecule,organic,,ChemAxon,cxcalc,19.27.0
+acceptorcount,acceptorcount -H 3.0,hydrogen bond acceptor atom count in molecule,organic,,ChemAxon,cxcalc,19.27.0
+wasa,wateraccessiblesurfacearea -H 3.0,Water Accessible Surface Area calculation at pH 3.0,organic,,ChemAxon,cxcalc,19.27.0
+vanderwaalssurfacearea,vdwsa -H 3.0,van der waals surface area calculation,organic,,ChemAxon,cxcalc,19.27.0
+vanderwaalsvolume,volume ,calculates the van der waals volume of the molecule,organic,,ChemAxon,cxcalc,19.27.0
+maximalprojectionradius,maximalprojectionradius ,calculates the maximal projection radius,organic,,ChemAxon,cxcalc,19.27.0
+minimalprojectionradius,minimalprojectionradius ,calculates the minimal projection radius,organic,,ChemAxon,cxcalc,19.27.0
+maximalprojectionarea,maximalprojectionarea ,calculates the maximal projection area,organic,,ChemAxon,cxcalc,19.27.0
+minimalprojectionarea,minimalprojectionarea ,calculates the minimal projection area,organic,,ChemAxon,cxcalc,19.27.0
+wienerpolarity,wienerpolarity ,wiener polarity,organic,,ChemAxon,cxcalc,19.27.0
+wienerindex,wienerindex,wiener index,organic,,ChemAxon,cxcalc,19.27.0
+hyperwienerindex,hyperwienerindex,hyper wiener index,organic,,ChemAxon,cxcalc,19.27.0
+cyclomaticnumber,cyclomaticnumber,the cyclomatic number,organic,,ChemAxon,cxcalc,19.27.0
+balabanindex,balabanindex,the balaban index,organic,,ChemAxon,cxcalc,19.27.0
+rotatablebondcount,rotatablebondcount,rotatable bond count,organic,,ChemAxon,cxcalc,19.27.0
+heteroaliphaticringcount,heteroaliphaticringcount,heteroaliphatic ring count,organic,,ChemAxon,cxcalc,19.27.0
+largestringsize,largestringsize,largest ring size,organic,,ChemAxon,cxcalc,19.27.0
+smallestringsize,smallestringsize,smallest ring size,organic,,ChemAxon,cxcalc,19.27.0
+ringatomcount,ringatomcount,ring atom count,organic,,ChemAxon,cxcalc,19.27.0
+chiralcentercount,chiralcentercount,the number of tetrahedral stereogenic center atoms,organic,,ChemAxon,cxcalc,19.27.0
+chainatomcount,chainatomcount,chain atom count,organic,,ChemAxon,cxcalc,19.27.0
+carboringcount,carboringcount,carbo ring count,organic,,ChemAxon,cxcalc,19.27.0
+carboaromaticringcount,carboaromaticringcount,carboaromatic ring count,organic,,ChemAxon,cxcalc,19.27.0
+carboaliphaticringcount,carboaliphaticringcount,carboaliphatic ring count,organic,,ChemAxon,cxcalc,19.27.0
+bondcount,bondcount,bond count,organic,,ChemAxon,cxcalc,19.27.0
+aromaticatomcount,aromaticatomcount,aromatic atom count,organic,,ChemAxon,cxcalc,19.27.0
+aromaticringcount,aromaticringcount ,aromatic ring count,organic,,ChemAxon,cxcalc,19.27.0
+aliphaticringcount,aliphaticringcount ,aliphatic ring count,organic,,ChemAxon,cxcalc,19.27.0
+refractivity,refractivity ,refractivity calculation,organic,,ChemAxon,cxcalc,19.27.0
+molpol,molpol ,molecular polarizability calculation,organic,,ChemAxon,cxcalc,19.27.0
+avgpol,avgpol -H 3.0,average molecular polarizability calculation,organic,,ChemAxon,cxcalc,19.27.0
+atomcount_n,atomcount -z 7 ,number of nitrogen atoms in the molecule ,organic,,ChemAxon,cxcalc,19.27.0
+atomcount_c,atomcount -z 6,number of carbon atoms in the molecule ,organic,,ChemAxon,cxcalc,19.27.0
+molweight,mass,molecule mass calculation,organic,,ChemAxon,cxcalc,19.27.0
+fr_imine,fr_Imine,number of imines,organic,,RDKit open source software,RDKit,19.03.4
+fr_ar_nh,fr_Ar_NH,number of aromatic amines,organic,,RDKit open source software,RDKit,19.03.4
+fr_arn,fr_ArN,number of aromatic nitrogens,organic,,RDKit open source software,RDKit,19.03.4
+fr_quatn,fr_quatN,number of quarternary nitrogens,organic,,RDKit open source software,RDKit,19.03.4
+fr_nh0,fr_NH0,number of tertiary amines,organic,,RDKit open source software,RDKit,19.03.4
+fr_nh1,fr_NH1,number of primary amines,organic,,RDKit open source software,RDKit,19.03.4
+fr_nh2,fr_NH2,number of secondary amines,organic,,RDKit open source software,RDKit,19.03.4
+fr_pyridine,fr_pyridine,number of pyridine rings,organic,,RDKit open source software,RDKit,19.03.4
+fr_piperzine,fr_piperzine,number of piperzine rings,organic,,RDKit open source software,RDKit,19.03.4
+fr_piperdine,fr_piperdine,number of piperdine rings,organic,,RDKit open source software,RDKit,19.03.4
+fr_guanido,fr_guanido,number of guanidine groups,organic,,RDKit open source software,RDKit,19.03.4
+fr_dihydropyridine,fr_dihydropyridine,number of dihydropyridines,organic,,RDKit open source software,RDKit,19.03.4
+fr_amidine,fr_amidine,number of amidine groups,organic,,RDKit open source software,RDKit,19.03.4

@@ -65,11 +65,11 @@ def get_unique_chemicals_types_byinstance(molarity_df_type_pivot):
         unique_chemicals_types_byinstance = \
             unique_chemicals_types_byinstance.join(mynew_df, how='left')
     inchi_columns = [x for x in unique_chemicals_types_byinstance.columns if 'inchikey' in x]
-    organic_columns = [x for x in unique_chemicals_types_byinstance.columns if 'inchikey' not in x]
+    molarity_columns = [x for x in unique_chemicals_types_byinstance.columns if 'inchikey' not in x]
     for column in inchi_columns:
         fixed_column = '_'.join([column.split('_')[0], column.split('_')[2], 'inchikey']) 
         unique_chemicals_types_byinstance.rename(columns = {column:fixed_column}, inplace = True)
-    for column in organic_columns:
+    for column in molarity_columns:
         fixed_column = f'{column}_M'
         unique_chemicals_types_byinstance.rename(columns = {column:fixed_column}, inplace = True)
     return unique_chemicals_types_byinstance

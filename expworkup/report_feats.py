@@ -66,7 +66,11 @@ def get_command_dict(command_type_df, one_type, application):
     for command in commands_df.itertuples():
             column_name = f'_feat_{command.short_name}'
             descriptor_dict[command.short_name] = {}
-            descriptor_dict[command.short_name]["command"] = command.calc_definition.split(' ')
+            # stupid human space removal
+            templist = command.calc_definition.split(' ')
+            str_list = list(filter(None, templist))
+            descriptor_dict[command.short_name]["command"] = str_list
+
             descriptor_dict[command.short_name]["column_names"] = [column_name]
     command_dict = {}
     command_dict['descriptors'] = descriptor_dict
@@ -231,7 +235,7 @@ def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
     ()
     
     """
-    report_copy = report_df.set_index('name')
+    report_copy = report_df.copy().set_index('name')
 
     # Build a dataframe of every unique inchikey
     inchi_df = report_copy.filter(regex='reagent_._chemicals_._inchikey')
@@ -300,5 +304,5 @@ def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
         runUID_inchi_file = 'REPORT_UID_LOADTABLE.csv'
         write_debug_file(runUID_indexed_inchikey_df,
                          runUID_inchi_file)
-    return runUID_inchi_file, inchi_key_indexed_features_df
+    return runUID_indexed_inchikey_df, inchi_key_indexed_features_df
 
