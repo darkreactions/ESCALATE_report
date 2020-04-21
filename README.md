@@ -1,8 +1,8 @@
 **Authors: Ian Pendleton, Michael Tynes, Aaron Dharna**
 
-**Science Contact:** ipendleton .at. haverford.edu
+**Science Contact:** jschrier .at. fordham.edu, ian .at. pendletonian.com
 
-**Technical Debugging:** ipendleton .at. haverford.edu
+**Technical Debugging:** vshekar .at. haverford.edu, gcattabrig .at. haverford.edu, 
 
 ## [FAQs](https://github.com/darkreactions/ESCALATE_Capture/wiki/Users:-FAQs)
 
@@ -37,11 +37,11 @@ Installation
 
 3. Install the latest version of the pip package manager, `conda install pip`
 
-4. Execute `pip install -r requirements.txt`
+4. Execute `pip install -r requirements.txt` OR `conda create --name <your_env_name_here> --file conda_requirements.txt`
 
 5. Execute `conda install -c conda-forge rdkit`
    
-5. Download the securekey files and move them into the expworkup/creds/ folder. Do not distribute these keys!
+5. Download the [securekey files](https://www.youtube.com/watch?v=oHg5SJYRHA0) and move them into the expworkup/creds/ folder. Do not distribute these keys! (Contact a dev for access)
 
 6. Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the main directory (directly in ESCALATE_report)
 
@@ -49,7 +49,7 @@ Installation
 
 ### Custom Environment (Package List)
 Pip install the following python packages prior to use:
-- pandas, json, numpy, gspread, pydrive
+- pandas, json, numpy, gspread, pydrive, cerberus, google-api-python-client==1.7.4, xlrd, xlwt, tqdm, pytest, 
 
 conda install -c conda-forge rdkit
 
