@@ -1,11 +1,13 @@
 #Copyright (c) 2020 Ian Pendleton - MIT License
 import os
 import logging
+import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
 from expworkup.handlers.chemical_types import get_chemical_types
 from chemdescriptor.generator.chemaxon import ChemAxonDescriptorGenerator as cag
+from chemdescriptor.generator.rdkit import RDKitDescriptorGenerator as rdg
 from utils.file_handling import write_debug_file
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
@@ -57,7 +59,7 @@ def get_command_dict(command_type_df, one_type, application):
      * 'ph_descriptors' are those which have -H option, can use to simplify return
 
     """
-    commands_df = command_type_df[(command_type_df['types'] == one_type) &  \
+    commands_df = command_type_df[(command_type_df['input'] == one_type) &  \
                                   (command_type_df['actor_systemtool_name'] == application)]
 
     descriptor_dict = {}
@@ -118,22 +120,56 @@ def get_features(unique_types, experiment_inchi_df, target_name, log_folder):
         inchi_smiles = correct_type[['inchikeys', 'smiles', 'types']]\
                                    .drop_duplicates(keep="first", 
                                                     ignore_index=True)
+        type_feat_dict[one_type] = inchi_smiles
         smiles_list = inchi_smiles['smiles'].values.tolist()
-        type_command_dict = get_command_dict(type_command_df,
+        cxcalc_command_dict = get_command_dict(type_command_df,
                                              one_type,
                                              'cxcalc')
-        if type_command_dict is not None:
+        rdkit_command_dict = get_command_dict(type_command_df,
+                                              one_type,
+                                              'RDKit')
+        if cxcalc_command_dict is not None:
+            try:
             #TODO: update logs and fix outputfile meaningfully
-            features = cag(smiles_list,
-                           whitelist={},
-                           command_dict=type_command_dict,
-                           logfile=f'{log_folder}/CXCALC_LOG.txt',
-                           standardize=True)
-            type_features_df = features.generate(f'./{target_name}/offline/SMILES_FEATURES.csv',
-                                                 dataframe=True,
-                                                 lec=False)
-            type_feat_dict[one_type] =  pd.concat([inchi_smiles, type_features_df], axis=1)
-            type_feat_dict[one_type].rename(columns={"Compound": "smiles_standardize"}, inplace=True)
+                calc_features = cag(smiles_list,
+                                    whitelist={},
+                                    command_dict=cxcalc_command_dict,
+                                    logfile=f'{log_folder}/CXCALC_LOG.txt',
+                                    standardize=True)
+                type_features_df = calc_features.generate(f'./{target_name}/offline/CXCALC_{one_type}_FEATURES.csv',
+                                                          dataframe=True,
+                                                          lec=False)
+            except UnboundLocalError:
+                modlog.error(f'Critical Error: cxcalc functions incorrectly specified. Please validate type_command.csv!')
+                warnlog.error(f'Critical Error: cxcalc functions incorrectly specified. Please validate type_command.csv!')
+                import sys
+                sys.exit()
+            type_feat_dict[one_type] = pd.concat([type_feat_dict[one_type], type_features_df], axis=1)
+        if rdkit_command_dict is not None:
+            try:
+#                rdkit_whitelist= rdkit_command_dict['descriptors'].keys()
+                rdkit_features = rdg(smiles_list,
+                                     whitelist=rdkit_command_dict,
+#                                     command_dict=rdkit_command_dict,
+                                     logfile=f'{log_folder}/RDKIT_LOG.txt')
+                
+                type_features_df = rdkit_features.generate(f'./{target_name}/offline/RDKIT_{one_type}_FEATURES.csv',
+                                                           dataframe=True)
+            except UnboundLocalError:
+                modlog.error(f'Critical Error: cxcalc functions incorrectly specified. Please validate type_command.csv!')
+                warnlog.error(f'Critical Error: cxcalc functions incorrectly specified. Please validate type_command.csv!')
+                import sys
+                sys.exit()
+            type_feat_dict[one_type] = pd.concat([type_feat_dict[one_type], type_features_df], axis=1)
+            # Drop duplicate columns on join
+            type_feat_dict[one_type] = \
+                type_feat_dict[one_type].loc[:,~type_feat_dict[one_type].columns.duplicated()]
+        try:
+#            type_feat_dict[one_type] = pd.concat([type_feat_dict[one_type], inchi_smiles], axis=1)
+            type_feat_dict[one_type].rename(columns={"Compound": "smiles_standardized"}, inplace=True)
+        except KeyError:
+            modlog.warn(f'No features defined for {one_type}')
+            pass
 
     modlog.info(f"Completed: 'Generating physicochemical features to {target_name} dataset'")
     return(type_feat_dict)
@@ -166,6 +202,8 @@ def unpack_features(type_feat_dict):
         # Merge the dataset into the existing index DOES NOT OVERWRITE
         inchi_key_indexed_features_df = \
             inchi_key_indexed_features_df.combine_first(df)
+    inchi_key_indexed_features_df.drop_duplicates(subset=['smiles','smiles_standardized'],
+                                                  inplace=True, keep='first')
     return(inchi_key_indexed_features_df)
 
 def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
@@ -240,12 +278,17 @@ def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
     runUID_indexed_inchikey_df = \
         unique_inchis_df['inchikeys'].apply(pd.Series)
     #unpack set(type=list) of inchis into unique columns
-    runUID_indexed_inchikey_df = \
-        runUID_indexed_inchikey_df.rename(columns = \
-                                          lambda x : 'inchikey_' + str(x))
     runUID_indexed_inchikey_df['name'] = unique_inchis_df['name']
     runUID_indexed_inchikey_df.set_index('name',
                                          inplace=True)
+    runUID_indexed_inchikey_df.replace(to_replace='null', value=np.nan, inplace=True)
+    # remove null columns and align, order here doesn't matter
+    runUID_indexed_inchikey_df = \
+        runUID_indexed_inchikey_df.apply(lambda x: x.dropna().reset_index(drop=True), axis=1)
+    runUID_indexed_inchikey_df.dropna(axis=1, inplace=True, how='all')
+    runUID_indexed_inchikey_df = \
+        runUID_indexed_inchikey_df.rename(columns = \
+                                          lambda x : 'inchikey_' + str(x))
 
     ###### Dataframe Export Begins Here ####### 
     if debug_bool:
@@ -257,5 +300,5 @@ def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
         runUID_inchi_file = 'REPORT_UID_LOADTABLE.csv'
         write_debug_file(runUID_indexed_inchikey_df,
                          runUID_inchi_file)
-#    return feat_df
+    return runUID_inchi_file, inchi_key_indexed_features_df
 

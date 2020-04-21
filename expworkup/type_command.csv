@@ -1,0 +1,12 @@
+m_descriptor_def_id,short_name,calc_definition,description,input,alternative_input,actor_org,actor_systemtool_name,actor_systemtool_version
+69,heteroaromaticringcount,heteroaromaticringcount,heteroaromatic ring count,organic,,ChemAxon,cxcalc,19.27.0
+68,aliphaticatomcount,aliphaticatomcount,aliphatic atom count,organic,,ChemAxon,cxcalc,19.27.0
+60,asa+,molecularsurfacearea -t asa+,asa+,organic,,ChemAxon,cxcalc,19.27.0
+59,asa_p,molecularsurfacearea -t asa_p,asa_p,organic,,ChemAxon,cxcalc,19.27.0
+58,asa_h,molecularsurfacearea -t asa_h,asa_h,organic,,ChemAxon,cxcalc,19.27.0
+57,asa-,molecularsurfacearea -t asa-,asa-,organic,,ChemAxon,cxcalc,19.27.0
+53,fr_guanido,fr_guanido,number of guanidine groups,organic,,RDKit open source software,RDKit,19.03.4
+52,fr_dihydropyridine,fr_dihydropyridine,number of dihydropyridines,organic,,RDKit open source software,RDKit,19.03.4
+51,fr_amidine,fr_amidine,number of amidine groups,organic,,RDKit open source software,RDKit,19.03.4
+69,heteroaromaticringcount,heteroaromaticringcount,heteroaromatic ring count,solvent,,ChemAxon,cxcalc,19.27.0
+68,aliphaticatomcount,aliphaticatomcount,aliphatic atom count,acid,,ChemAxon,cxcalc,19.27.0

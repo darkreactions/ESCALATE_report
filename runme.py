@@ -11,6 +11,7 @@ import numpy as np
 from utils.globals import set_debug_header, get_debug_header
 from utils.file_handling import write_debug_file
 from expworkup.jsonparser import json_pipeline
+from expworkup.report_view import construct_2d_view
 from expworkup.createjson import download_experiment_directories
 from expworkup.createjson import inventory_assembly
 from expworkup.ingredients.pipeline import ingredient_pipeline
@@ -92,7 +93,7 @@ if __name__ == "__main__":
 
     # A dev toggle to bypass google downloads after a local iteration
     # Requires targeting 'dev' dataset on the first iteration (to get chemical inventories)
-    offline_toggle = 1
+    offline_toggle = 0
     # First iteration, set to '1' to save files locally
     # Second iteration, set to '2' to load local files and continue    
     offline_folder = f'./{args.local_directory}/offline'
@@ -148,16 +149,29 @@ if __name__ == "__main__":
     compound_ingredient_objects_df = ingredient_pipeline(report_df,
                                                          chemdf_dict,
                                                          args.debug)
-    feat_pipeline(target_naming_scheme, report_df, chemdf_dict, args.debug, log_directory)
-    sum_molarity_df = calc_pipeline(report_df,
+
+    runUID_inchi_file,\
+        inchi_key_indexed_features_df= feat_pipeline(target_naming_scheme,
+                                                     report_df,
+                                                     chemdf_dict,
+                                                     args.debug,
+                                                     log_directory)
+
+    calc_out_df = calc_pipeline(report_df,
                                     compound_ingredient_objects_df,
                                     chemdf_dict,
                                     args.debug) 
+    #calc_out_df.to_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
+    #calc_out_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
 
-    #augmented_raw_df = augmentdataset(report_df)
-    #rxn_v1molarity_clean = nameCleaner(clean_df.filter(like='_raw_v1-M_'), '_rxn_M')
-    # TODO: cleanup documentation and export pipeline for statesets
-    # TODO: create final export of a 2d CSV file from the data above
+    escalate_final_df = construct_2d_view(report_df,
+                                          calc_out_df,
+                                          runUID_inchi_file,
+                                          inchi_key_indexed_features_df, 
+                                          args.debug,
+                                          args.raw)
+
+    escalate_final_df.to_csv(f'{target_naming_scheme}.csv')
 
     if ('state' in vars(args)):
         templink = str(args.state)
@@ -175,8 +189,8 @@ if __name__ == "__main__":
         modlog.info('No versioned data repository format generated')
 
     elif args.verdata == None:
-        modlog.info(f'No versioned data export selected, exiting cleanly, please use the generated {target_naming_scheme}.csv file')
-        print(f'Exiting cleanly, please use the generated {target_naming_scheme}.csv file')
+        modlog.info(f'Clean Exit: {target_naming_scheme}.csv was generated')
+        print(f'Clean Exit: {target_naming_scheme}.csv was generated')
 
     if offline_toggle == 0: 
         os.remove('./mycred.txt') #cleanup automatic authorization
