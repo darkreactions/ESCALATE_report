@@ -19,7 +19,7 @@ __pycache__/
 !type_command.csv
 *.log
 *.ipynb_checkpoints
-!OriginalTestCase.csv
+!statesets/*
 !dataset_rename.json
 !example.csv
 !example.link.csv
