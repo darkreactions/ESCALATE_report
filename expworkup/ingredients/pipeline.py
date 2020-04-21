@@ -202,11 +202,13 @@ def get_compound_ingredient_objects_df(all_ingredients_df, chemdf_dict):
     compound_ingredient_list = set(compound_ingredient_list)
 
     modlog.info('Preparing Reagent Objects, details for ingredient preparation are in separate logfile')
-    print('(4/6) Preparing reagent objects...')
+    print('(4/6) Preparing reagent objects... (this is slow on large datasets)')
     for compound_ingredient_label in tqdm(compound_ingredient_list):
         modlog.info(f'Preparing {compound_ingredient_label}')
         df = all_ingredients_df.filter(regex=compound_ingredient_label)
         df['name'] = all_ingredients_df['name'].values
+        # TODO: parallelize this for performance increase
+        # https://stackoverflow.com/questions/36794433/python-using-multiprocessing-on-a-pandas-dataframe
         compound_ingredient_objects_df[compound_ingredient_label] = \
             df.apply(lambda row:  one_compound_ingredient(row,
                                                           compound_ingredient_label,

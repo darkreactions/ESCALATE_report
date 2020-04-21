@@ -1,23 +1,18 @@
 short_name,calc_definition,human readable description,input,alternative_input,actor_org,actor_systemtool_name,actor_systemtool_version
 heteroaromaticringcount,heteroaromaticringcount,heteroaromatic ring count,organic,,ChemAxon,cxcalc,19.27.0
 aliphaticatomcount,aliphaticatomcount,aliphatic atom count,organic,,ChemAxon,cxcalc,19.27.0
-asa+,molecularsurfacearea -t asa+ -H 3.0,asa+,organic,,ChemAxon,cxcalc,19.27.0
-asa_p,molecularsurfacearea -t asa_p -H 3.0,asa_p,organic,,ChemAxon,cxcalc,19.27.0
-asa_h,molecularsurfacearea -t asa_h -H 3.0,asa_h,organic,,ChemAxon,cxcalc,19.27.0
-asa-,molecularsurfacearea -t asa- -H 3.0,asa-,organic,,ChemAxon,cxcalc,19.27.0
+asa+,molecularsurfacearea -t asa+ -H 3.0,Molecular Surface Area calculation (3D). asa+,organic,,ChemAxon,cxcalc,19.27.0
+asa_p,molecularsurfacearea -t asa_p -H 3.0,Molecular Surface Area calculation (3D). asa_p,organic,,ChemAxon,cxcalc,19.27.0
+asa_h,molecularsurfacearea -t asa_h -H 3.0,Molecular Surface Area calculation (3D). asa_h,organic,,ChemAxon,cxcalc,19.27.0
+asa-,molecularsurfacearea -t asa- -H 3.0,Molecular Surface Area calculation (3D). asa-,organic,,ChemAxon,cxcalc,19.27.0
+asavdwp,molecularsurfacearea -t vanderwaals -H 3.0,Molecular Surface Area calculation (3D). Vanderwaals,organic,,ChemAxon,cxcalc,19.27.0
 hdonorcount,donorcount -H 3.0,hydrogen bond donor atom count in molecule,organic,,ChemAxon,cxcalc,19.27.0
 hacceptorcount,acceptorcount -H 3.0,hydrogen bond acceptor atom count in molecule,organic,,ChemAxon,cxcalc,19.27.0
 protpsa,psa -H 3.0,topological polar surface area calculation (2d),organic,,ChemAxon,cxcalc,19.27.0
-molsurfaceareaasap,msa -t ASA+ -H 3.0,molecular surface area calculation (3d),organic,,ChemAxon,cxcalc,19.27.0
-molsurfaceareavdwp,msa -t vanderwaals -H 3.0,molecular surface area calculation (3d),organic,,ChemAxon,cxcalc,19.27.0
 minimalprojectionsize,minimalprojectionsize,calculates the size of the molecule perpendicular to the minimal projection area surface,organic,,ChemAxon,cxcalc,19.27.0
 maximalprojectionsize,maximalprojectionsize,calculates the size of the molecule perpendicular to the maximal projection area surface,organic,,ChemAxon,cxcalc,19.27.0
 donsitecount,donorsitecount -H 3.0,hydrogen bond donor multiplicity in molecule,organic,,ChemAxon,cxcalc,19.27.0
-donorcount,donorcount -H 3.0,hydrogen bond donor atom count in molecule,organic,,ChemAxon,cxcalc,19.27.0
 accsitecount,acceptorsitecount -H 3.0,hydrogen bond acceptor multiplicity in molecule,organic,,ChemAxon,cxcalc,19.27.0
-acceptorcount,acceptorcount -H 3.0,hydrogen bond acceptor atom count in molecule,organic,,ChemAxon,cxcalc,19.27.0
-wasa,wateraccessiblesurfacearea -H 3.0,Water Accessible Surface Area calculation at pH 3.0,organic,,ChemAxon,cxcalc,19.27.0
-vanderwaalssurfacearea,vdwsa -H 3.0,van der waals surface area calculation,organic,,ChemAxon,cxcalc,19.27.0
 vanderwaalsvolume,volume ,calculates the van der waals volume of the molecule,organic,,ChemAxon,cxcalc,19.27.0
 maximalprojectionradius,maximalprojectionradius ,calculates the maximal projection radius,organic,,ChemAxon,cxcalc,19.27.0
 minimalprojectionradius,minimalprojectionradius ,calculates the minimal projection radius,organic,,ChemAxon,cxcalc,19.27.0

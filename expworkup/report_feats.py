@@ -62,18 +62,18 @@ def get_command_dict(command_type_df, one_type, application):
     commands_df = command_type_df[(command_type_df['input'] == one_type) &  \
                                   (command_type_df['actor_systemtool_name'] == application)]
 
-    descriptor_dict = {}
+    my_descriptor_dict = {}
     for command in commands_df.itertuples():
             column_name = f'_feat_{command.short_name}'
-            descriptor_dict[command.short_name] = {}
+            my_descriptor_dict[command.short_name] = {}
             # stupid human space removal
             templist = command.calc_definition.split(' ')
             str_list = list(filter(None, templist))
-            descriptor_dict[command.short_name]["command"] = str_list
+            my_descriptor_dict[command.short_name]["command"] = str_list
 
-            descriptor_dict[command.short_name]["column_names"] = [column_name]
+            my_descriptor_dict[command.short_name]["column_names"] = [column_name]
     command_dict = {}
-    command_dict['descriptors'] = descriptor_dict
+    command_dict['descriptors'] = my_descriptor_dict
     command_dict['ph_descriptors'] = {} # possibly useful, see chemdescriptor for more details
     if len(command_dict['descriptors'].keys()) == 0:
         return None
@@ -108,7 +108,7 @@ def get_features(unique_types, experiment_inchi_df, target_name, log_folder):
 
     # TODO: insert validation of the type_command df
     # type_command df should be treated as code!
-    type_command_df = pd.read_csv('./expworkup/type_command.csv')
+    type_command_df = pd.read_csv('./type_command.csv')
     type_feat_dict = {}
 
     modlog.info(f'Generating physicochemical features to {target_name} dataset')

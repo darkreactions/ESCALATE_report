@@ -38,6 +38,8 @@ Installation
 3. Install the latest version of the pip package manager, `conda install pip`
 
 4. Execute `pip install -r requirements.txt`
+
+5. Execute `conda install -c conda-forge rdkit`
    
 5. Download the securekey files and move them into the expworkup/creds/ folder. Do not distribute these keys!
 
@@ -45,11 +47,11 @@ Installation
 
 ## Windows
 
-
-
 ### Custom Environment (Package List)
-Install the following python packages prior to use:
+Pip install the following python packages prior to use:
 - pandas, json, numpy, gspread, pydrive
+
+conda install -c conda-forge rdkit
 
 Please report any failures of the above message to the repo admins
  
@@ -57,12 +59,15 @@ Running The Code
 =================
 Currently supported `dataset targets` (folder names): 
   * **MIT Data:** MIT_PVLab
-  * **HC and LBL Data:** LBL, 4-Data-WF3_Iodide, 4-Data-WF3_Alloying, 4-Data-Bromides
+  * **HC and LBL Data:** 4-Data-WF3_Iodide, 4-Data-WF3_Alloying, 4-Data-Bromides, 4-Data-Iodides
   * **Development:** dev
 
 ## Basic Overview
+A more detailed instruction manual including videos overviewing how to operated the code can be found [here](https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit)
+
 To add additional target directories please see the how-to guide [here](https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:-Adding-New-Labs-to-devconfig.py)
 
+1. You can always get runtime information by executing `python runme.py --help`
 1. `python runme.py <dataset-name> -l <workup target>` 
   
 2. For additional command line options see `python runme.py --help`

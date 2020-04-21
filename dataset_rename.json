@@ -8,7 +8,7 @@
         "columns" : {}
     },
     "group_1": {
-        "datasets" : ["LBL", "HC", "4-Data-WF3_Iodide", "4-Data-Bromides", "4-Data-WF3_Alloying"],
+        "datasets" : ["4-Data-WF3_Iodide", "4-Data-Bromides", "4-Data-WF3_Alloying", "4-Data-Iodides"],
         "columns" : {
             "Unnamed: 2" : "_raw_placeholder",
             "Bulk Actual Temp (C)" : "_rxn_temperatureC_actual_bulk",
@@ -20,6 +20,7 @@
         }
     },
     "group_2": {
+        "comment" : "superset of group_1",
         "datasets" : ["dev", "MIT_PVLab"],
         "columns" : {
             "Bulk Actual Temp (C)" : "_rxn_temperature_C_actual_bulk",

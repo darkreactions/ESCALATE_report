@@ -100,7 +100,7 @@ def runuid_feat_merge(sumbytype_byinstance_molarity_df, inchi_key_indexed_featur
         sumbytype_byinstance_molarity_df.filter(regex='_inchikey')
     for type_inchi_col in chemical_type_inchi.columns:
         chemical_type = type_inchi_col.split('_')[2].strip() # _raw_inorganic_0_inchikey to inorganic
-        feature_prefix = type_inchi_col.rsplit('_', 1)[0].strip() # inorganic_0_inchikey to inorganic_0
+        feature_prefix = type_inchi_col.rsplit('_', 1)[0].strip().split('_',2)[2] # _raw_inorganic_0_inchikey to inorganic_0
         bulk_features = inchi_key_indexed_features_df.copy()
         bulk_features = bulk_features[bulk_features['types'].str.contains(pat=f'(?:^|\W){chemical_type}(?:$|\W)', regex=True)]
         #Drop anycolumns which are not full (likely due to specifying multiple types)
