@@ -146,5 +146,5 @@ FAQs, Trouble Shooting, and Tutorials
 1. [FAQs](https://github.com/darkreactions/ESCALATE_Capture/wiki/Users:-FAQs)
 2. Trouble Shooting Help: please send log file, any terminal output and a brief explanation to ipendlet .at. haverford.edu for help. 
 3. Tutorials
-   1. [Adding a new target for data workup](https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:-Adding-New-Labs-to-devconfig.py)
+   1. [Adding a new target for data workup](https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:-Adding-New-Labs-to-devconfig.py:--Capture-and-Report)
    2. [Adding a new target for experiment generation]()
