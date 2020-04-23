@@ -31,19 +31,33 @@ Installation
 ## Mac and Linux
 ### Pip Install
 
-1. Create new python 3.7 environment in conda: `conda create -n escalate python=3.7`
+1. Create new python 3.8 environment in conda: `conda create -n escalate python=3.8`
 
 2. `conda activate escalate`
 
 3. Install the latest version of the pip package manager, `conda install pip`
 
-4. Execute `pip install -r requirements.txt` OR `conda create --name <your_env_name_here> --file conda_requirements.txt`
+4. Execute:
+
+   `pip install -r requirements.txt` 
+
+   OR 
+
+   `conda create --name <your_env_name_here> --file conda_requirements.txt`
 
 5. Execute `conda install -c conda-forge rdkit`
    
 5. Download the [securekey files](https://www.youtube.com/watch?v=oHg5SJYRHA0) and move them into the expworkup/creds/ folder. Do not distribute these keys! (Contact a dev for access)
 
 6. Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the main directory (directly in ESCALATE_report)
+
+6. Stop here if you don't want to use the automated feature generation. You can specify the simple workup from google by executing: 
+
+   `python runme.py <dataset-name> -l <workup target> --simple 1` 
+
+6. Download and [install ChemAxon JChemSuite](https://chemaxon.com/products/jchem-engines) and obtain a [ChemAxon License Free for academic use](https://academia.chemaxon.com/)
+
+7. You will need to specify the location of your chemaxon installation locations in `./expworkup/devconfig.py` at the bottom of the file
 
 ## Windows
 
@@ -67,16 +81,33 @@ A more detailed instruction manual including videos overviewing how to operated 
 
 To add additional target directories please see the how-to guide [here](https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:-Adding-New-Labs-to-devconfig.py)
 
-1. You can always get runtime information by executing `python runme.py --help`
-1. `python runme.py <dataset-name> -l <workup target>` 
-  
-2. For additional command line options see `python runme.py --help`
+1. You can always get runtime information by executing:
 
-3. If you want to change column headers specify them in the `dataset_rename.json` file
+    `python runme.py --help`
+
+1. To execute a simple run with no data augmentation:
+   
+   `python runme.py <dataset-name> -l <workup target> --simple 1` 
+
+2. To execute a normal run with chemaxon, rdkit, and ESCALATE calcs (see installation instructions above for more details)
+
+   `python runme.py <dataset-name> -l <workup target>`
   
-5. A file named <directory>.csv will contain the 2d CSV of the dataset using the configured headers from the data or the mapping developed for the lab.  The `data/` folder will contain the generated JSONs.
+3. To improve the clarity of column headers specify them in the `dataset_rename.json` file.  All columns can be viewed in the initial run by executing: 
+
+   `python runme.py <dataset-name> -l <workup target> --raw 1`
+
+4. __Columns that do not conform to the `_{category}_` (e.g., `_feat_`, `_rxn_`) will be omitted unless `--raw 1` is enabled!__
+  
+5. A file named `<directory>.csv` will contain the 2d CSV of the dataset using the configured headers from the data or the mapping developed for the lab.  The `data/` folder will contain the generated JSONs.
+
+6. Intermediate dataframes can be exported in bulk by specifying:
+
+   `python runme.py <dataset-name> -l <workup target> --debug 1`
 
 ## Report to Versioned Data to ESCALATion
+More detailed instructions can be found in the [ESCALATE user manual](https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit?usp=sharing).
+
 **If you are using Windows10 please follow [these instructions](https://github.com/darkreactions/ESCALATE_Capture/wiki/User:-Configuring-Windows-Environment) on what you will need to setup your environment. Consider using Ubuntu or wsl instead!**
 
 1. Ensure that [versioned data repo](https://gitlab.sd2e.org/sd2program/versioned-datasets) and [escalation](http://escalation.sd2e.org/) are installed

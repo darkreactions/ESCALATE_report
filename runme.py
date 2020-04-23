@@ -60,6 +60,9 @@ if __name__ == "__main__":
     parser.add_argument('--debug', type=bool, default=False, choices=[True, False],
                         help="exports all dataframe intermediates prefixed with 'REPORT_'\
                         csvfiles with default names")
+    parser.add_argument('--simple', type=bool, default=False, choices=[True, False],
+                        help="setting to 'True' will disable reagent processing, feature augmentation,\
+                              and calculations.  The code will still export a simple report dataframe." )
 
     args = parser.parse_args()
 
@@ -146,6 +149,18 @@ if __name__ == "__main__":
             inventory_name = f'REPORT_{name.upper()}_INVENTORY.csv'
             write_debug_file(chemicaldf, inventory_name)
 
+    if args.simple:
+        report_df.to_csv(f'{target_naming_scheme}.csv')
+        if offline_toggle == 0: 
+            os.remove('./mycred.txt') #cleanup automatic authorization
+        modlog.info(f'Simple Export Enabled: No dataset augmentation will occur!')
+        print(f'Simple Export Enabled: No dataset augmentation will occur!')
+        print(f'Simple Export Enabled: (3/3 steps were completed)')
+        modlog.info(f'Clean Exit: {target_naming_scheme}.csv was generated')
+        print(f'Clean Exit: {target_naming_scheme}.csv was generated')
+        import sys
+        sys.exit()
+
     compound_ingredient_objects_df = ingredient_pipeline(report_df,
                                                          chemdf_dict,
                                                          args.debug)
@@ -188,9 +203,8 @@ if __name__ == "__main__":
     elif args.verdata == 0:
         modlog.info('No versioned data repository format generated')
 
-    elif args.verdata == None:
-        modlog.info(f'Clean Exit: {target_naming_scheme}.csv was generated')
-        print(f'Clean Exit: {target_naming_scheme}.csv was generated')
+    modlog.info(f'Clean Exit: {target_naming_scheme}.csv was generated')
+    print(f'Clean Exit: {target_naming_scheme}.csv was generated')
 
     if offline_toggle == 0: 
         os.remove('./mycred.txt') #cleanup automatic authorization
