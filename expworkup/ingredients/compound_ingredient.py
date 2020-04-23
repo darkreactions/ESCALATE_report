@@ -119,14 +119,19 @@ class CompoundIngredient():
         chemical_list_length = len(inchikey_series.values)
         chemical_id_list = [f'chemicals_{i}' for i in range(chemical_list_length)]
 
-        chemical_series = onlychemicals_series[onlychemicals_series.index.str.endswith('_amount')]
-        chemical_units = onlychemicals_series[onlychemicals_series.index.str.endswith('_units')]
+        try:
+            chemical_series = onlychemicals_series[onlychemicals_series.index.str.endswith('_amount')]
+            chemical_units = onlychemicals_series[onlychemicals_series.index.str.endswith('_units')]
 
-        ingredient_df = pd.DataFrame({'InChiKey': inchikey_series.values,
-                                      'amount': chemical_series.values, 
-                                      'unit' : chemical_units.values,
-                                      'chemical_num' : chemical_id_list 
-                                     })
+            ingredient_df = pd.DataFrame({'InChiKey': inchikey_series.values,
+                                          'amount': chemical_series.values, 
+                                          'unit' : chemical_units.values,
+                                          'chemical_num' : chemical_id_list 
+                                         })
+        except ValueError:
+            warnlog.error(f'Please validate {self.uid_name}!  An error processing this reagent prohibits the run from completing')
+            import sys
+            sys.exit()
 
         ingredient_df['molecularmass'] = chem_df.loc[ingredient_df['InChiKey'], 'Molecular Weight (g/mol)'].values
         ingredient_df['density'] = chem_df.loc[ingredient_df['InChiKey'], 'Density            (g/mL)'].values
