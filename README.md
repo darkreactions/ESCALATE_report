@@ -77,9 +77,7 @@ Currently supported `dataset targets` (folder names):
   * **Development:** dev
 
 ## Basic Overview
-A more detailed instruction manual including videos overviewing how to operated the code can be found [here](https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit)
-
-To add additional target directories please see the how-to guide [here](https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:-Adding-New-Labs-to-devconfig.py)
+A more detailed instruction manual including videos overviewing how to operated the code can be found in the [ESCALATE user manual](https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit?usp=sharing)
 
 1. You can always get runtime information by executing:
 
@@ -104,6 +102,8 @@ To add additional target directories please see the how-to guide [here](https://
 6. Intermediate dataframes can be exported in bulk by specifying:
 
    `python runme.py <dataset-name> -l <workup target> --debug 1`
+
+To add additional target directories please see the how-to guide [here](https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:-Adding-New-Labs-to-devconfig.py).  If you would like to add these to the existing datasets, please issue a git merge request after you add the necessary information.
 
 ## Report to Versioned Data to ESCALATion
 More detailed instructions can be found in the [ESCALATE user manual](https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit?usp=sharing).
