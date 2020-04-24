@@ -23,6 +23,8 @@ __pycache__/
 !dataset_rename.json
 !example.csv
 !example.link.csv
+!requirements.txt
+!conda_requirements.txt
 .idea/*
 *.smi
 

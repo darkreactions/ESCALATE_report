@@ -1,0 +1,26 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: osx-64
+cerberus=1.3.2=pypi_0
+chemdescriptor=0.2.4=pypi_0
+glib=2.64.2=h577aef8_0
+google-api-core=1.17.0=pypi_0
+google-api-python-client=1.7.4=pypi_0
+google-auth=1.14.0=pypi_0
+google-auth-httplib2=0.0.3=pypi_0
+googleapis-common-protos=1.51.0=pypi_0
+gspread=3.4.2=pypi_0
+more-itertools=8.2.0=pypi_0
+numpy=1.18.3=pypi_0
+oauth2client=4.1.3=pypi_0
+pandas=1.0.3=py38h5fc983b_1
+pip=20.0.2=py38_1
+pydrive=1.3.1=pypi_0
+pytest=5.4.1=pypi_0
+python=3.8.2=hc70fcce_0
+python-dateutil=2.8.1=py_0
+python_abi=3.8=1_cp38
+rdkit=2020.03.1=py38h415f5aa_1
+tqdm=4.45.0=pypi_0
+xlrd=1.2.0=pypi_0
+xlwt=1.3.0=pypi_0
