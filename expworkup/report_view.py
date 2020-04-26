@@ -80,6 +80,17 @@ def construct_2d_view(report_df,
             modlog.info(f'{num} in additional dataframes already correctly indexed')
         escalate_final_df = escalate_final_df.join(dataframe)
     final_df = cleaner(escalate_final_df, raw_bool) 
+    start_count = final_df.shape[1]
+    # Remove all columns that are entirely '0' or 'null'
+    # Even if all the values are ACTUALLY 0, there is no variance, wgaf?
+    condition_1 = (final_df == 0).all()
+    condition_2 = (final_df.astype(str) == 'null').all()
+    final_df = final_df.loc[:, ~condition_1]
+    final_df = final_df.loc[:, ~condition_2]
+    end_count = final_df.shape[1]
+
+    modlog.info(f'Removed {start_count-end_count} of an original {start_count} columns which contained only "0" or "null"')
+    print(f'Removed {start_count-end_count} of an original {start_count} columns which contained only "0" or "null"')
     modlog.info('successfully generated mmol and molarity dataframes for calcs')
     # TODO: cleanup documentation and export pipeline for statesets
     # TODO: create final export of a 2d CSV file from the data above

@@ -6,8 +6,8 @@ import pandas as pd
 from tqdm import tqdm
 
 from expworkup.handlers.chemical_types import get_chemical_types
-from chemdescriptor.generator.chemaxon import ChemAxonDescriptorGenerator as cag
-from chemdescriptor.generator.rdkit import RDKitDescriptorGenerator as rdg
+from expworkup.handlers.chemdescriptor_wrapper import cxcalc_handler
+from expworkup.handlers.chemdescriptor_wrapper import rdkit_handler
 from utils.file_handling import write_debug_file
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
@@ -61,7 +61,6 @@ def get_command_dict(command_type_df, one_type, application):
     """
     commands_df = command_type_df[(command_type_df['input'] == one_type) &  \
                                   (command_type_df['actor_systemtool_name'] == application)]
-
     my_descriptor_dict = {}
     for command in commands_df.itertuples():
             column_name = f'_feat_{command.short_name}'
@@ -129,47 +128,37 @@ def get_features(unique_types, experiment_inchi_df, target_name, log_folder):
         cxcalc_command_dict = get_command_dict(type_command_df,
                                              one_type,
                                              'cxcalc')
+
+        cxcalc_std_command_dict = get_command_dict(type_command_df,
+                                                   one_type,
+                                                   'cxcalc_std')
         rdkit_command_dict = get_command_dict(type_command_df,
                                               one_type,
                                               'RDKit')
         if cxcalc_command_dict is not None:
-            try:
-            #TODO: update logs and fix outputfile meaningfully
-                calc_features = cag(smiles_list,
-                                    whitelist={},
-                                    command_dict=cxcalc_command_dict,
-                                    logfile=f'{log_folder}/CXCALC_LOG.txt',
-                                    standardize=True)
-                type_features_df = calc_features.generate(f'./{target_name}/offline/CXCALC_{one_type}_FEATURES.csv',
-                                                          dataframe=True,
-                                                          lec=False)
-            except UnboundLocalError:
-                modlog.error(f'Critical Error: cxcalc functions incorrectly specified. Please validate type_command.csv!')
-                warnlog.error(f'Critical Error: cxcalc functions incorrectly specified. Please validate type_command.csv!')
-                import sys
-                sys.exit()
-            type_feat_dict[one_type] = pd.concat([type_feat_dict[one_type], type_features_df], axis=1)
+            type_feat_dict = cxcalc_handler(type_feat_dict, 
+                                            cxcalc_command_dict,
+                                            smiles_list,
+                                            target_name,
+                                            one_type,
+                                            False,
+                                            log_folder)
+        if cxcalc_std_command_dict is not None:
+            type_feat_dict = cxcalc_handler(type_feat_dict, 
+                                            cxcalc_std_command_dict,
+                                            smiles_list,
+                                            target_name,
+                                            one_type,
+                                            True,
+                                            log_folder)
         if rdkit_command_dict is not None:
-            try:
-#                rdkit_whitelist= rdkit_command_dict['descriptors'].keys()
-                rdkit_features = rdg(smiles_list,
-                                     whitelist=rdkit_command_dict,
-#                                     command_dict=rdkit_command_dict,
-                                     logfile=f'{log_folder}/RDKIT_LOG.txt')
-                
-                type_features_df = rdkit_features.generate(f'./{target_name}/offline/RDKIT_{one_type}_FEATURES.csv',
-                                                           dataframe=True)
-            except UnboundLocalError:
-                modlog.error(f'Critical Error: cxcalc functions incorrectly specified. Please validate type_command.csv!')
-                warnlog.error(f'Critical Error: cxcalc functions incorrectly specified. Please validate type_command.csv!')
-                import sys
-                sys.exit()
-            type_feat_dict[one_type] = pd.concat([type_feat_dict[one_type], type_features_df], axis=1)
-            # Drop duplicate columns on join
-            type_feat_dict[one_type] = \
-                type_feat_dict[one_type].loc[:,~type_feat_dict[one_type].columns.duplicated()]
+            type_feat_dict = rdkit_handler(type_feat_dict, 
+                                           rdkit_command_dict,
+                                           smiles_list,
+                                           target_name,
+                                           one_type,
+                                           log_folder)
         try:
-#            type_feat_dict[one_type] = pd.concat([type_feat_dict[one_type], inchi_smiles], axis=1)
             type_feat_dict[one_type].rename(columns={"Compound": "smiles_standardized"}, inplace=True)
         except KeyError:
             modlog.warn(f'No features defined for {one_type}')

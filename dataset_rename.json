@@ -4,6 +4,7 @@
     "comment3" : "if no grouping exists for a specified dataset, code will target 'default'",
     "comment4" : "if a column does not have a suitable prefix it will be ommitted from the dataset",
     "comment5" : "all columns (including undefined) can be viewed by toggling 'raw' from the command line",
+    "comment6" : "THIS RENAME WILL BE APPLIED TWICE, once immediately after generatign report, and again after all other functions",
     "default" : {
         "columns" : {}
     },
@@ -11,19 +12,20 @@
         "datasets" : ["4-Data-WF3_Iodide", "4-Data-Bromides", "4-Data-WF3_Alloying", "4-Data-Iodides"],
         "columns" : {
             "Unnamed: 2" : "_raw_placeholder",
-            "Bulk Actual Temp (C)" : "_rxn_temperatureC_actual_bulk",
+            "Bulk Actual Temp (C)" : "_rxn_actual_bulk_temperature_c",
             "Crystal Score" : "_out_crystalscore",
             "_out_predicted" : "_raw_model_predicted",
             "modelname" : "_raw_modelname",
             "participantname" : "_raw_participantname",
-            "notes" : "_raw_notes"
+            "notes" : "_raw_notes",
+            "_raw_datecompleted" : "EXCLUDEME_ECLONLY_datecompleted"
         }
     },
     "group_2": {
         "comment" : "superset of group_1",
         "datasets" : ["dev", "MIT_PVLab"],
         "columns" : {
-            "Bulk Actual Temp (C)" : "_rxn_temperature_C_actual_bulk",
+            "Bulk Actual Temp (C)" : "_rxn_actual_bulk_temperature_c",
             "Crystal Score" : "_out_crystalscore",
             "modelname" : "_raw_modelname",
             "participantname" : "_raw_participantname",

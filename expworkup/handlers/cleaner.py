@@ -28,7 +28,9 @@ def cleaner(clean_df, raw_bool_cli):
         # we have to exclude all numerical values where '0' (zero) has meaning, e.g., temperature
         if column_type == 'object':
             null_list.append(column_name)
-        if column_type != 'object' and 'rxn' in column_name:
+        if column_type != 'object' and '_rxn_' in column_name:
+            null_list.append(column_name)
+        if column_type != 'object' and '_units' in column_name:
             null_list.append(column_name)
         if '_out_' in column_name:
             null_list.append(column_name)

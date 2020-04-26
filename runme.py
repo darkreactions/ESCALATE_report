@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
     # A dev toggle to bypass google downloads after a local iteration
     # Requires targeting 'dev' dataset on the first iteration (to get chemical inventories)
-    offline_toggle = 0
+    offline_toggle = 2
     # First iteration, set to '1' to save files locally
     # Second iteration, set to '2' to load local files and continue    
     offline_folder = f'./{args.local_directory}/offline'
@@ -125,17 +125,17 @@ if __name__ == "__main__":
         if not os.path.exists(offline_folder):
             modlog.error('Developer offline_toggle set before downloading files.. EXITING')
             sys.exit()
-        report_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT.csv')
+        report_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT.csv', low_memory=False)
         chemdf_dict = {}
         chemdf_dict = {
-            'ECL' : pd.read_csv(f'./{args.local_directory}/offline/ECL.csv',
+                'LBL' : pd.read_csv(f'./{args.local_directory}/offline/LBL.csv',
                                 index_col='InChI Key (ID)'),
-            'HC' : pd.read_csv(f'./{args.local_directory}/offline/HC.csv',
+                'HC' : pd.read_csv(f'./{args.local_directory}/offline/HC.csv',
                                 index_col='InChI Key (ID)'),
-            'LBL' : pd.read_csv(f'./{args.local_directory}/offline/LBL.csv',
+                'ECL' : pd.read_csv(f'./{args.local_directory}/offline/ECL.csv',
                                 index_col='InChI Key (ID)'),
-            'MIT_PVLab' : pd.read_csv(f'./{args.local_directory}/offline/MIT_PVLab.csv',
-                                      index_col='InChI Key (ID)')
+#                'MIT_PVLab' : pd.read_csv(f'./{args.local_directory}/offline/MIT_PVLab.csv',
+#                                      index_col='InChI Key (ID)')
         }
 
     debug_header = f"# Report version {__version__}; Created on {datetime.datetime.now()}; Dataset(s) targeted {dataset_list}\n"
@@ -176,8 +176,8 @@ if __name__ == "__main__":
                                     compound_ingredient_objects_df,
                                     chemdf_dict,
                                     args.debug) 
-    #calc_out_df.to_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
-    #calc_out_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
+    calc_out_df.to_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
+    calc_out_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
 
     escalate_final_df = construct_2d_view(report_df,
                                           calc_out_df,
@@ -200,9 +200,6 @@ if __name__ == "__main__":
     if args.verdata is not None:
         export_to_repo.prepareexport(target_naming_scheme, args.state, link, args.verdata)
             
-    elif args.verdata == 0:
-        modlog.info('No versioned data repository format generated')
-
     modlog.info(f'Clean Exit: {target_naming_scheme}.csv was generated')
     print(f'Clean Exit: {target_naming_scheme}.csv was generated')
 
