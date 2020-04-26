@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
     # A dev toggle to bypass google downloads after a local iteration
     # Requires targeting 'dev' dataset on the first iteration (to get chemical inventories)
-    offline_toggle = 2
+    offline_toggle = 0
     # First iteration, set to '1' to save files locally
     # Second iteration, set to '2' to load local files and continue    
     offline_folder = f'./{args.local_directory}/offline'
@@ -176,8 +176,8 @@ if __name__ == "__main__":
                                     compound_ingredient_objects_df,
                                     chemdf_dict,
                                     args.debug) 
-    calc_out_df.to_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
-    calc_out_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
+    #calc_out_df.to_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
+    #calc_out_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
 
     escalate_final_df = construct_2d_view(report_df,
                                           calc_out_df,
