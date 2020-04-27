@@ -18,7 +18,8 @@
             "modelname" : "_raw_modelname",
             "participantname" : "_raw_participantname",
             "notes" : "_raw_notes",
-            "_raw_datecompleted" : "EXCLUDEME_ECLONLY_datecompleted"
+            "_raw_datecompleted" : "EXCLUDEME_ECLONLY_datecompleted",
+            "_raw_timecompleted_utc" : "EXCLUDEME_ECLONLY_timecompleted_utc"
         }
     },
     "group_2": {

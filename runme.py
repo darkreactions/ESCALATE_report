@@ -96,7 +96,7 @@ if __name__ == "__main__":
 
     # A dev toggle to bypass google downloads after a local iteration
     # Requires targeting 'dev' dataset on the first iteration (to get chemical inventories)
-    offline_toggle = 0
+    offline_toggle = 1
     # First iteration, set to '1' to save files locally
     # Second iteration, set to '2' to load local files and continue    
     offline_folder = f'./{args.local_directory}/offline'
@@ -198,7 +198,9 @@ if __name__ == "__main__":
         sys.exit()
 
     if args.verdata is not None:
-        export_to_repo.prepareexport(target_naming_scheme, args.state, link, args.verdata)
+        export_to_repo.prepareexport(escalate_final_df, args.state, link, args.verdata, target_naming_scheme)
+        modlog.info(f'Exporting {args.verdata}: {args.verdata}.{target_naming_scheme}.csv was generated')
+        print(f'Exporting {args.verdata}: {args.verdata}.{target_naming_scheme}.csv was generated')
             
     modlog.info(f'Clean Exit: {target_naming_scheme}.csv was generated')
     print(f'Clean Exit: {target_naming_scheme}.csv was generated')
