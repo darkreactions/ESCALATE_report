@@ -17,11 +17,23 @@ def calc_pipeline(report_df, object_df, chemdf_dict, debug_bool):
     Parameters
     ----------
     report_df : pandas.DataFrame
-        dataframe returned after parsing all content from google drive
+        2d dataframe returned after parsing all content from google drive
         returned from expworkup.json_pipeline
+        
+    compound_ingredient_objects_df : pd.DataFrame of CompoundIngredient objects
+        objects = are instances of chemical combinations generated in the lab.
+        each reagent is rendered to a CompoundIngredient
+        object and report to the dataframe.  Every experiment is explicitly described
+        in terms of the reagents
     
+    chemdf_dict : dict of pandas.DataFrames assembled from all lab inventories
+        reads in all of the chemical inventories which describe the chemical content
+        from each lab used across the dataset construction
+
     debug_bool : CLI argument, True=Enable debugging
         ETL export option mainl
+    
+
 
     Returns
     ---------

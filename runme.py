@@ -32,40 +32,103 @@ def initialize(args):
     modlog = logging.getLogger(f'mainlog.{__name__}')
     modlog.info(args)
 
-if __name__ == "__main__":
-    ''' Initialize the main body of the code
+def local_chemdf_dict(offline_folder):
+    """ Acquire all chemdicts saved by the first local iteration
 
-    '''
-    parser = ap.ArgumentParser(description='Target Folder')
-    parser.add_argument('local_directory', type=str,
-                        help='Please include target folder')
-    parser.add_argument('-d',
-                        type=str,
-                        nargs='+',
-                        choices=[dataset for dataset in devconfig.workup_targets.keys()],
-                        help="Please specify one or more supported datasets from the options \
-                              listed. The dataset(s) require the correct credentials to access.\
-                              ||default = 4-Data-Iodides||",
-                        default='4-Data-Iodides'
-                        )
-    parser.add_argument('--raw', type=bool, default=False, choices=[True, False],
-                        help='final dataframe is printed with all raw values\
-                        included ||default = 1||')
-    parser.add_argument('--verdata', type=str, 
-                        help='Enter numerical value such as "0001". Generates <0001>.perovskitedata.csv output\
-                        in a form ready for upload to the versioned data repo ||default = None||')
-    parser.add_argument('--state', type=str,
-                        help='title of state set file to be used at the state set for \
-                        this iteration of the challenge problem, no entry will result in no processing')
-    parser.add_argument('--debug', type=bool, default=False, choices=[True, False],
-                        help="exports all dataframe intermediates prefixed with 'REPORT_'\
-                        csvfiles with default names")
-    parser.add_argument('--simple', type=bool, default=False, choices=[True, False],
-                        help="setting to 'True' will disable reagent processing, feature augmentation,\
-                              and calculations.  The code will still export a simple report dataframe." )
+    Parameters
+    ----------
+    local_directory : folder location 
+        <local directory>/offline/<my inventories>.csv must exists 
+    
+    Returns
+    -------
+    chemdf_dict : dict of pandas.DataFrames assembled from all lab inventories
+        reads in all of the chemical inventories which describe the chemical content
+        from each lab used across the dataset construction
 
-    args = parser.parse_args()
+    Notes
+    ------
+    Assumes that the user will have run 'offline_toggle = 1' first,
+    and that the only required inventories will be ones included in the offline folder
+    """
+    chemdf_dict = {}
+    inventory_list = []
+    (_, _, offline_files) = next(os.walk(offline_folder))
+    inventory_files = [x for x in offline_files if 'INVENTORY' in x]
+    for inventory in inventory_files:
+        inventory_name = inventory.rsplit('_', 1)[0] #ex MIT_PVLab_INVENTORY.csv to MIT_PVLab
+        chemdf_dict[inventory_name] = pd.read_csv(f'{offline_folder}/{inventory}',
+                                                  low_memory=False,
+                                                  index_col='InChI Key (ID)')
+    
+    return chemdf_dict
 
+
+def report_pipeline(args, offline_toggle):
+    """ Downloads and formats target folders as local JSONs, parses JSONs to simple 2d dataframe
+
+    Parameters
+    ----------
+    args : parameters from CLI
+
+    offline_toggle : explicit offline toggle from CLI
+        A dev toggle to bypass google downloads after a local iteration
+        Requires targeting 'dev' dataset on the first iteration (to get chemical inventories)
+    
+    Returns
+    ----------
+    chemdf_dict : dict of pandas.DataFrames assembled from all lab inventories
+        reads in all of the chemical inventories which describe the chemical content
+        from each lab used across the dataset construction
+
+    report_df : pandas.DataFrame
+        2d dataframe returned after parsing all content from google drive
+        returned from expworkup.json_pipeline
+
+    """
+    offline_folder = f'./{args.local_directory}/offline'
+    dataset_list = args.d
+    target_naming_scheme = args.local_directory
+
+    modlog = logging.getLogger(f'mainlog.{__name__}')
+    warnlog = logging.getLogger(f'warning.{__name__}')
+    ingredlog = logging.getLogger(f'ilog.{__name__}')
+
+    modlog.info(f'Developer Option: "offline_toggle" set to {offline_toggle}')
+
+    if offline_toggle == 1 or offline_toggle == 0:
+        # Always create offline folder to store cxcalc outputs
+        if not os.path.exists(offline_folder):
+            os.mkdir(offline_folder)
+        for dataset in dataset_list:
+            exp_dict = download_experiment_directories(target_naming_scheme, dataset)
+            chemdf_dict = inventory_assembly(exp_dict)
+        report_df = json_pipeline(target_naming_scheme,
+                                  args.raw,
+                                  chemdf_dict,
+                                  dataset_list)
+        report_df.replace('null', np.nan, inplace=True)
+        report_df.replace('', np.nan, inplace=True)
+        report_df.replace(' ', np.nan, inplace=True)
+        if offline_toggle == 1:
+            modlog.info(f'Writing intermediate files locally, ensuring {offline_folder} exists')
+            report_df.to_csv(f'{offline_folder}/REPORT.csv')
+            for name, chemicaldf in chemdf_dict.items():
+                chemicaldf.to_csv(f'{offline_folder}/{name}_INVENTORY.csv')
+    if offline_toggle == 2:
+        print('offline_toggle enabled, skipping steps 1-3')
+        if not os.path.exists(offline_folder):
+            modlog.error('Developer offline_toggle set before downloading files.. EXITING')
+            sys.exit()
+        chemdf_dict = local_chemdf_dict(offline_folder)
+        report_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT.csv', low_memory=False)
+
+    return chemdf_dict, report_df
+
+def main_pipeline(args):
+    """
+
+    """
     #Load logging information
     log_directory = f'{args.local_directory}/logging'  # folder for logs
     if not os.path.exists(args.local_directory):
@@ -94,49 +157,7 @@ if __name__ == "__main__":
 
     initialize(args)
 
-    # A dev toggle to bypass google downloads after a local iteration
-    # Requires targeting 'dev' dataset on the first iteration (to get chemical inventories)
-    offline_toggle = 1
-    # First iteration, set to '1' to save files locally
-    # Second iteration, set to '2' to load local files and continue    
-    offline_folder = f'./{args.local_directory}/offline'
-    modlog.info(f'Developer Option: "offline_toggle" set to {offline_toggle}')
-    if offline_toggle == 1 or offline_toggle == 0:
-        # Always create offline folder to store cxcalc outputs
-        if not os.path.exists(offline_folder):
-            os.mkdir(offline_folder)
-        for dataset in dataset_list:
-            exp_dict = download_experiment_directories(target_naming_scheme, dataset)
-            chemdf_dict = inventory_assembly(exp_dict)
-        report_df = json_pipeline(target_naming_scheme,
-                                  args.raw,
-                                  chemdf_dict,
-                                  dataset_list)
-        report_df.replace('null', np.nan, inplace=True)
-        report_df.replace('', np.nan, inplace=True)
-        report_df.replace(' ', np.nan, inplace=True)
-        if offline_toggle == 1:
-            modlog.info(f'Writing intermediate files locally, ensuring {offline_folder} exists')
-            report_df.to_csv(f'{offline_folder}/REPORT.csv')
-            for name, chemicaldf in chemdf_dict.items():
-                chemicaldf.to_csv(f'{offline_folder}/{name}.csv')
-    if offline_toggle == 2:
-        print('offline_toggle enabled, skipping steps 1-3')
-        if not os.path.exists(offline_folder):
-            modlog.error('Developer offline_toggle set before downloading files.. EXITING')
-            sys.exit()
-        report_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT.csv', low_memory=False)
-        chemdf_dict = {}
-        chemdf_dict = {
-                'LBL' : pd.read_csv(f'./{args.local_directory}/offline/LBL.csv',
-                                index_col='InChI Key (ID)'),
-                'HC' : pd.read_csv(f'./{args.local_directory}/offline/HC.csv',
-                                index_col='InChI Key (ID)'),
-                'ECL' : pd.read_csv(f'./{args.local_directory}/offline/ECL.csv',
-                                index_col='InChI Key (ID)'),
-#                'MIT_PVLab' : pd.read_csv(f'./{args.local_directory}/offline/MIT_PVLab.csv',
-#                                      index_col='InChI Key (ID)')
-        }
+    chemdf_dict, report_df = report_pipeline(args, args.offline)
 
     debug_header = f"# Report version {__version__}; Created on {datetime.datetime.now()}; Dataset(s) targeted {dataset_list}\n"
     set_debug_header(debug_header)
@@ -151,7 +172,7 @@ if __name__ == "__main__":
 
     if args.simple:
         report_df.to_csv(f'{target_naming_scheme}.csv')
-        if offline_toggle == 0: 
+        if args.offline == 0: 
             os.remove('./mycred.txt') #cleanup automatic authorization
         modlog.info(f'Simple Export Enabled: No dataset augmentation will occur!')
         print(f'Simple Export Enabled: No dataset augmentation will occur!')
@@ -205,6 +226,51 @@ if __name__ == "__main__":
     modlog.info(f'Clean Exit: {target_naming_scheme}.csv was generated')
     print(f'Clean Exit: {target_naming_scheme}.csv was generated')
 
-    if offline_toggle == 0: 
+    if args.offline == 0: 
         os.remove('./mycred.txt') #cleanup automatic authorization
 
+def parse_args(args):
+    """
+    """
+    parser = ap.ArgumentParser(description='Compile 2d version of specified dataset while saving online files to target folder')
+    parser.add_argument('local_directory', type=str,
+                        help='Please include target folder')
+    parser.add_argument('-d',
+                        type=str,
+                        nargs='+',
+                        choices=[dataset for dataset in devconfig.workup_targets.keys()],
+                        help="Please specify one or more supported datasets from the options \
+                              listed. The dataset(s) require the correct credentials to access.\
+                              ||default = 4-Data-Iodides||",
+                        default='4-Data-Iodides'
+                        )
+    parser.add_argument('--raw', type=bool, default=False, choices=[True, False],
+                        help='final dataframe is printed with all raw values\
+                        included ||default = 1||')
+    parser.add_argument('--verdata', type=str, 
+                        help='Enter numerical value such as "0001". Generates <0001>.perovskitedata.csv output\
+                        in a form ready for upload to the versioned data repo ||default = None||')
+    parser.add_argument('--state', type=str,
+                        help='title of state set file to be used at the state set for \
+                        this iteration of the challenge problem, no entry will result in no processing')
+    parser.add_argument('--simple', type=bool, default=False, choices=[True, False],
+                        help="setting to 'True' will disable reagent processing, feature augmentation,\
+                              and calculations.  The code will still export a simple report dataframe." )
+    parser.add_argument('--debug', type=bool, default=False, choices=[True, False],
+                        help="exports all dataframe intermediates prefixed with 'REPORT_'\
+                        csvfiles with default names")
+    parser.add_argument('--offline', type=int, default=0, choices=[0,1,2],
+                        help="|| Default = 0 || First iteration, set to '1' to save files locally \
+                        second iteration, set to '2' to load local files and continue")
+    return parser.parse_args(args)
+
+
+if __name__ == "__main__":
+    ''' Initialize the CLI and kickoff mainbody of the code
+
+    Notes
+    ------
+    Code shifted to definitions to allow for testing...
+    '''
+    parser = parse_args(sys.argv[1:])
+    main_pipeline(parser)

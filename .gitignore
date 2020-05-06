@@ -25,6 +25,7 @@ __pycache__/
 !example.link.csv
 !requirements.txt
 !conda_requirements.txt
-.idea/*
+idea/*
+!tests/REPORT_DEV.csv
 *.smi
 

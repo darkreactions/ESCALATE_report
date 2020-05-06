@@ -27,11 +27,11 @@ def ingredient_pipeline(report_df, chemdf_dict, debug_bool):
     Returns
     -------
     compound_ingredient_objects_df : pd.DataFrame of CompoundIngredient objects
-        objects are instances of things generated in the lab
-        each reagent specified in an experiment is rendered to a CompoundIngredient
-        object and report to the dataframe.  Every experiment is explicitly described
-        in terms of the reagents
-    
+        objects = are instances of chemical combinations generated in the lab.
+        each reagent is rendered to a CompoundIngredient object and report to 
+        the dataframe.  
+
+    TODO:currently disabled... 
     compound_ingredient_models_df : pd.DataFrame of CompoundIngredient models
         models are target descriptions (nominals)
         each reagent specified in an experiment is rendered to a CompoundIngredient
