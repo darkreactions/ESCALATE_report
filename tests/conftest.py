@@ -52,8 +52,8 @@ def chemdf_dict(dev_args):
                                   offline_folder,
                                   offline_toggle)
     yield chemdf_dict
-    #shutil.rmtree(str(target_naming_scheme))
-    #os.remove('mycred.txt')
+    shutil.rmtree(str(target_naming_scheme))
+    os.remove('mycred.txt')
 
 @pytest.fixture(scope='module')
 def get_report_df(get_devreport_df, chemdf_dict, dev_args):
