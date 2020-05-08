@@ -1,6 +1,7 @@
 #Copyright (c) 2018 Ian Pendleton - MIT License
 import json
 import pandas as pd
+import numpy as np
 import os
 from operator import itemgetter
 import json
@@ -95,15 +96,18 @@ def unpackJSON(myjson_fol, chemdf_dict):
         concat_df_raw = pd.concat([concat_df_raw,concat_df], sort=True)
     return(concat_df_raw) #this contains all of the raw values from the processed JSON files.  No additional data has been calculated
 
-def json_pipeline(myjsonfolder, raw_bool_cli, chemdf_dict, dataset_list):
+def json_pipeline(target_naming_scheme, raw_bool_cli, chemdf_dict, dataset_list):
     '''Top level json parser pipeline
 
     reads in the downloaded files from google drive and parses them according
     to the user defined structure.  
     
+    Parameters
+    ----------
+    target_naming_scheme : target folder for storing the run and associated data
 
-    :param myjsonfolder: target folder for run and the generated data
-    :param raw_bool_cli: list of cli arguments 
+    raw_bool_cli: include all columns
+        True will enable even improperly labeled columns to be exported
 
     Returns
     ---------
@@ -115,13 +119,16 @@ def json_pipeline(myjsonfolder, raw_bool_cli, chemdf_dict, dataset_list):
 
     '''
     print('(3/6) Dataset download complete. Unpacking JSON Files...')
-    modlog.info('%s loaded with JSONs for parsing, starting' %myjsonfolder)
+    modlog.info('%s loaded with JSONs for parsing, starting' %target_naming_scheme)
 
-    raw_df = unpackJSON(myjsonfolder, chemdf_dict)
+    raw_df = unpackJSON(target_naming_scheme, chemdf_dict)
     renamed_raw_df = renamer(raw_df, dataset_list)
     report_df = cleaner(renamed_raw_df, raw_bool_cli)
     report_df['name'] = raw_df['runid_vial']
     #TODO: add validation to dev here
+    report_df.replace('null', np.nan, inplace=True)
+    report_df.replace('', np.nan, inplace=True)
+    report_df.replace(' ', np.nan, inplace=True)
 
     return(report_df)
 

@@ -21,6 +21,9 @@ from expworkup.devconfig import cwd
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
 
+# Disable super spam from api code
+logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
+
 def get_gdrive_auth():
     gauth = GoogleAuth(settings_file='./expworkup/settings.yaml')
 

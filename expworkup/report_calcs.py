@@ -22,9 +22,8 @@ def calc_pipeline(report_df, object_df, chemdf_dict, debug_bool):
         
     compound_ingredient_objects_df : pd.DataFrame of CompoundIngredient objects
         objects = are instances of chemical combinations generated in the lab.
-        each reagent is rendered to a CompoundIngredient
-        object and report to the dataframe.  Every experiment is explicitly described
-        in terms of the reagents
+        each reagent is rendered to a CompoundIngredient object and report to 
+        the dataframe.  
     
     chemdf_dict : dict of pandas.DataFrames assembled from all lab inventories
         reads in all of the chemical inventories which describe the chemical content
