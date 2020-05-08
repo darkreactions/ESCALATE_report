@@ -26,6 +26,6 @@ __pycache__/
 !requirements.txt
 !conda_requirements.txt
 idea/*
-!tests/REPORT_DEV.csv
+!tests/devreport_20200504.csv
 *.smi
 
