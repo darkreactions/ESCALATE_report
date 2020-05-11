@@ -5,6 +5,19 @@ from expworkup.devconfig import valid_input_files, workup_targets, lab_vars
 from utils.globals import get_debug_header
 
 def get_interface_filename(interface_type, working_directory, runID):
+    """ Searches for filename match and returns instance
+
+    Specified in devconfig['valid_input_files'] 
+    e.g. 'experiment_specification': ['ExperimentSpecification.xls', 'RobotInput.xls']
+    new file names (suffixes) can be added in devconfig as needed
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
+    """
     for suffix in valid_input_files[interface_type]:
         filename = os.path.join(working_directory, f'{runID}_{suffix}')
         if os.path.exists(filename):

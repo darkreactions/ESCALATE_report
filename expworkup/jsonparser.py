@@ -68,8 +68,23 @@ def unpackJSON(myjson_fol, chemdf_dict):
     Unpack those values first and then copy the generated array to each of the invidual wells
     developed enough now that it should be broken up into smaller pieces!
 
-    :param myjson_fol:
-    :return:
+    Parameters
+    ----------
+
+    myjson_fol : target folder for storing the run and associated data.
+        same as target_naming_scheme
+    
+    chemdf_dict : dict of pandas.DataFrames assembled from all lab inventories
+        reads in all of the chemical inventories which describe the chemical 
+        content from each lab used across the dataset construction
+
+    Return
+    ------   
+    concat_df_raw : pd.DataFrame, all of the raw values from the processed JSON files
+        Notes: unlike previous version, no additional calculations are performed,
+        just parsing the files
+
+
     """
     concat_df = pd.DataFrame()
     concat_df_raw = pd.DataFrame()
@@ -94,7 +109,7 @@ def unpackJSON(myjson_fol, chemdf_dict):
         concat_df = pd.concat([concat_df, runID_df], sort=True, axis=1)
         #Combines the most recent dataframe with the final dataframe which is targeted for export
         concat_df_raw = pd.concat([concat_df_raw,concat_df], sort=True)
-    return(concat_df_raw) #this contains all of the raw values from the processed JSON files.  No additional data has been calculated
+    return(concat_df_raw) #this contains .  No additional data has been calculated
 
 def json_pipeline(target_naming_scheme, raw_bool_cli, chemdf_dict, dataset_list):
     '''Top level json parser pipeline
@@ -106,16 +121,25 @@ def json_pipeline(target_naming_scheme, raw_bool_cli, chemdf_dict, dataset_list)
     ----------
     target_naming_scheme : target folder for storing the run and associated data
 
-    raw_bool_cli: include all columns
+    raw_bool_cli : Bool, from CLI, include all columns?
         True will enable even improperly labeled columns to be exported
+        proper labels can be defined in 'dataset_rename.json'
+    
+    chemdf_dict : dict of pandas.DataFrames assembled from all lab inventories
+        reads in all of the chemical inventories which describe the chemical 
+        content from each lab used across the dataset construction
+
+    dataset_list : list of targeted datasets
+        datasets must be defined in devconfig
 
     Returns
-    ---------
+    -------
     cli_specified_name : final csv file name from dataset generation
 
     Notes
     ---------
-    Note: unlike older code this does not perform ANY calcs.  See report_calcs.py
+    Note: unlike <1.0 versions, this jsonparser does not do _calcs_ or _feats_ 
+        See report_calcs.py or report_feats.py
 
     '''
     print('(3/6) Dataset download complete. Unpacking JSON Files...')

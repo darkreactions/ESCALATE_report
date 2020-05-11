@@ -1,4 +1,4 @@
-#Copyright (c) 2018 Ian Pendleton - MIT License
+#Copyright (c) 2020 Ian Pendleton - MIT License
 import os
 import sys
 import time
@@ -85,23 +85,23 @@ def parse_observation_interface(fname):
     return out_json, observation_df
 
 def parse_run_to_json(outfile, local_data_directory, run_name):
-    """Parse data from one ESCALATE run into json and write to
+    """Parse downloaded files from one experiment into a summary json file
 
+    Parameters
+    ----------
+    outfile : target json file to write parsed experimental data
 
-    TODO: this is the T in ETL,
-        * separate out the (Download, Read, (these are extract)), Transform, and Validate functionalty
-            * It seems like we are going to need to Transform before we Validate
-            * Question: are we reading from drive and validating, or reading from drive, saving to disk, and validating?
-            * Right now we are running into datatype issues (e.g. int vs string) which are small trasnformations,
-              Lets just (try to) transform everything into the expected form before validating
+    local_data_directory : (aka save_directory) where local files are
+        report default = {target_directory}/gdrive_files
 
-        * Document: how are we transforming it here?
-
-    :param outfile:
-    :param local_data_directory:
     :param run_name:
     :param crystal_data:
     :return:
+
+    Notes
+    -----
+    TODO: Validate datatype after run generation (e.g. int vs string) or 
+    other small trasnformations prior to json write out
     """
 
     local_data_directory = os.path.join('.', local_data_directory)
@@ -134,14 +134,21 @@ def parse_run_to_json(outfile, local_data_directory, run_name):
     print('\t', crys_str, file=outfile)
     print('}', file=outfile)
 
-
 def download_experiment_directories(target_directory, dataset):
     """Gets all of the relevant folder titles from the experimental directory
-    Cross references with the working directory of the final Json files send the list of jobs needing processing
+    
+    Cross references with the working directory of the final Json files send
+    the list of jobs needing processing
 
-    :param target_directory: The local directory in which the curated json files will be stored. From CLI.
+    Parameters
+    ----------
+    target_directory: target folder for storing the run and associated data
+        The local directory in which the curated json files will be stored. From CLI.
 
-    :return:
+    exp_dict : dict {<folder_name> : folder_children uids}
+        dict keyed on the child foldernames with values being a list of the 
+        items in the expeirment (child) gdrive folders 
+        (list items objects are dictionaries with defined structure)
     """
     save_directory = f'{target_directory}/gdrive_files'  # Local storage for gdrive files
     modlog.info('ensuring directories')
@@ -162,10 +169,15 @@ def download_experiment_directories(target_directory, dataset):
         while not os.path.isfile(run_json_filename):
             sleep_timer = 0
             try:
+                # Download files locally
                 googleio.gdrive_download(save_directory, exp_name, exp_files)
                 outfile = open(run_json_filename, 'w')
+                # Parse them to JSON
                 parse_run_to_json(outfile, save_directory, exp_name)
                 outfile.close()
+                #TODO: Validate json structures after creation! better error reporting
+                # If the file fails validation, remove, ERROR, but continue w/o adding JSON
+                # This will prevent full system failure in the face of a single error in parsing
             except APIError as e:
                 modlog.info(e.response)
                 modlog.info(sys.exc_info())

@@ -25,6 +25,11 @@ warnlog = logging.getLogger(f'warning.{__name__}')
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
 def get_gdrive_auth():
+    '''returns instance of the gdrive authentication
+
+    Requires client_secrets.json to generate see:
+    https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:--ONBOARDING-LABS:--Capture-and-Report
+    '''
     gauth = GoogleAuth(settings_file='./expworkup/settings.yaml')
 
     google_cred_file = "./mycred.txt"
@@ -48,6 +53,9 @@ def get_gdrive_client():
     '''
     returns instance of gspread client based on credentials in creds.json file
     different scope than googlio.py in ESCALATE_Capture
+
+    requires creds.json to generate see:
+    https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:--ONBOARDING-LABS:--Capture-and-Report
     '''
     scope = ['https://www.googleapis.com/auth/spreadsheets.readonly']
     #scope = ['https://spreadsheets.google.com/feeds']
@@ -91,13 +99,26 @@ def ChemicalData(lab):
     modlog.info(f'Successfully loaded the chemical inventory from {lab}')
     return(chemdf)
 
-def save_prep_interface(prep_UID, local_data_dir, run_name):
-    """todo gary can we run on this?
+def save_prep_interface(prep_UID, local_data_dir, experiment_name):
+    """ Download the hardcoded TSV backend of the preparation interface
+    
+    Parameters
+    ---------
+    prep_UID : gdrive UID of the target prep interface
 
-    I'm not really sure what goes on with the ECL data, and the other case is Ian's JSON sheet logic
+    local_data_dir : folder to store gdrive files
+        report default: {target_naming_scheme}/gdrive_files/
+
+    experiment_name :  name of gdrive folder containing the experiment
+
+    Notes
+    -----
+    ECL data is stored in a JSON file rendered at ECL, all other labs
+    are parsed from the TSV backend of the interface.  Example here:
+    https://drive.google.com/open?id=1kVVbijwRO_kFeXO74vtIgpEyLenha4ek7n35yp6vxvY
     """
     drive = get_gdrive_auth()
-    if 'ECL' in run_name:
+    if 'ECL' in experiment_name:
         #TODO: Local Copy of JSON logic for testing / comparison
         prep_file = drive.CreateFile({'id': prep_UID})
         prep_file.GetContentFile(os.path.join(local_data_dir, prep_file['title']))
@@ -106,7 +127,7 @@ def save_prep_interface(prep_UID, local_data_dir, run_name):
         prep_workbook = gc.open_by_key(prep_UID)
         tsv_ready_lists = prep_workbook.get_worksheet(1)
         json_in_tsv_list = tsv_ready_lists.get_all_values()
-        json_file = local_data_dir + '/' + run_name + '_ExpDataEntry.json' # todo this doesnt make sense for MIT
+        json_file = local_data_dir + '/' + experiment_name + '_ExpDataEntry.json' # todo this doesnt make sense for MIT
         modlog.info(f'Parsing TSV to JSON from gdrive. RunID: {json_file}')
         with open(json_file, 'w') as f:
             for i in json_in_tsv_list:
@@ -121,15 +142,16 @@ def parse_gdrive_folder(remote_directory, local_directory):
     remote_directory : Gdrive UID
         UID of the Gdrive parent directory containing ESCALATE runs to process. ESCALATE 
         runs are the child folders of the parent directory.
-    local_directory: local folder for saving downloaded files
+
+   local_directory : folder to store gdrive files
+        report default: {target_naming_scheme}/gdrive_files/
 
     Returns
     -----------
-
     data_directories : dict {<folder_name> : folder_children uids}
         dict keyed on the child foldernames with values being all of the grandchildren 
         gdrive objects (these objects are dictionaries as well with defined structure)
-    lablist : list of all unique labs included in the parent directory
+
     '''
     drive = get_gdrive_auth()
 
@@ -145,23 +167,54 @@ def parse_gdrive_folder(remote_directory, local_directory):
 
     return data_directories
 
-def gdrive_download(local_directory, child, grandchildren):
+def gdrive_download(local_directory, experiment_name, experiment_files):
+    """ Download specific, hard coded files locally
+        Only grabs observation interface, preparation interface, and
+        experiment specification interfaces (v1.0).  Additional will need to be
+        manually added. Parsing of the files happens upstream
+    
+    Parameters
+    ----------
+    local_directory : folder to store gdrive files
+        report default: {target_naming_scheme}/gdrive_files/
+    
+    experiment_name :  name of gdrive folder containing the experiment
+
+    experiment_files : list of gdrive objects (files) in experiment_name
+        my_file (object in experiment_files) is a gdrive object
+        (these objects are dictionaries as with defined structure)
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    Though this function returns no objects, the files are in 
+    a local directory for manipulation.  Due to the structure of the files
+    as well as how finicky google drive API can be, downloading locally 
+    was determined to be the best decision.  
+    The downloaded files are assessed later. 
+
+    TODO: generalize/broaden this function to grab additional files
+    Trick in this case will be that not all runs will have all files
+    """
+
     drive = get_gdrive_auth()
-    modlog.info(f"Starting on {child} files, saving to {local_directory}")
-    for grandchild in grandchildren:
-        #TODO: generalize this
-        if "CrystalScoring" in grandchild['title']\
-                or '_observation_interface' in grandchild['title']:
-            observation_file = drive.CreateFile({'id': grandchild['id']})
+    modlog.info(f"Starting on {experiment_name} files, saving to {local_directory}")
+    for my_file in experiment_files:
+        if "CrystalScoring" in my_file['title']\
+                or '_observation_interface' in my_file['title']:
+            observation_file = drive.CreateFile({'id': my_file['id']})
             observation_file_title = os.path.join(local_directory, f"{observation_file['title']}.csv")
             observation_file.GetContentFile(observation_file_title,mimetype='text/csv')
 
-        if "ExpDataEntry" in grandchild['title']\
-                or "preparation_interface" in grandchild['title']:
-            save_prep_interface(grandchild['id'], local_directory, child)
+        if "ExpDataEntry" in my_file['title']\
+                or "preparation_interface" in my_file['title']:
+            save_prep_interface(my_file['id'], local_directory, experiment_name)
 
-        if "RobotInput" in grandchild['title']\
-                or "ExperimentSpecification" in grandchild['title']:
-            vol_file = drive.CreateFile({'id': grandchild['id']})
+        if "RobotInput" in my_file['title']\
+                or "ExperimentSpecification" in my_file['title']:
+            vol_file = drive.CreateFile({'id': my_file['id']})
             vol_file.GetContentFile(os.path.join(local_directory, vol_file['title']))
     return 

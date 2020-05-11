@@ -5,6 +5,7 @@
 **Technical Debugging:** vshekar .at. haverford.edu, gcattabrig .at. haverford.edu, 
 
 ## [FAQs](https://github.com/darkreactions/ESCALATE_Capture/wiki/Users:-FAQs)
+## [Wiki](https://github.com/darkreactions/ESCALATE_Capture/wiki)
 
 Overview
 =================

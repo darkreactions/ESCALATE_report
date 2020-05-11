@@ -6,7 +6,7 @@ import pandas as pd
 import shutil
 
 from runme import parse_args
-from runme import get_chemdf_dict
+from runme import get_remote_data
 from runme import report_pipeline
 
 @pytest.fixture(scope='module')
@@ -47,7 +47,7 @@ def chemdf_dict(dev_args):
     if not os.path.exists(offline_folder):
         os.mkdir(offline_folder)
 
-    chemdf_dict = get_chemdf_dict(dataset_list, 
+    chemdf_dict = get_remote_data(dataset_list, 
                                   target_naming_scheme,
                                   offline_folder,
                                   offline_toggle)
