@@ -33,6 +33,7 @@ def renamer(dirty_df, dataset_list):
     clean_df : pandas.DataFrame of experiments
         should be the export of jsonparser.cleaner, no spaces or
         special characters in the column headers
+
     dataset_list : list of datasets included in the report_df 
         dataset_rename.json is used to determine if a report_df
         qualifies for a rename set.  If all datasets in dataset_list

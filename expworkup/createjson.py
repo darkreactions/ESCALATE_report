@@ -22,17 +22,23 @@ from utils.globals import lab_safeget
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 
-def parse_preparation_interface(fname):
-    """
+def parse_preparation_interface(prep_interface_fname):
+    """ reads in json preparation interface, structure for appending
 
-    :param fname:
+    Parameters
+    ----------
+    prep_interface_fname: filename of preparation inteface
+        e.g., 2018-12-04T01_52_47.768958+00_00_LBL_ExpDataEntry.json
+
     :return:
     """
-    with open(fname, "r") as f:
+    with open(prep_interface_fname, "r") as f:
         exp_dict = json.load(f)
         exp_str = json.dumps(exp_dict, indent=4, sort_keys=True)
-    f.close()
-    exp_str = exp_str[:-8]  # remove the end of the json structure from the preparation interface dump, makes concatenation later easy
+    f.close() 
+    # Remove the end of the json structure from the preparation interface dump, 
+    # This makes concatenation with other files easier
+    exp_str = exp_str[:-8] 
     return exp_str, exp_dict
 
 
@@ -84,19 +90,22 @@ def parse_observation_interface(fname):
     out_json = observation_df.to_json(orient='records')
     return out_json, observation_df
 
-def parse_run_to_json(outfile, local_data_directory, run_name):
+def parse_run_to_json(outfile, working_directory, experiment_name):
     """Parse downloaded files from one experiment into a summary json file
 
     Parameters
     ----------
     outfile : target json file to write parsed experimental data
 
-    local_data_directory : (aka save_directory) where local files are
+    working_directory : (aka save_directory) where local files are
         report default = {target_directory}/gdrive_files
+    
+    experiment_name :  name of gdrive folder containing the experiment
+        aka. runUID,  e.g. 2019-09-18T20_27_33.741387+00_00_LBL
 
-    :param run_name:
-    :param crystal_data:
-    :return:
+    Return
+    ------
+    None
 
     Notes
     -----
@@ -104,12 +113,18 @@ def parse_run_to_json(outfile, local_data_directory, run_name):
     other small trasnformations prior to json write out
     """
 
-    local_data_directory = os.path.join('.', local_data_directory)
-    run_lab = get_experimental_run_lab(run_name)
+    working_directory = os.path.join('.', working_directory)
+    run_lab = get_experimental_run_lab(experiment_name)
 
-    exp_volume_spec_fname = get_interface_filename('experiment_specification', local_data_directory, run_name)
-    prep_interface_fname = get_interface_filename('preparation_interface', local_data_directory, run_name)
-    obs_interface_fname = get_interface_filename('observation_interface', local_data_directory, run_name)
+    exp_volume_spec_fname = get_interface_filename('experiment_specification',
+                                                   working_directory,
+                                                   experiment_name)
+    prep_interface_fname = get_interface_filename('preparation_interface',
+                                                  working_directory,
+                                                  experiment_name)
+    obs_interface_fname = get_interface_filename('observation_interface',
+                                                 working_directory,
+                                                 experiment_name)
 
     exp_str, exp_dict = parse_preparation_interface(prep_interface_fname)
 

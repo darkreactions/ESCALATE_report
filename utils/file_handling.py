@@ -8,15 +8,21 @@ def get_interface_filename(interface_type, working_directory, runID):
     """ Searches for filename match and returns instance
 
     Specified in devconfig['valid_input_files'] 
-    e.g. 'experiment_specification': ['ExperimentSpecification.xls', 'RobotInput.xls']
     new file names (suffixes) can be added in devconfig as needed
 
     Parameters
     ----------
+    working_directory : (aka save_directory) where local files are
+        report default = {target_directory}/gdrive_files
+    
+    runID :  name of gdrive folder containing the experiment
+        aka. experiment_name,  e.g. 2019-09-18T20_27_33.741387+00_00_LBL
 
     Returns
     -------
-
+    filename : identified filename for a particular type of file
+        e.g. type = 'experiment_specification' could be 
+                    'ExperimentSpecification.xls' or 'RobotInput.xls'
     """
     for suffix in valid_input_files[interface_type]:
         filename = os.path.join(working_directory, f'{runID}_{suffix}')

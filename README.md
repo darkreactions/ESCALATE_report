@@ -30,35 +30,48 @@ Installation
   system interaction is more brittle.
 
 ## Mac and Linux
-### Pip Install
+### Initial Setup
+#### Pip Install
 
 1. Create new python 3.8 environment in conda: `conda create -n escalate python=3.8`
 
-2. `conda activate escalate`
+2. `conda activate escalate_report`
 
-3. Install the latest version of the pip package manager, `conda install pip`
+3. Install the latest version of the pip package manager
 
-4. Execute:
+   `conda install pip`
 
-   `pip install -r requirements.txt` 
+4. Then install requirments (still in escalate_report)
 
-   OR 
+    `pip install -r requirements.txt` 
 
-   `conda create --name <your_env_name_here> --file conda_requirements.txt`
+5. Then install conda dependent pieces:
 
-5. Execute `conda install -c conda-forge rdkit`
+   `conda install -c conda-forge rdkit`
+
+#### Conda Install
+
+1. Execute:
+
+   `conda env create -f environment.yml`
+
+   The `conda env create` command will automatically create an escalate_report environment
+
+### Authentication Setup
    
-5. Download the [securekey files](https://www.youtube.com/watch?v=oHg5SJYRHA0) and move them into the expworkup/creds/ folder. Do not distribute these keys! (Contact a dev for access)
+1. Download the [securekey files](https://www.youtube.com/watch?v=oHg5SJYRHA0) and move them into the expworkup/creds/ folder. Do not distribute these keys! (Contact a dev for access)
 
-6. Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the main directory (directly in ESCALATE_report)
+   Note: If setting up a new lab see [here](https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:--ONBOARDING-LABS:--Capture-and-Report)
 
-6. Stop here if you don't want to use the automated feature generation. You can specify the simple workup from google by executing: 
+2. Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the main directory (directly in ESCALATE_report)
+
+3. Stop here if you don't want to use the automated feature generation. You can specify the simple workup from google by executing: 
 
    `python runme.py <my_local_folder> -d <google_drive_target_name> --simple 1` 
 
-6. Download and [install ChemAxon JChemSuite](https://chemaxon.com/products/jchem-engines) and obtain a [ChemAxon License Free for academic use](https://academia.chemaxon.com/)
+4. Download and [install ChemAxon JChemSuite](https://chemaxon.com/products/jchem-engines) and obtain a [ChemAxon License Free for academic use](https://academia.chemaxon.com/)
 
-7. You will need to specify the location of your chemaxon installation locations in `./expworkup/devconfig.py` at the bottom of the file
+5. You will need to specify the location of your chemaxon installation locations in `./expworkup/devconfig.py` at the bottom of the file
 
 ## Windows
 

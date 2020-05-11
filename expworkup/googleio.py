@@ -78,7 +78,7 @@ def ChemicalData(lab):
     chemdf : pandas df of the chemical inventory
     """
     sleep_timer = 0
-    chemdf = 0 #just create a fake instance
+    chemdf = 0  #just create a 'blank' object
     while not isinstance(chemdf, pd.DataFrame):
         try:
             gc = get_gdrive_client()
@@ -110,9 +110,21 @@ def save_prep_interface(prep_UID, local_data_dir, experiment_name):
         report default: {target_naming_scheme}/gdrive_files/
 
     experiment_name :  name of gdrive folder containing the experiment
+        aka. runUID,  e.g. 2019-09-18T20_27_33.741387+00_00_LBL
+
+    Returns
+    -------
+    None
 
     Notes
     -----
+    Suffix 'ExpDataEntry.json' is a holdover from original development.  This
+    suffix is not viewed by any USER level interactions, the name is irrelevant
+    except for internal code
+
+    DEVNOTE: the suffix _ExpDataEntry.json CANNOT be changed without breaking
+    ECL suppoort
+
     ECL data is stored in a JSON file rendered at ECL, all other labs
     are parsed from the TSV backend of the interface.  Example here:
     https://drive.google.com/open?id=1kVVbijwRO_kFeXO74vtIgpEyLenha4ek7n35yp6vxvY
@@ -127,7 +139,7 @@ def save_prep_interface(prep_UID, local_data_dir, experiment_name):
         prep_workbook = gc.open_by_key(prep_UID)
         tsv_ready_lists = prep_workbook.get_worksheet(1)
         json_in_tsv_list = tsv_ready_lists.get_all_values()
-        json_file = local_data_dir + '/' + experiment_name + '_ExpDataEntry.json' # todo this doesnt make sense for MIT
+        json_file = local_data_dir + '/' + experiment_name + '_ExpDataEntry.json' 
         modlog.info(f'Parsing TSV to JSON from gdrive. RunID: {json_file}')
         with open(json_file, 'w') as f:
             for i in json_in_tsv_list:
@@ -179,6 +191,7 @@ def gdrive_download(local_directory, experiment_name, experiment_files):
         report default: {target_naming_scheme}/gdrive_files/
     
     experiment_name :  name of gdrive folder containing the experiment
+        aka. runUID e.g. 2019-09-18T20_27_33.741387+00_00_LBL
 
     experiment_files : list of gdrive objects (files) in experiment_name
         my_file (object in experiment_files) is a gdrive object
