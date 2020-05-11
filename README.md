@@ -57,6 +57,16 @@ Installation
 
    The `conda env create` command will automatically create an escalate_report environment
 
+#### Custom Environment (Package List)
+   <center> <b>Windows Users will likely need to use this </b> </center>
+
+Pip install the following python packages prior to use:
+- pandas, json, numpy, gspread, pydrive, cerberus, google-api-python-client==1.7.4, xlrd, xlwt, tqdm, pytest, 
+
+conda install -c conda-forge rdkit
+
+Please report any failures of the above message to the repo admins
+
 ### Authentication Setup
    
 1. Download the [securekey files](https://www.youtube.com/watch?v=oHg5SJYRHA0) and move them into the expworkup/creds/ folder. Do not distribute these keys! (Contact a dev for access)
@@ -73,15 +83,7 @@ Installation
 
 5. You will need to specify the location of your chemaxon installation locations in `./expworkup/devconfig.py` at the bottom of the file
 
-## Windows
 
-### Custom Environment (Package List)
-Pip install the following python packages prior to use:
-- pandas, json, numpy, gspread, pydrive, cerberus, google-api-python-client==1.7.4, xlrd, xlwt, tqdm, pytest, 
-
-conda install -c conda-forge rdkit
-
-Please report any failures of the above message to the repo admins
  
 Running The Code
 =================
