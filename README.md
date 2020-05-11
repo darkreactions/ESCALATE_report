@@ -148,15 +148,6 @@ More detailed instructions can be found in the [ESCALATE user manual](https://do
 
 3. Follow 5-6 above
 
-
-Use Examples
-======================
-
-1. Generate the latest copy of a target data folder
-2. Generate versioned repo crank with state set
-   * `python runme.py 2019-02-13_TrainingData -v 1 -s EtNH3Istateset.csv` 
-3.
-
 FAQs, Trouble Shooting, and Tutorials
 ======================
 1. [FAQs](https://github.com/darkreactions/ESCALATE_Capture/wiki/Users:-FAQs)
