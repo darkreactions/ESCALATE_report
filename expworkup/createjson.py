@@ -30,7 +30,13 @@ def parse_preparation_interface(prep_interface_fname):
     prep_interface_fname: filename of preparation inteface
         e.g., 2018-12-04T01_52_47.768958+00_00_LBL_ExpDataEntry.json
 
-    :return:
+    Returns
+    -------
+    exp_str: json w/o final characters
+        makes appending to other files easier
+
+    exp_dict: complete json
+
     """
     with open(prep_interface_fname, "r") as f:
         exp_dict = json.load(f)
@@ -42,11 +48,29 @@ def parse_preparation_interface(prep_interface_fname):
     return exp_str, exp_dict
 
 
-def parse_exp_volumes(fname, experiment_lab):
-    """
+def parse_exp_volumes(exp_volume_spec_fname, experiment_lab):
+    """ Parses the experiment interface.  
+        For example of the complete structure see:
+        https://drive.google.com/open?id=1rNPfcOiseQSTTB8E7VsKp77h8hv8VSCj
+        Link targets 4-DataDebug Robotinput example
 
-    :param fname:
-    :return:
+    Parameters
+    ----------
+    exp_volume_spec_fname  : filename which contains volumes actions
+        predifined structure is hardcoded based on a specific labs needs
+
+    experiment_lab : name of lab
+        all labs except MIT are handled the same, this is hard coded and brittle
+    
+    Returns
+    -------
+    lists and dataframes, complex return
+
+    Notes:
+    TODO: Generalize this function to any new lab
+    TODO: clean up the return of this function
+    If this function breaks pytest will catch the malfunction
+
     """
 
     robot_dict = pd.read_excel(open(fname, 'rb'), header=[0], sheet_name=0)
@@ -81,10 +105,17 @@ def parse_exp_volumes(fname, experiment_lab):
 
 def parse_observation_interface(fname):
     '''
-    Gather the crystal datafile information and return JSON object
+    Gather the crystal CSV information and return JSON object
 
-    :param fname: tabular file (.csv) used to contain experiment data
-    :return:
+    Parameters
+    ----------
+    fname: target tabular file (.csv) used to contain experiment data
+
+    Returns
+    -------
+    out_json : json of the tabular data
+
+    observation_df : tabular data rendered to dataframe
     '''
     observation_df = pd.read_csv(fname)
     out_json = observation_df.to_json(orient='records')
