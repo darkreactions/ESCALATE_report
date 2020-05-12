@@ -44,12 +44,12 @@ def parse_preparation_interface(prep_interface_fname):
         exp_str = json.dumps(exp_dict, indent=4, sort_keys=True)
     f.close() 
 
-    validate_ingredient_data(exp_dict)
+    is_valid = validate_ingredient_data(exp_dict)
 
     # Remove the end of the json structure from the preparation interface dump, 
     # This makes concatenation with other files easier
     exp_str = exp_str[:-8] 
-    return exp_str 
+    return exp_str, is_valid
 
 
 def parse_exp_volumes(exp_volume_spec_fname, experiment_lab):
@@ -144,10 +144,10 @@ def parse_observation_interface(fname):
     if 'Crystal Score' in  observation_df.columns:
         observation_df = observation_df.astype({'Crystal Score': int})
 
-    validate_observation_interface(observation_df)
+    is_valid = validate_observation_interface(observation_df)
 
     out_json = observation_df.to_json(orient='records')
-    return out_json 
+    return out_json, is_valid
 
 def parse_run_to_json(outfile, working_directory, experiment_name):
     """Parse downloaded files from one experiment into a summary json file
@@ -181,9 +181,9 @@ def parse_run_to_json(outfile, working_directory, experiment_name):
                                                  experiment_name)
 
     # All functions return JSON structure
-    ingredient_prep_str  = parse_preparation_interface(prep_interface_fname)
+    ingredient_prep_str, is_valid  = parse_preparation_interface(prep_interface_fname)
     pipette_dump, reaction_dump, reagent_dump = parse_exp_volumes(exp_volume_spec_fname, run_lab)
-    observation_json = parse_observation_interface(obs_interface_fname)
+    observation_json, is_valid = parse_observation_interface(obs_interface_fname)
 
     print(ingredient_prep_str, file=outfile)
     print('\t},', file=outfile)

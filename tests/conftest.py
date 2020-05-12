@@ -8,9 +8,12 @@ import shutil
 from runme import parse_args
 from runme import get_remote_data
 from runme import report_pipeline
+from expworkup.createjson import download_experiment_directories
 
 global TEST_TARGET
+global ARGS_LIST
 TEST_TARGET = 'tests/devreport_20200511.csv'
+ARGS_LIST = ['testing', '-d', 'dev', '--raw', '1']
 
 @pytest.fixture(scope='module')
 def get_devreport_df():
@@ -20,7 +23,7 @@ def get_devreport_df():
 
 @pytest.fixture(scope='session')
 def dev_args():
-    parser = parse_args(['testing', '-d', 'dev', '--raw', '1'])
+    parser = parse_args(ARGS_LIST)
     return parser
 
 @pytest.fixture(scope='session')
