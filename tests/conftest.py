@@ -9,9 +9,13 @@ from runme import parse_args
 from runme import get_remote_data
 from runme import report_pipeline
 
+global TEST_TARGET
+TEST_TARGET = 'tests/devreport_20200511.csv'
+
 @pytest.fixture(scope='module')
 def get_devreport_df():
-    df = pd.read_csv('tests/devreport_20200504.csv', low_memory=False)
+    global TEST_TARGET
+    df = pd.read_csv(TEST_TARGET, low_memory=False)
     return df
 
 @pytest.fixture(scope='session')

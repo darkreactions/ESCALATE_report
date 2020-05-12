@@ -15,6 +15,8 @@ from expworkup.ingredients.compound_ingredient import CompoundIngredient
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
 
+WARNCOUNT = 0
+
 _DEBUG_HEADER = None
 _DEBUG_SET = False
 

@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-
+from tests.conftest import TEST_TARGET
 """
 Notes on testing from early development:
 - modification of the the devreport file by programs such as excel can result in additional error messages (files are modified in some way)
@@ -9,6 +9,7 @@ Notes on testing from early development:
 - Modification of the test file should only be done AFTER the new features have been validated. 
 - Updating the test file should be done carefully... the ground truth should be maintained!
 """
+global TEST_TARGET
 
 def test_full(get_devreport_df, get_report_df):
     """ Test for the exact structure of the report dataframe
@@ -23,12 +24,14 @@ def test_full(get_devreport_df, get_report_df):
     assert get_devreport_df.equals(get_report_df), "Failed identity check (computational exact equality), see additional errors below for more info"
 
 def dev_df_columns():
-    df = pd.read_csv('tests/devreport_20200504.csv', low_memory=False)
+    global TEST_TARGET
+    df = pd.read_csv(TEST_TARGET, low_memory=False)
     columns = list(df.columns)
     return columns
 
 def dev_df_rows():
-    df = pd.read_csv('tests/devreport_20200504.csv', low_memory=False, index_col='name')
+    global TEST_TARGET
+    df = pd.read_csv(TEST_TARGET, low_memory=False, index_col='name')
     df_t = df.T
     rows = list(df_t.columns)
     return rows
@@ -50,7 +53,7 @@ def test_rows_equal(get_devreport_df, get_report_df):
     (rows) if extra are added the number of new will be reported with the error
     """
     num_new_rows = get_devreport_df.shape[0] - get_report_df.shape[0] # negative means you lost rows...
-    assert get_devreport_df.shape[0] == get_report_df.shape[0], f'{num_new_rows} experiments (rows) were detected in dataset'
+    assert get_devreport_df.shape[0] == get_report_df.shape[0], f'{num_new_rows} new experiments (rows) were detected in dataset'
 
 def test_columns_equal(get_devreport_df, get_report_df):
     """ Informs about what is different in the dataset

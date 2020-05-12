@@ -92,8 +92,8 @@ lab_vars = {
             'required_files': ['observation_interface', 'preparation_interface', 'metadata.json'],
             'required_folders': [],
             'observation_interface': {'uid_col': 'B',
-                                      'modeluid_col': 'H',
-                                      'participantuid_col': 'I'}
+                                      'modeluid_col': 'I',
+                                      'participantuid_col': 'J'}
         },
 }
 

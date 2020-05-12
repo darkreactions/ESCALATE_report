@@ -33,7 +33,6 @@
             "notes" : "_raw_notes",
             "Experiment Number" : "_raw_experimentNumber",
             "Experiment Name" : "_raw_experimentName",
-            "Linked Data" : "_raw_linkeddata",
             "User defined tag" : "_raw_userdefinedtag",
             "Robot Number" : "_raw_robotnumber",
             "Vial Site (1)" : "_raw_microplate_row",
@@ -42,8 +41,11 @@
             "class_probability" : "_raw_classprobability",
             "films_made_success" : "_rxn_filmmade_bool",
             "identifier" : "_raw_identifier",
-            "shiny?" : "_rxn_shiny_bool",
-            "transparent?": "_rxn_tranparent_bool"
+            "Degradation Temperature (C)" : "_out_degradation_temperature_c",  
+            "Degradation Humidity (%)" : "_rxn_degradation_humidity_percent", 
+            "Degradation Onset Time Red (s)" : "_out_degradation_onset_time_red_s",
+            "Spotting?" : "_out_spotting_boolean",
+            "Linked Data" : "_raw_linked_data"
         }
     }
 }
