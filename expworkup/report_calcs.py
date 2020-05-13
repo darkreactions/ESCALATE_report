@@ -32,12 +32,11 @@ def calc_pipeline(report_df, object_df, chemdf_dict, debug_bool):
     debug_bool : CLI argument, True=Enable debugging
         ETL export option mainl
     
-
-
     Returns
     ---------
     calc_df :  pandas.DataFrame of concatenated calculations
-        does not include the report_df.  Includes, chemical types, 
+        does not include the report_df. Includes, chemical types, values
+        indexed on runUID
 
     """
     report_copy = report_df.set_index('name')
@@ -121,8 +120,8 @@ def report_mmol(stacked_mmol_df, debug_bool):
         mmol values delineated reagent chemical combination are the values of each cell
         duplicate inchikeys are possible
 
-    debug_bool :  CLI argument, True=Enable debugging
-        ETL export option mainly
+     debug_bool : CLI argument, True=Enable debugging
+        if toggled on, code will export CSV files of each dataframe
 
     Returns
     -------
@@ -158,8 +157,8 @@ def report_molarity(summed_molarity_series, debug_bool):
     summed_molarity_series : pd.Series with ['name', 'inchikey'] multiindex
         values are the Molarity of each runUID + inchikey combination
 
-    debug_bool :  CLI argument, True=Enable debugging
-        ETL export option mainly
+    debug_bool : CLI argument, True=Enable debugging
+        if toggled on, code will export CSV files of each dataframe
     
     Returns
     -------

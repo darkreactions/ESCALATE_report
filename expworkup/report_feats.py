@@ -65,12 +65,14 @@ def get_command_dict(command_type_df, one_type, application):
     for command in commands_df.itertuples():
             column_name = f'_feat_{command.short_name}'
             my_descriptor_dict[command.short_name] = {}
-            # stupid human space removal
+
+            # 'space' (i.e, ' ') removal
             templist = command.calc_definition.split(' ')
             str_list = list(filter(None, templist))
             my_descriptor_dict[command.short_name]["command"] = str_list
 
             my_descriptor_dict[command.short_name]["column_names"] = [column_name]
+
     command_dict = {}
     command_dict['descriptors'] = my_descriptor_dict
     command_dict['ph_descriptors'] = {} # possibly useful, see chemdescriptor for more details
@@ -221,7 +223,21 @@ def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
 
     Returns
     -------
-    ()
+    runUID_indexed_inchikey_df : pandas.DataFrame
+        all unique inchikeys for a run indexed in the runUID
+        runs with less than the maximum will have np.nan values (blanks)
+
+    inchi_key_indexed_features_df : pandas.DataFrame 
+        all features selected by user in type_command.csv indexed on InchiKey
+        headers will conform to the type_command.csv unless mismatched
+        (mismatch occurs when the requested chemaxon features generate multiples)
+
+    Notes
+    -----
+
+    NOTE: An easy way to get a view of each of the large dataframes is to enable
+    debugging!  Each render will be cast to a simlar named csv.  Search for name
+    for associated code or vice-versa.
     
     """
     report_copy = report_df.copy().set_index('name')
@@ -284,6 +300,9 @@ def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
                                           lambda x : 'inchikey_' + str(x))
 
     ###### Dataframe Export Begins Here ####### 
+    #NOTE: An easy way to get a view of each of the large dataframes is to enable
+    #debugging!  Each render will be cast to a simlar named csv.  Search for name
+    #for associated code or vice-versa.
     if debug_bool:
         # Export dataframes physicochemical features and load tables for ETL to ESCALATEV3
         inchi_key_indexed_features_df_file = 'REPORT_INCHI_FEATURES_TABLE.csv'
@@ -293,5 +312,6 @@ def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
         runUID_inchi_file = 'REPORT_UID_LOADTABLE.csv'
         write_debug_file(runUID_indexed_inchikey_df,
                          runUID_inchi_file)
+
     return runUID_indexed_inchikey_df, inchi_key_indexed_features_df
 

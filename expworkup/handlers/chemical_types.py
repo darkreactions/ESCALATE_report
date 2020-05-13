@@ -27,6 +27,7 @@ def get_chemical_types(inchi, lab, chem_df_dict):
     types = chem_df_dict[lab].loc[inchi, 'Chemical Category'].strip(' ').lower()
     #clean the list before returning
     types_list = [x.strip(' ') for x in types.split(',')]
+    # Funky return allows parsing by the lambda caller
     return(pd.Series((types_list, smiles)))
 
 def get_unique_chemicals_types_byinstance(molarity_df_type_pivot):

@@ -20,6 +20,7 @@ def ingredient_pipeline(report_df, chemdf_dict, debug_bool):
     ----------
     report_df : pandas.DataFrame containing all parsed experiments
         originates from the expworkup.createjson --> expworkup.jsontocsv pipeline
+
     chemdf_dict : dict of pandas.DataFrames assembled from all lab inventories
         reads in all of the chemical inventories which describe the chemical content
         from each lab used across the dataset construction
@@ -30,10 +31,12 @@ def ingredient_pipeline(report_df, chemdf_dict, debug_bool):
         objects = are instances of chemical combinations generated in the lab.
         each reagent is rendered to a CompoundIngredient object and report to 
         the dataframe.  
+    TODO: ensure that only ONE object is created for each unique instance
 
-    TODO:currently disabled... 
+
+    TODO: currently disabled... 
     compound_ingredient_models_df : pd.DataFrame of CompoundIngredient models
-        models are target descriptions (nominals)
+        models are target descriptions (nominals)*
         each reagent specified in an experiment is rendered to a CompoundIngredient
         object and report to the dataframe.  Every experiment is explicitly described
         in terms of the reagents
@@ -41,32 +44,38 @@ def ingredient_pipeline(report_df, chemdf_dict, debug_bool):
     Notes
     --------
         * the difference between objects (e.g., actuals) and models (e.g., nominals) 
-          indicates how well a hyptothesis was executed
+          indicates how well a hypothesis was executed
+    Nominal, actual, language can be found with the original publication:
+        DOI: https://doi.org/10.1557/mrc.2019.72
     """
     report_copy = report_df.copy().set_index('name')
     
-    #TODO: Fix to only implement a new CompoundIngredient as needed (currently implements for all instances)
-    ingredients_actual_df = get_ingredients_df(report_df, nominal=False)# default is to return the actuals (nominals can be toggled)
+    #TODO: Fix to only implement a new CompoundIngredientClass as needed (currently implements new one for all instances)
+    # Best way might be to generate a hash of each reagent and compare across experiments, minimize and then reassemble
+    ingredients_actual_df = get_ingredients_df(report_df, nominal=False) # default is to return the actuals (nominals can be toggled)
     ingredients_actual_df['name'] = report_df['name']
-    ingredients_actual_df_copy = ingredients_actual_df.set_index('name')
-    reagent_volumes_df = report_copy.filter(regex='reagent_._volume')
-    temperature_df = report_copy.filter(regex='temperature')
-    measures_df = reagent_volumes_df.join(ingredients_actual_df_copy, how='left', on='name')
-    measures_df = measures_df.join(temperature_df, how='left', on='name')
+    compound_ingredient_objects_df = get_compound_ingredient_objects_df(ingredients_actual_df, chemdf_dict)
+
     if debug_bool:
+        reagent_volumes_df = report_copy.filter(regex='reagent_._volume')
+        ingredients_actual_df_copy = ingredients_actual_df.set_index('name')
+        temperature_df = report_copy.filter(regex='temperature')
+        measures_df = reagent_volumes_df.join(ingredients_actual_df_copy, how='left', on='name')
+        measures_df = measures_df.join(temperature_df, how='left', on='name')
         measures_df_file = 'REPORT_MEASURES.csv'
         # converts to 'name' indexed and unpacks with each inchikey as a column
         write_debug_file(measures_df.sort_index(axis=1),
                          measures_df_file)
 
-    compound_ingredient_objects_df = get_compound_ingredient_objects_df(ingredients_actual_df, chemdf_dict)
-    # TODO: export reagent objects/actuals df with concentrations, recipes, etc
 
+    ### THe following are two necessary functions for ETL into v3, they will follow the same pattern as compound_ingredient_objects_df
     #TODO: repeat the object process but use the nominal values and return the models
     #ingredients_nominals_df = get_ingredients_df(report_df, nominal=True)# default is to return the actuals (nominals can be toggled)
     #ingredients_nominals_df['name'] = report_df['name']
     #compound_ingredient_models_df = get_compound_ingredient_objects_df(ingredients_actual_df, chemdf_dict)
-    # TODO: export reagent models df with concentrations, recipes, etc
+
+    #TODO: export reagent objects/actuals df using only observed volumes to generate concentrations, recipes, etc
+    #    This is separate from objects above (which use a the SolUD model concentrations)
 
     return(compound_ingredient_objects_df)#, compound_ingredient_models_df)
 
@@ -75,8 +84,12 @@ def get_ingredients_df(report_df, nominal=False):
     gather up all reagent preparation infomation and return df of 
     reagent entities indexed by uid
 
-    :param perovskite_df: dataframe rendered by escalate_report v0.8.1
-    :param nominal: generated the dataframe using the nominal amounts (default uses actuals)
+    Parameters
+    ----------
+    report_df : pandas.DataFrame containing all parsed experiments
+        originates from the expworkup.createjson --> expworkup.jsontocsv pipeline
+
+    nominal : generated the dataframe using the nominal amounts (default uses 'actuals')
 
     :return: dataframe of all unique reagents used in the campaign (all unique
     from the dataset perovskite_df)
@@ -135,6 +148,7 @@ def one_compound_ingredient(one_ingredient_series_static, compound_ingredient_la
           The series labels should be correctly associated by chemical label where
           "chemical_0" through "chemical_{n}" where n is the total number of 
           chemicals
+
     chemdf_dict : dict of pandas.DataFrames assembled from all lab inventories
         reads in all of the chemical inventories which describe the chemical content
         from each lab used across the dataset construction.  

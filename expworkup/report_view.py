@@ -10,13 +10,43 @@ warnlog = logging.getLogger(f'warning.{__name__}')
 
 def construct_2d_view(report_df, 
                       calc_out_df,
-                      runUID_inchi_file,
                       inchi_key_indexed_features_df,
                       debug_bool,
                       raw_bool):
     """ Combines the generated dataframes into a single 2d csv for export
 
+    Parameters
+    ----------
+    report_df : pandas.DataFrame
+        2d dataframe returned after parsing all content from google drive
+        returned from expworkup.json_pipeline
     
+    calc_df :  pandas.DataFrame of concatenated calculations
+        does not include the report_df. Includes, chemical types, values
+        indexed on runUID
+    
+    inchi_key_indexed_features_df : pandas.DataFrame 
+        all features selected by user in type_command.csv indexed on InchiKey
+        headers will conform to the type_command.csv unless mismatched
+        (mismatch occurs when the requested chemaxon features generate multiples)
+
+    debug_bool : CLI argument, True=Enable debugging
+        if toggled on, code will export CSV files of each dataframe
+    
+    raw_bool_cli : Bool, from CLI, include all columns?
+        True will enable even improperly labeled columns to be exported
+        proper labels can be defined in 'dataset_rename.json'
+
+    Returns
+    -------
+    final_df : pandas.DataFrame with default view of data
+        default view also removes all nan columns and all '0' columns
+    TODO: add additional views (likely better in v3 though...)
+        
+
+    NOTE: An easy way to get a view of each of the large dataframes is to enable
+    debugging!  Each render will be cast to a simlar named csv.  Search for name
+    for associated code or vice-versa.
     """
     modlog.info("Generating 2d dataframe")
     print(f'Exporting 2d Dataframe...')
@@ -100,6 +130,10 @@ def construct_2d_view(report_df,
 def runuid_feat_merge(sumbytype_byinstance_molarity_df, inchi_key_indexed_features_df):
     """ Merge and rename function for runuid + report_feats dataframes
 
+    Parameters
+    ----------
+    sumbytype_byinstance_molarity_df : pandas.DataFrame, contents matter!
+        runUID 
 
     Notes
     ------

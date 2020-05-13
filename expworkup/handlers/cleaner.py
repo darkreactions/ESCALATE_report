@@ -9,6 +9,7 @@ def cleaner(clean_df, raw_bool_cli):
     Parameters
     ----------
     clean_df : incoming dataframe from parsing the JSON file and renaming
+
     raw_bool_cli : cli argument, 
         if True includes extended dataframe including superfluous columns
         used in data handling

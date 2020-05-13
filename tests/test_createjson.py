@@ -40,10 +40,10 @@ def generate_name_list(default_name):
     ### Return the list of files based on the default_name
     file_list = []
     for experiment_name in exp_dict.keys():
-        file = get_interface_filename(default_name,
+        my_file = get_interface_filename(default_name,
                                       working_directory,
                                       experiment_name)
-        file_list.append(interface)
+        file_list.append(my_file)
     return file_list
 
 @pytest.mark.parametrize("observation_filename", generate_name_list('observation_interface'))

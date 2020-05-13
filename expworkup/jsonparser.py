@@ -21,7 +21,7 @@ modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
 
 def renamer(dirty_df, dataset_list):
-    """Eats clean datasets and renames them according to rename_list.json
+    """Eats dirty datasets and renames them according to dataset_rename.json
 
     Imports the user level json file and uses the dictionary to
     specify how to rename columns in the final report_df.  This
@@ -30,18 +30,22 @@ def renamer(dirty_df, dataset_list):
 
     Parameters
     ----------
-    clean_df : pandas.DataFrame of experiments
-        should be the export of jsonparser.cleaner, no spaces or
+    dirty_df : pandas.DataFrame of experiments
+        should be the export of, no spaces or
         special characters in the column headers
 
     dataset_list : list of datasets included in the report_df 
         dataset_rename.json is used to determine if a report_df
         qualifies for a rename set.  If all datasets in dataset_list
-        are not in a dataset_rename, this process will return clean_df.
+        are not in a dataset_rename, this process will return dirty_df.
 
     Returns
     --------
-    renamed_df : pandas.DataFrame with the updated column headers
+    clean_df : pandas.DataFrame with the updated column headers
+
+    NOTE: if you want to rename columns on a combination of datasets
+    that doesn't exist in dataset_rename.json, just make that combination
+    and all the selected renames.
     """
     try:
         with open("dataset_rename.json", "r") as read_file:
@@ -51,8 +55,6 @@ def renamer(dirty_df, dataset_list):
         import sys 
         sys.exit()
 
-    #The default concentrations need to be clearly marked by _rxn_ 
-    # Unless better concentration models are incorporated, this should remain constant
     for key, name_dict in rename_dict.items():
         if 'group' in key:
             if all(elem in name_dict['datasets'] for elem in dataset_list):
@@ -62,7 +64,7 @@ def renamer(dirty_df, dataset_list):
     clean_df = dirty_df
     return(clean_df)
 
-def unpackJSON(myjson_fol, chemdf_dict):
+def unpackJSON(target_naming_scheme, chemdf_dict):
     """
     most granular data for each row of the final CSV is the well information.
     Each well will need all associated information of chemicals, run, etc.
@@ -72,8 +74,7 @@ def unpackJSON(myjson_fol, chemdf_dict):
     Parameters
     ----------
 
-    myjson_fol : target folder for storing the run and associated data.
-        same as target_naming_scheme
+    target_naming_scheme : target folder for storing the run and associated data.
     
     chemdf_dict : dict of pandas.DataFrames assembled from all lab inventories
         reads in all of the chemical inventories which describe the chemical 
@@ -84,33 +85,34 @@ def unpackJSON(myjson_fol, chemdf_dict):
     concat_df_raw : pd.DataFrame, all of the raw values from the processed JSON files
         Notes: unlike previous version, no additional calculations are performed,
         just parsing the files
-
-
     """
     concat_df = pd.DataFrame()
     concat_df_raw = pd.DataFrame()
 
     json_list = []
-    for my_exp_json in sorted(os.listdir(myjson_fol)):
+    for my_exp_json in sorted(os.listdir(target_naming_scheme)):
         if my_exp_json.endswith(".json"):
             json_list.append(my_exp_json)
     for my_exp_json in tqdm(json_list):
         modlog.info('(3/4) Unpacking %s' %my_exp_json)
         concat_df = pd.DataFrame()  
         #appends each run to the original dataframe
-        myjson = (os.path.join(myjson_fol, my_exp_json))
-        workflow1_json = json.load(open(myjson, 'r'))
-        #gathers all information from raw data in the JSON file
-        tray_df = parser.tray_parser(workflow1_json, myjson) #generates the tray level dataframe for all wells including some calculated features
+        json_fname = (os.path.join(target_naming_scheme, my_exp_json))
+        experiment_dict = json.load(open(json_fname, 'r'))
+
+        modlog.info('Parsing %s to 2d dataframe' %json_fname)
+        tray_df = parser.tray_parser(experiment_dict) #generates the tray level dataframe
         concat_df = pd.concat([concat_df,tray_df], ignore_index=True, sort=True)
+
         #generates a well level unique ID and aligns
         runID_df=pd.DataFrame(data=[concat_df['_raw_jobserial'] + '_' + concat_df['_raw_vialsite']]).transpose()
         runID_df.columns=['runid_vial']
+
         #combines all operations into a final dataframe for the entire tray level view with all information
         concat_df = pd.concat([concat_df, runID_df], sort=True, axis=1)
         #Combines the most recent dataframe with the final dataframe which is targeted for export
         concat_df_raw = pd.concat([concat_df_raw,concat_df], sort=True)
-    return(concat_df_raw) #this contains .  No additional data has been calculated
+    return(concat_df_raw) 
 
 def json_pipeline(target_naming_scheme, raw_bool_cli, chemdf_dict, dataset_list):
     '''Top level json parser pipeline
@@ -139,9 +141,10 @@ def json_pipeline(target_naming_scheme, raw_bool_cli, chemdf_dict, dataset_list)
 
     Notes
     ---------
-    Note: unlike <1.0 versions, this jsonparser does not do _calcs_ or _feats_ 
+    NOTE: unlike <1.0 versions, this jsonparser does not do _calcs_ or _feats_ 
         See report_calcs.py or report_feats.py
 
+    NOTE: pytest will test the output of this function on the dev dataset
     '''
     print('(3/6) Dataset download complete. Unpacking JSON Files...')
     modlog.info('%s loaded with JSONs for parsing, starting' %target_naming_scheme)
@@ -150,10 +153,9 @@ def json_pipeline(target_naming_scheme, raw_bool_cli, chemdf_dict, dataset_list)
     renamed_raw_df = renamer(raw_df, dataset_list)
     report_df = cleaner(renamed_raw_df, raw_bool_cli)
     report_df['name'] = raw_df['runid_vial']
-    #TODO: add validation to dev here
+
     report_df.replace('null', np.nan, inplace=True)
     report_df.replace('', np.nan, inplace=True)
     report_df.replace(' ', np.nan, inplace=True)
-
     return(report_df)
 

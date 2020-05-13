@@ -142,7 +142,10 @@ def parse_observation_interface(fname):
                 warnlog.warn('Files failed to validate. Please search for "validation" log.')
                 WARNCOUNT += 1
     if 'Crystal Score' in  observation_df.columns:
-        observation_df = observation_df.astype({'Crystal Score': int})
+        try:
+            observation_df = observation_df.astype({'Crystal Score': int})
+        except ValueError:
+            pass
 
     is_valid = validate_observation_interface(observation_df)
 
@@ -244,14 +247,15 @@ def download_experiment_directories(target_directory, dataset):
                 modlog.info('During download of {} sever request limit was met at {} seconds'.format(run_json_filename, sleep_timer))
                 sleep_timer = 15.0
 
-            is_valid_json = validate_is_json(run_json_filename)
-            if not is_valid_json:
-               os.remove(run_json_filename) 
-               warnlog.warn(f'{run_json_filename} could not be properly constructed. Omitting from dataset. Please inspect run!')
-               modlog.warn(f'{run_json_filename} could not be properly constructed. Omitting from dataset. Please inspect run!')
-
             modlog.info('New sleep timer {}'.format(sleep_timer))
             time.sleep(sleep_timer)
+
+        is_valid_json = validate_is_json(run_json_filename)
+        if not is_valid_json:
+           os.remove(run_json_filename) 
+           warnlog.warn(f'{run_json_filename} could not be properly constructed. Omitting from dataset. Please inspect run!')
+           modlog.warn(f'{run_json_filename} could not be properly constructed. Omitting from dataset. Please inspect run!')
+
     return exp_dict
 
 def inventory_assembly(exp_dict):

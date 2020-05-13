@@ -244,7 +244,6 @@ def main_pipeline(args):
     # Export dataframe
     escalate_final_df = construct_2d_view(report_df,
                                           calc_out_df,
-                                          runUID_inchi_file,
                                           inchi_key_indexed_features_df, 
                                           args.debug,
                                           args.raw)
