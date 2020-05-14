@@ -88,6 +88,7 @@ def get_remote_data(datasets, offline_toggle):
         chemdf_dict = {}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         (_, _, offline_files) = next(os.walk(get_offline_folder()))
 =======
 =======
@@ -102,6 +103,9 @@ def get_remote_data(datasets, offline_toggle):
 =======
         (_, _, offline_files) = next(os.walk(get_offline_folder()))
 >>>>>>> readability, streamline feats
+>>>>>>> readability, streamline feats
+=======
+        (_, _, offline_files) = next(os.walk(get_offline_folder()))
 >>>>>>> readability, streamline feats
         inventory_files = [x for x in offline_files if 'INVENTORY' in x]
         for inventory in inventory_files:
@@ -235,9 +239,9 @@ def main_pipeline(args):
         sys.exit()
 
     # Perform feature calculations / gather physicochemical descriptors
-    compound_ingredient_objects_df = ingredient_pipeline(report_df,
-                                                         chemdf_dict,
-                                                         args.debug)
+#    compound_ingredient_objects_df = ingredient_pipeline(report_df,
+#                                                         chemdf_dict,
+#                                                         args.debug)
 
     runUID_inchi_file,\
         inchi_key_indexed_features_df= feat_pipeline(get_target_folder(),
