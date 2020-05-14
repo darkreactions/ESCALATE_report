@@ -166,6 +166,11 @@ def writetrain(indexdf, traindf, metdict):
     trainfile = trainheader(trainfile, metdict)
     indexfile = indexheader(indexfile, metdict)
     with open(trainfile, 'a') as f:
+        traindf.rename(columns={'_rxn_actual_bulk_temperature_c':'_rxn_temperatureC_actual_bulk',
+                    '_rxn_molarity_acid' : '_rxn_M_acid',
+                    '_rxn_molarity_inorganic' : '_rxn_M_inorganic', 
+                    '_rxn_molarity_organic' : '_rxn_M_organic',
+                    '_raw_organic_0_inchikey' : '_rxn_organic-inchikey'}, inplace=True)
         traindf.to_csv(f)
     with open(indexfile, 'a') as f2:
         indexdf.to_csv(f2)
