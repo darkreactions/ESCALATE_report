@@ -263,23 +263,7 @@ def main_pipeline(args):
                                           args.raw)
 
     escalate_final_df.to_csv(f'{get_target_folder()}.csv')
-=======
-#    calc_out_df = calc_pipeline(report_df,
-#                                compound_ingredient_objects_df,
-#                                chemdf_dict,
-#                                args.debug) 
-#    #calc_out_df.to_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
-#    #calc_out_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
-#
-#    # Export dataframe
-#    escalate_final_df = construct_2d_view(report_df,
-#                                          calc_out_df,
-#                                          inchi_key_indexed_features_df, 
-#                                          args.debug,
-#                                          args.raw)
-#
-#    escalate_final_df.to_csv(f'{get_target_folder()}.csv')
->>>>>>> readability, streamline feats
+
 
     # Additional variations on dataframe export (for escalation / versioned data repo)
     if ('state' in vars(args)):
