@@ -100,3 +100,4 @@ def chemical_type_sorting(x):
                                        orient='index',
                                        columns=mycolumns)
     return(sorted_df)
+
