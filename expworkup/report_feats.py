@@ -83,8 +83,12 @@ def unpack_features(type_feat_dict):
         # Merge the dataset into the existing index DOES NOT OVERWRITE
         inchi_key_indexed_features_df = \
             df.combine_first(inchi_key_indexed_features_df)#.combine_first(df)
-    inchi_key_indexed_features_df.drop_duplicates(subset=['smiles','smiles_standardized'],
-                                                  inplace=True, keep='first')
+
+    inchi_key_indexed_features_df.reset_index(inplace=True)
+    duplicate_targets = ['smiles', 'smiles_standardized', 'types', 'inchikeys']
+    shared_cols = list(frozenset(inchi_key_indexed_features_df.columns).intersection(duplicate_targets))
+    inchi_key_indexed_features_df.drop_duplicates(subset=shared_cols, inplace=True, keep='first')
+    inchi_key_indexed_features_df.set_index('inchikeys', inplace=True) 
     return(inchi_key_indexed_features_df)
 
 def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):

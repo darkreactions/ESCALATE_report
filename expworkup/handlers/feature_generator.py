@@ -6,6 +6,7 @@ from chemdescriptor.generator.chemaxon import ChemAxonDescriptorGenerator as cag
 from chemdescriptor.generator.rdkit import RDKitDescriptorGenerator as rdg
 
 from utils.globals import get_offline_folder, get_target_folder, get_log_folder
+from expworkup.devconfig import CALC_POSSIBLE, STANDARDIZE_POSSIBLE, CXCALC_PATH 
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
@@ -38,7 +39,6 @@ class OneTypeFeatures():
                                                           self.cxcalc_command_dict,
                                                           self.cxcalcstd_command_dict,
                                                           self.rdkit_command_dict)
-
 
     def get_command_dict(self, command_type_df, one_type, application):
         """Converts expworkup.type_command.csv to dict for chemdescriptor
@@ -197,21 +197,29 @@ class OneTypeFeatures():
         """
         """
         if cxcalc_command_dict is not None:
-            type_features_df = self.cxcalc_handler(cxcalc_command_dict,
-                                                   self.smiles_list,
-                                                   self.one_type,
-                                                   False)
-            outdf = pd.concat([outdf,
-                               type_features_df], axis=1)
+            if CALC_POSSIBLE:
+                type_features_df = self.cxcalc_handler(cxcalc_command_dict,
+                                                       self.smiles_list,
+                                                       self.one_type,
+                                                       False)
+                outdf = pd.concat([outdf,
+                                   type_features_df], axis=1)
+            else:
+                warnlog.warn(f'Devconfig cxcalc path is {CXCALC_PATH}, no such file exists! Skipping ChemAxon Functions')
+                modlog.warn(f'Devconfig cxcalc path is {CXCALC_PATH}, no such file exists! Skipping ChemAxon Functions')
 
         if cxcalcstd_command_dict is not None:
-            type_features_df = self.cxcalc_handler(cxcalcstd_command_dict,
-                                                   self.smiles_list,
-                                                   self.one_type,
-                                                   True)
-            type_features_df.rename(columns={"Compound": "smiles_standardized"}, inplace=True)
-            outdf = pd.concat([outdf,
-                               type_features_df], axis=1)
+            if CALC_POSSIBLE and STANDARDIZE_POSSIBLE:
+                type_features_df = self.cxcalc_handler(cxcalcstd_command_dict,
+                                                       self.smiles_list,
+                                                       self.one_type,
+                                                       True)
+                type_features_df.rename(columns={"Compound": "smiles_standardized"}, inplace=True)
+                outdf = pd.concat([outdf,
+                                   type_features_df], axis=1)
+            else:
+                warnlog.warn(f'Devconfig standardizer path is {CXCALC_PATH}, no such file exists! Skipping Standardizer functions')
+                modlog.warn(f'Devconfig standardizer path is {CXCALC_PATH}, no such file exists! Skipping Standardizer functions')
 
         if rdkit_command_dict is not None:
             type_features_df = self.rdkit_handler(rdkit_command_dict,
