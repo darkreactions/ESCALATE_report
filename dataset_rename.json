@@ -1,0 +1,51 @@
+{
+    "comment1" : "for a new postprocessing scheme, create a new group of datatasets",
+    "comment2" : "add datasets with similar postprocess to an existing group",
+    "comment3" : "if no grouping exists for a specified dataset, code will target 'default'",
+    "comment4" : "if a column does not have a suitable prefix it will be ommitted from the dataset",
+    "comment5" : "all columns (including undefined) can be viewed by toggling 'raw' from the command line",
+    "comment6" : "THIS RENAME WILL BE APPLIED TWICE, once immediately after generatign report, and again after all other functions",
+    "default" : {
+        "columns" : {}
+    },
+    "group_1": {
+        "datasets" : ["4-Data-WF3_Iodide", "4-Data-Bromides", "4-Data-WF3_Alloying", "4-Data-Iodides"],
+        "columns" : {
+            "Unnamed: 2" : "_raw_placeholder",
+            "Bulk Actual Temp (C)" : "_rxn_actual_bulk_temperature_c",
+            "Crystal Score" : "_out_crystalscore",
+            "_out_predicted" : "_raw_model_predicted",
+            "modelname" : "_raw_modelname",
+            "participantname" : "_raw_participantname",
+            "notes" : "_raw_notes",
+            "_raw_datecompleted" : "EXCLUDEME_ECLONLY_datecompleted",
+            "_raw_timecompleted_utc" : "EXCLUDEME_ECLONLY_timecompleted_utc"
+        }
+    },
+    "group_2": {
+        "comment" : "superset of group_1",
+        "datasets" : ["dev", "MIT_PVLab"],
+        "columns" : {
+            "Bulk Actual Temp (C)" : "_rxn_actual_bulk_temperature_c",
+            "Crystal Score" : "_out_crystalscore",
+            "modelname" : "_raw_modelname",
+            "participantname" : "_raw_participantname",
+            "notes" : "_raw_notes",
+            "Experiment Number" : "_raw_experimentNumber",
+            "Experiment Name" : "_raw_experimentName",
+            "User defined tag" : "_raw_userdefinedtag",
+            "Robot Number" : "_raw_robotnumber",
+            "Vial Site (1)" : "_raw_microplate_row",
+            "Vial Site (2)" : "_raw_microplate_column",
+            "_out_predicted" : "_raw_model_predicted",
+            "class_probability" : "_raw_classprobability",
+            "films_made_success" : "_rxn_filmmade_bool",
+            "identifier" : "_raw_identifier",
+            "Degradation Temperature (C)" : "_out_degradation_temperature_c",  
+            "Degradation Humidity (%)" : "_rxn_degradation_humidity_percent", 
+            "Degradation Onset Time Red (s)" : "_out_degradation_onset_time_red_s",
+            "Spotting?" : "_out_spotting_boolean",
+            "Linked Data" : "_raw_linked_data"
+        }
+    }
+}

@@ -1,5 +1,25 @@
 RELEASE HISTORY
 ===============
+### Be sure to update the version number in 'runme.py'!
+
+1.0 (2020-04-10)
+-----------------
+  * Integrated chemdescriptor module
+  * Generalized feature report around type_command.csv table
+  * Added full dataframe export option for v3 ETL targets, and additional export options
+  * Create a default view of the generated datasets (resembles past versions)
+  * Significant improvements to generalizability, flexibility, readability, and inspectability of code
+  * Generalized 'chemical_type' specification with user level access
+  * Updated Docstrings
+  * Added Test Kit, nothing fancy, but it is a (messy) start
+  * Added additional schema representations to cerberus (validated datasets, with significant improvements to dataset integrity)
+
+0.86 (2020-03-30)
+-----------------
+  * separated baseline parsing from all calcs and feats
+  * added dev test on baseline parseing
+  * debug now exports dataframes at every step
+  * all columns exported as lowercase (as much as possible)
 
 0.85 (2020-03-27)
 ------------------------

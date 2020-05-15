@@ -3,11 +3,9 @@ import os
 import sys
 
 cwd = os.getcwd()
-
 #######################################
 # Version Control
 RoboVersion = 2.59
-ReportVersion = 0.85
 ######################################
 # Sampler Selection
 sampler = 'wolfram' # options are 'default' or 'wolfram'
@@ -94,8 +92,8 @@ lab_vars = {
             'required_files': ['observation_interface', 'preparation_interface', 'metadata.json'],
             'required_folders': [],
             'observation_interface': {'uid_col': 'B',
-                                      'modeluid_col': 'H',
-                                      'participantuid_col': 'I'}
+                                      'modeluid_col': 'I',
+                                      'participantuid_col': 'J'}
         },
 }
 
@@ -115,6 +113,9 @@ this isn't magic just plumbing. An example of the correct structure can be found
 https://drive.google.com/open?id=1rPNGq69KR7_8Zhr4aPEV6yLtB6V4vx7k
 
 '''
+#TODO: assign desired calculations to each dataset, add a safe/generalizable default 
+# .   The dict of desired calculations should only toggle on options, not specify
+# .   The default should not include 'target_data_folder", these should always be assigned
 workup_targets = {
     '4-Data-Bromides':
         {
@@ -142,33 +143,41 @@ workup_targets = {
         }
 }
 
-
 #######################################
 # Wolfram Kernel Management
 
+
+# first check that system is supported: do one thing at a time
+system = platform.system()
+if system not in ['Linux', 'Darwin', 'Windows']:
+    # Dont kill, just warn. If it dies, it dies. If it doesn't: cool!
+    print("Warning: OS not officially supported") 
+
+
 wolfram_kernel_path = None # ensure the value can be imported on all computers.
 
-system = platform.system()
-if system == "Linux":
-    wolfram_kernel_path = None
-    from pathlib import Path
-    # try first path location
-    wolfram_kernel = Path('/usr/local/Wolfram/WolframEngine/12.0/Executables/WolframKernel')
-    if wolfram_kernel.is_file():
-        wolfram_kernel_path = "/usr/local/Wolfram/WolframEngine/12.0/Executables/WolframKernel"
-    # try second path location
-    wolfram_kernel_2 = Path('/usr/local/Wolfram/Mathematica/12.0/Executables/WolframKernel')
-    if wolfram_kernel_2.is_file():
-        wolfram_kernel_path = '/usr/local/Wolfram/Mathematica/12.0/Executables/WolframKernel'
-    if wolfram_kernel_path is None:
-        print('WolframKernel not successfully found, please correct devconfig')
-        import sys
-        sys.exit()
-
+# we only need to do this check if the user wants wolfram in the first place
+if sampler == 'wolfram': 
+    if system == "Linux":
+        wolfram_kernel_path = None
+        from pathlib import Path
+        # try first path location
+        wolfram_kernel = Path('/usr/local/Wolfram/WolframEngine/12.0/Executables/WolframKernel')
+        if wolfram_kernel.is_file():
+            wolfram_kernel_path = "/usr/local/Wolfram/WolframEngine/12.0/Executables/WolframKernel"
+        # try second path location
+        wolfram_kernel_2 = Path('/usr/local/Wolfram/Mathematica/12.0/Executables/WolframKernel')
+        if wolfram_kernel_2.is_file():
+            wolfram_kernel_path = '/usr/local/Wolfram/Mathematica/12.0/Executables/WolframKernel'
+        if wolfram_kernel_path is None:
+            # is this allowed? maybe can do in a cleaner way but nice to automate this instead of just killing
+            print('Warning: WolframKernel not successfully found, falling back on default')
+            sampler = 'default' 
 # Mac or Windows
 elif system == "Darwin" or system == 'Windows':
     wolfram_kernel_path = None
 
-# Other
-else:
-    raise OSError("Your system is likely not supported if it's not Linux, MAC, or Windows")
+###################################
+#Chemdescriptor management
+os.environ['CXCALC_PATH'] = '/Applications/JChemSuite/bin/'
+os.environ['STANDARDIZE_PATH'] = '/Applications/JChemSuite/bin/'

@@ -19,7 +19,8 @@ INDEX_NAME = None
 STATESET_NAME = None
 LINK_NAME = None
 
-modlog = logging.getLogger('report.export_to_repo')
+modlog = logging.getLogger(f'mainlog.{__name__}')
+warnlog = logging.getLogger(f'warning.{__name__}')
 
 ### HEADER PREPARATION INFORMATION
 ## Header for state set data
@@ -36,17 +37,18 @@ modlog = logging.getLogger('report.export_to_repo')
 ## Header for state index
 # Index of first run provided by Haverford through the SD2E TACC file system.
 # Author: Scott Novotney, Ian Pendelton
-# The name "first_run" is not significant.
+# The name "first_run" is not significant
+
 
 def trainheader(trainingfile, metdict):
     ''' generates metrics for training data header creation
     '''
     modlog.info('Building initial training text file containing header with metrics')
     with open(trainingfile, 'w') as t:
-        print('#Training data generated on %s for the perovskite dataset' %(datetime.utcnow()), file=t)
-        print('#%s experiments, covering 67 descriptors.'%metdict['exp#'], file=t)
-        print('#Author: Ian Pendleton', file=t)
-        print('#Index: %s.index.csv' %TRAININGDATA_NAME, file=t)
+        print(f"#Training data generated on {datetime.utcnow()} for the perovskite dataset", file=t)
+        print(f"#Index of {metdict['exp#']} experiments, covering {metdict['featcount']} descriptors.", file=t)
+        print(f"#Author: {metdict['author_name']}", file=t)
+        print(f"#Index: {TRAININGDATA_NAME}.index.csv", file=t)
     return(trainingfile)    
 
 def indexheader(indexfile, metdict):
@@ -54,9 +56,9 @@ def indexheader(indexfile, metdict):
     '''
     modlog.info("Building index header containing metrics and description")
     with open(indexfile, 'w') as t2:
-        print('#Index of %s experiments associated with challenge problem %s' %(metdict['exp#'],INDEX_NAME) , file=t2)
-        print('#Author: Ian Pendleton', file=t2)
-        print('#Generated on %s for the perovskite dataset' %(datetime.utcnow()), file=t2)
+        print(f"#Generated on {datetime.utcnow()} associated with challenge problem {INDEX_NAME}", file=t2)
+        print(f"#Index of {metdict['exp#']} experiments, covering {metdict['featcount']} descriptors.", file=t2)
+        print(f"#Author: {metdict['author_name']}", file=t2)
     return(indexfile)
 
 def stateheader(statefile, stdict):
@@ -64,10 +66,12 @@ def stateheader(statefile, stdict):
     '''
     modlog.info('Building initial stateset file containing header with metrics')
     with open(statefile, 'w') as t:
-        print('#State set generated on %s associated with challenge problem %s' %(datetime.utcnow(), INDEX_NAME), file=t)
-        print('#%s possible experiments, covering 67 descriptors.'%stdict['exp#'], file=t)
-        print('#Author: Ian Pendleton', file=t)
-        print('#Index: %s.index.csv' %STATESET_NAME, file=t)
+        print(f"#State set generated on {datetime.utcnow()} associated with challenge problem {INDEX_NAME}", file=t)
+        print(f"#{stdict['exp#']} possible experiments, covering 67 descriptors.", file=t)
+        #The features for the state set are not yet automatically generated, this remains constant until coded.
+#        print(f"#{stdict['exp#']} possible experiments, covering {stdict['featcount']} descriptors.", file=t)
+        print(f"#Author: {stdict['author_name']}", file=t)
+        print(f"#Index: {STATESET_NAME}.index.csv", file=t)
     return(statefile)
 
 def linkheader(linkfile, stdict):
@@ -75,10 +79,12 @@ def linkheader(linkfile, stdict):
     '''
     modlog.info('building initial link file containing header with metrics')
     with open(linkfile, 'w') as t:
-        print('#Link file generated on %s associated with challenge problem %s' %(datetime.utcnow(), INDEX_NAME), file=t)
-        print('#%s possible experiments, covering 67 descriptors.'%stdict['exp#'], file=t)
-        print('#Author: Ian Pendleton', file=t)
-        print('#Index: %s.index.csv' %STATESET_NAME, file=t)
+        print(f"#Link file generated on {datetime.utcnow()} associated with challenge problem {INDEX_NAME}", file=t)
+        print(f"#{stdict['exp#']} possible experiments, covering 67 descriptors.", file=t)
+        #The features for the state set are not yet automatically generated, this remains constant until coded.
+#        print(f"#{stdict['exp#']} possible experiments, covering {stdict['featcount']} descriptors.", file=t)
+        print(f"#Author: {stdict['author_name']}", file=t)
+        print(f"#Index: {STATESET_NAME}.index.csv", file=t)
     return(linkfile)
 
 def stateindexheader(statesetindexfile, stdict):
@@ -86,17 +92,18 @@ def stateindexheader(statesetindexfile, stdict):
     '''
     modlog.info("Building state set index header containing metrics and description")
     with open(statesetindexfile, 'w') as t2:
-        print('#Index of %s possible experiments associated with challenge problem %s' %(stdict['exp#'],INDEX_NAME) , file=t2)
-        print('#Author: Ian Pendleton', file=t2)
-        print('#Generated on %s for the perovskite dataset' %(datetime.utcnow()), file=t2)
+        print(f"#Index of {stdict['exp#']} possible experiments associated with challenge problem {INDEX_NAME}", file=t2)
+        print(f"#Author: {stdict['author_name']}", file=t2)
+        print(f"#Generated on {datetime.utcnow()} for the perovskite dataset", file=t2)
     return(statesetindexfile)
 
-def statemetrics(statedf):
+def statemetrics(statedf, metdict):
     ''' generates metrics for stateset header creation
     '''
     modlog.info('Generating state set metrics for version repo headers')
     stdict = {}
     stdict['exp#'] = len(statedf)
+    stdict['author_name'] = metdict['author_name']
     return(stdict)
 
 def exportstateset(statespace, link):
@@ -124,12 +131,17 @@ def exportstateset(statespace, link):
 def metricbuild(traindf):
     ''' skeleton metrics gathered from training data for repo commit
     '''
+    command_dict = pd.read_csv('type_command.csv')
+    feature_count = len(command_dict)
+    author_name = input("Enter your name for versioned repository records: ") 
     modlog.info('Generating training data metrics for version repo headers')
     metdict = {}
     metdict['exp#'] = len(traindf)
+    metdict['featcount'] = feature_count
+    metdict['author_name'] = author_name
     return(metdict)
 
-def exporttraining(finalcsv):
+def exporttraining(df):
     ''' generates the appropriate verdata repo structure
 
     takes the training data generated in the report code and converts
@@ -139,13 +151,10 @@ def exporttraining(finalcsv):
     data repo.
     '''
     modlog.info('Generating version repo ready data and index dataframes')
-    df2 = pd.DataFrame()
-    df = pd.read_csv(finalcsv, low_memory=False)
-    df2['name'] = df['RunID_vial']
+    df2 = df.copy()
+    df2['name'] = df2.index
     df2['dataset'] = INDEX_NAME
-    df.drop(['RunID_vial'],axis=1,inplace=True)
-    indexdf = df2
-    #pd.concat([df2['name'],df2['name']], axis=1)
+    indexdf = df2[['name', 'dataset']]
     maindf = pd.concat([indexdf,df],axis=1)
     indexdf = indexdf.set_index(['dataset'])
     maindf = maindf.set_index(['dataset'])
@@ -157,6 +166,11 @@ def writetrain(indexdf, traindf, metdict):
     trainfile = trainheader(trainfile, metdict)
     indexfile = indexheader(indexfile, metdict)
     with open(trainfile, 'a') as f:
+        traindf.rename(columns={'_rxn_actual_bulk_temperature_c':'_rxn_temperatureC_actual_bulk',
+                    '_rxn_molarity_acid' : '_rxn_M_acid',
+                    '_rxn_molarity_inorganic' : '_rxn_M_inorganic', 
+                    '_rxn_molarity_organic' : '_rxn_M_organic',
+                    '_raw_organic_0_inchikey' : '_rxn_organic-inchikey'}, inplace=True)
         traindf.to_csv(f)
     with open(indexfile, 'a') as f2:
         indexdf.to_csv(f2)
@@ -175,7 +189,7 @@ def writestate(stateindexdf, statedf, stdict, linkdf):
     with open(link_file, 'a') as f3:
         linkdf.to_csv(f3)
 
-def prepareexport(dataset_name, cli_statespace, link, crank_num):#, stateinchi):
+def prepareexport(final_report_df, cli_statespace, link, crank_num, dataset_name):#, stateinchi):
     ''' generate version repo ready csv files
 
     calls on metrics generator to provide basic information 
@@ -188,8 +202,6 @@ def prepareexport(dataset_name, cli_statespace, link, crank_num):#, stateinchi):
     global STATESET_NAME
     global LINK_NAME
 
-    dataset_filename = dataset_name+'.csv'
-
     if crank_num is None:
         crank_num = '0'
 
@@ -198,24 +210,22 @@ def prepareexport(dataset_name, cli_statespace, link, crank_num):#, stateinchi):
     STATESET_NAME = crank_num + ".stateset"
     LINK_NAME = crank_num + ".link"
 
+    ## Build the training.csv and associated index with the correct headers
+    indexdf, traindf = exporttraining(final_report_df)
+    metdict = metricbuild(traindf) #retrieve dictionary of training data metrics
+    if crank_num:
+        print(f'Exporting data to {crank_num}.{dataset_name} for version data upload')
+        modlog.info(f'Exporting data to {crank_num}.{dataset_name} for version data upload')
+        writetrain(indexdf, traindf, metdict)
+    
     if cli_statespace is not None:
         ## Build statespace, statespace index and link files then export and write
         modlog.info('Generating version data repo ready state space')
         modlog.info('Generating version data repo ready link')
         stateindexdf, statedf, linkdf = exportstateset(cli_statespace, link)
-        stdict = statemetrics(statedf)
+        stdict = statemetrics(statedf, metdict)
         writestate(stateindexdf, statedf, stdict, linkdf)
 
-    ## Build the training.csv and associated index with the correct headers
-    indexdf, traindf = exporttraining(dataset_filename)
-    metdict = metricbuild(traindf) #retrieve dictionary of training data metrics
-    if crank_num is not '0':
-        print(f'Exporting data to {crank_num}.{dataset_filename} for version data upload')
-        modlog.info(f'Exporting data to {crank_num}.{dataset_filename} for version data upload')
-        writetrain(indexdf, traindf, metdict)
+
     return traindf
-
-
-if __name__ == "__main__":
-    prepareexport('test.csv', 'EtNH3Istateset.csv', 'EtNH3Istateset_link.csv', '0000')
 
