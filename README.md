@@ -86,6 +86,10 @@ Please report any failures of the above message to the repo admins
 #### Optional for ChemAxon Support
 4. Download and [install ChemAxon JChemSuite](https://chemaxon.com/products/jchem-engines) and obtain a [ChemAxon License Free for academic use](https://academia.chemaxon.com/)
 
+5. Follow the installation instruction found on [ChemAxons website](https://docs.chemaxon.com/display/docs/Installation+Guide.) Be sure to not the location of the JChemSuite installation (i.e. `~/opt/chemaxon/jchemsuite/bin` on linux or `/Applications/JChemSuite/bin/` on MacOSX)
+
+   * There are also docs on license install using a graphical user interface (GUI) here: https://docs.chemaxon.com/display/docs/Licenses.html
+
 5. You will need to specify the location of your chemaxon installation locations in `./expworkup/devconfig.py` at the bottom of the file. 
 
 
