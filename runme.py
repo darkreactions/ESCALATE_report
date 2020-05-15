@@ -227,9 +227,9 @@ def main_pipeline(args):
         sys.exit()
 
     # Perform feature calculations / gather physicochemical descriptors
-#    compound_ingredient_objects_df = ingredient_pipeline(report_df,
-#                                                         chemdf_dict,
-#                                                         args.debug)
+    compound_ingredient_objects_df = ingredient_pipeline(report_df,
+                                                         chemdf_dict,
+                                                         args.debug)
 
     runUID_inchi_file,\
         inchi_key_indexed_features_df= feat_pipeline(get_target_folder(),
