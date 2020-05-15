@@ -82,7 +82,6 @@ def get_remote_data(datasets, target_naming_scheme, offline_folder, offline_togg
                 chemicaldf.to_csv(f'{offline_folder}/{name}_INVENTORY.csv')
     if offline_toggle == 2:
         chemdf_dict = {}
-        inventory_list = []
         (_, _, offline_files) = next(os.walk(offline_folder))
         inventory_files = [x for x in offline_files if 'INVENTORY' in x]
         for inventory in inventory_files:
@@ -126,8 +125,6 @@ def report_pipeline(chemdf_dict, raw_bool, target_naming_scheme,
     """
 
     modlog = logging.getLogger(f'mainlog.{__name__}')
-    warnlog = logging.getLogger(f'warning.{__name__}')
-    ingredlog = logging.getLogger(f'ilog.{__name__}')
 
     if offline_toggle == 1 or offline_toggle == 0:
         report_df = json_pipeline(target_naming_scheme,
@@ -175,11 +172,9 @@ def main_pipeline(args):
     warning_logger = f'{log_directory}/REPORT_WARNING_LOG.txt' 
     ingredient_logger = f'{log_directory}/REPORT_INGREDIENT_LOG.txt' 
     logger.setup_logger('mainlog', main_logger)
-    logger.setup_logger('warning', main_logger, level=logging.WARN, stream=True)
+    logger.setup_logger('warning', warning_logger, level=logging.WARN, stream=True)
     logger.setup_logger('ilog', ingredient_logger) #ingredient log
     modlog = logging.getLogger(f'mainlog.{__name__}')
-    warnlog = logging.getLogger(f'warning.{__name__}')
-    ingredlog = logging.getLogger(f'ilog.{__name__}')
 
     # Initial reporting signaling successful code kickoff
     modlog.info(f'{dataset_list} selected as the dataset target(s) for this run')
@@ -300,6 +295,9 @@ def parse_args(args):
                         help='final dataframe is printed with all raw values\
                         included ||default = 1||')
     parser.add_argument('--verdata', type=str, 
+                        help='Enter numerical value such as "0001". Generates <0001>.perovskitedata.csv output\
+                        in a form ready for upload to the versioned data repo ||default = None||')
+    parser.add_argument('--verdata_version', type=str, 
                         help='Enter numerical value such as "0001". Generates <0001>.perovskitedata.csv output\
                         in a form ready for upload to the versioned data repo ||default = None||')
     parser.add_argument('--state', type=str,
