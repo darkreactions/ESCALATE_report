@@ -201,7 +201,6 @@ class OneTypeFeatures():
                                                    self.smiles_list,
                                                    self.one_type,
                                                    False)
-            outdf.rename(columns={"Compound": "calc_input_smiles"}, inplace=True)
             outdf = pd.concat([outdf,
                                type_features_df], axis=1)
 
@@ -210,7 +209,7 @@ class OneTypeFeatures():
                                                    self.smiles_list,
                                                    self.one_type,
                                                    True)
-            outdf.rename(columns={"Compound": "smiles_standardized"}, inplace=True)
+            type_features_df.rename(columns={"Compound": "smiles_standardized"}, inplace=True)
             outdf = pd.concat([outdf,
                                type_features_df], axis=1)
 
