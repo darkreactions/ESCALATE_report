@@ -258,7 +258,7 @@ def download_experiment_directories(target_directory, dataset):
 
     return exp_dict
 
-def inventory_assembly(exp_dict):
+def inventory_assembly(exp_dict, chemdf_dict):
     """ 
     Gather chemical inventories used to generate runs for labs in exp_dict
 
@@ -278,7 +278,6 @@ def inventory_assembly(exp_dict):
         lab_vars dictionary subsequent code will be automated to target
         the default if no lab specific chemdf uid is provided.
     """
-    chemdf_dict = {}
     lablist = [] 
     for title in exp_dict.keys():
         run_lab = get_experimental_run_lab(title)
@@ -286,7 +285,8 @@ def inventory_assembly(exp_dict):
             lablist.append(run_lab)
     
     for lab in lablist:
-        chem_df = googleio.ChemicalData(lab)                    
-        chemdf_dict[lab] = chem_df
+        if lab not in chemdf_dict.keys():
+            chem_df = googleio.ChemicalData(lab)                    
+            chemdf_dict[lab] = chem_df
 
     return chemdf_dict 

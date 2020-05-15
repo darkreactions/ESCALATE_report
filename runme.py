@@ -71,11 +71,12 @@ def get_remote_data(datasets, target_naming_scheme, offline_folder, offline_togg
     https://docs.google.com/spreadsheets/d/1JgRKUH_ie87KAXsC-fRYEw_5SepjOgVt7njjQBETxEg/edit#gid=1755798808
     """
     if offline_toggle == 1 or offline_toggle == 0:
+        chemdf_dict = {}
         for dataset in datasets:
             # File downloaded locally in the subsequent function
             exp_dict = download_experiment_directories(target_naming_scheme, 
                                                        dataset)
-            chemdf_dict = inventory_assembly(exp_dict)
+            chemdf_dict = inventory_assembly(exp_dict, chemdf_dict)
         if offline_toggle == 1:
             for name, chemicaldf in chemdf_dict.items():
                 chemicaldf.to_csv(f'{offline_folder}/{name}_INVENTORY.csv')
