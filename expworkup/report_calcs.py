@@ -20,7 +20,7 @@ def calc_pipeline(report_df, object_df, chemdf_dict, debug_bool):
         2d dataframe returned after parsing all content from google drive
         returned from expworkup.json_pipeline
         
-    compound_ingredient_objects_df : pd.DataFrame of CompoundIngredient objects
+    object_df : pd.DataFrame of CompoundIngredient objects
         objects = are instances of chemical combinations generated in the lab.
         each reagent is rendered to a CompoundIngredient object and report to 
         the dataframe.  
@@ -107,6 +107,9 @@ def calc_pipeline(report_df, object_df, chemdf_dict, debug_bool):
     # build heleper fucntions for cxcalc interfacing (and examples)
     # same with rdkit
     # Calculate concentration ratio of specified types (a:b and b:a, both needed for ML)
+
+    ## Hardcoding for now! ###
+
     return out_df
 
 

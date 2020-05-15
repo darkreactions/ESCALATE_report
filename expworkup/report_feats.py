@@ -6,83 +6,17 @@ import pandas as pd
 from tqdm import tqdm
 
 from expworkup.handlers.chemical_types import get_chemical_types
-from expworkup.handlers.chemdescriptor_wrapper import cxcalc_handler
-from expworkup.handlers.chemdescriptor_wrapper import rdkit_handler
+from expworkup.handlers.feature_generator import OneTypeFeatures
 from utils.file_handling import write_debug_file
+
+from utils.globals import get_target_folder
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
 
-def get_command_dict(command_type_df, one_type, application):
-    """Converts expworkup.type_command.csv to dict for chemdescriptor
-
-    Parameters
-    ----------
-    command_type_df : pd.DataFrame generated from type_command.csv
-
-    one_type : defines which chemical type to target
-        should match an entry in command_types_df 'types' column 
-    
-    application : defines the application being targeted by caller
-        will only return rows where actor_systemtool_name matches 
-        specified application
-
-    Returns
-    -------
-    default_command_dict : structure shown below
-        default_command_dict = {
-        "descriptors": {
-            "acceptorcount": {
-                "command": [
-                    "acceptorcount"
-                ],
-                "column_names": [
-                    "_feat_acceptorcount"
-                ]
-            },...
-        ""ph_descriptors": {
-            "molsurfaceareaASAp": {
-                "command": [
-                    "molecularsurfacearea",
-                    "-t",
-                    "ASA+"
-                ],
-                "column_names": [
-                    "_feat_molsurfaceareaASAp"
-                ]
-            },...
-
-    Notes
-    -----
-     * https://github.com/darkreactions/chemdescriptor
-     * 'descriptors' must be specified fully (including flags where needed)
-     * 'ph_descriptors' are those which have -H option, can use to simplify return
-
-    """
-    commands_df = command_type_df[(command_type_df['input'] == one_type) &  \
-                                  (command_type_df['actor_systemtool_name'] == application)]
-    my_descriptor_dict = {}
-    for command in commands_df.itertuples():
-            column_name = f'_feat_{command.short_name}'
-            my_descriptor_dict[command.short_name] = {}
-
-            # 'space' (i.e, ' ') removal
-            templist = command.calc_definition.split(' ')
-            str_list = list(filter(None, templist))
-            my_descriptor_dict[command.short_name]["command"] = str_list
-
-            my_descriptor_dict[command.short_name]["column_names"] = [column_name]
-
-    command_dict = {}
-    command_dict['descriptors'] = my_descriptor_dict
-    command_dict['ph_descriptors'] = {} # possibly useful, see chemdescriptor for more details
-    if len(command_dict['descriptors'].keys()) == 0:
-        return None
-    else:
-        return(command_dict)
-
-def get_features(unique_types, experiment_inchi_df, target_name, log_folder):
+def get_features(unique_types, experiment_inchi_df):
     """ gather specified features to describe all expUID+inchi+type combinations
+    TODO: update this docstring
     All features for experimentUID + InchiKey + types combinations across
     labs are gathered and returned as a dict of pd.Dataframes 
 
@@ -94,79 +28,30 @@ def get_features(unique_types, experiment_inchi_df, target_name, log_folder):
         which contains all unique combinations of expUID+inchikeys 
         along with associated type list for each
 
-    target_name : name of the working data directory
-        used for report logs 
-
-    log_folder : folder location to stores logs 
-    
     Returns
     -------
     type_feat_dict : dict of pd.DataFrames containing features
         keys:one_type label, values:dfs of features from chemdescriptor
 
     """
-    #TODO: fix logging issues
-
-    # TODO: insert validation of the type_command df
-    # type_command df should be treated as code!
-    type_command_df = pd.read_csv('./type_command.csv')
-    type_feat_dict = {}
-
-    modlog.info(f'Generating physicochemical features to {target_name} dataset')
+    modlog.info(f'Generating physicochemical features to {get_target_folder()} dataset')
     modlog.info(f'Log files for this process are in CXCALC_LOG.txt')
-    print(f'(5/6) Gathering physicochemical features for {len(unique_types)} chemical type(s) in {target_name}...')
+    print(f'(5/6) Gathering physicochemical features for {len(unique_types)} chemical type(s) in {get_target_folder()}...')
+    type_feat_dict = {}
     for one_type in tqdm(unique_types):
         #only grabs EXACT string matches for the type
-        correct_type =\
-            experiment_inchi_df[experiment_inchi_df['types']\
-            .str.contains(pat=f'(?:^|\W){one_type}(?:$|\W)',\
-                          regex=True)]
+        correct_type = \
+            experiment_inchi_df[experiment_inchi_df['types'].\
+                                str.contains(pat=f'(?:^|\W){one_type}(?:$|\W)',
+                                regex=True)]
         #gather information we will want in the final dataframe for features
-        inchi_smiles = correct_type[['inchikeys', 'smiles', 'types']]\
-                                   .drop_duplicates(keep="first", 
-                                                    ignore_index=True)
-        type_feat_dict[one_type] = inchi_smiles
-        smiles_list = inchi_smiles['smiles'].values.tolist()
-        cxcalc_command_dict = get_command_dict(type_command_df,
-                                             one_type,
-                                             'cxcalc')
+        onetype_feature_identity_dict = correct_type[['inchikeys', 'smiles', 'types']].\
+                                                     drop_duplicates(keep="first", 
+                                                     ignore_index=True)
+        type_feat_dict[one_type] = OneTypeFeatures(one_type, 
+                                                   onetype_feature_identity_dict)
 
-        cxcalc_std_command_dict = get_command_dict(type_command_df,
-                                                   one_type,
-                                                   'cxcalc_std')
-        rdkit_command_dict = get_command_dict(type_command_df,
-                                              one_type,
-                                              'RDKit')
-        if cxcalc_command_dict is not None:
-            type_feat_dict = cxcalc_handler(type_feat_dict, 
-                                            cxcalc_command_dict,
-                                            smiles_list,
-                                            target_name,
-                                            one_type,
-                                            False,
-                                            log_folder)
-        if cxcalc_std_command_dict is not None:
-            type_feat_dict = cxcalc_handler(type_feat_dict, 
-                                            cxcalc_std_command_dict,
-                                            smiles_list,
-                                            target_name,
-                                            one_type,
-                                            True,
-                                            log_folder)
-        if rdkit_command_dict is not None:
-            type_feat_dict = rdkit_handler(type_feat_dict, 
-                                           rdkit_command_dict,
-                                           smiles_list,
-                                           target_name,
-                                           one_type,
-                                           log_folder)
-        try:
-            type_feat_dict[one_type].rename(columns={"Compound": "smiles_standardized"}, inplace=True)
-        except KeyError:
-            modlog.warn(f'No features defined for {one_type}')
-            pass
-
-    modlog.info(f"Completed: 'Generating physicochemical features to {target_name} dataset'")
+    modlog.info(f"Completed: 'Generating physicochemical features to {get_target_folder()} dataset'")
     return(type_feat_dict)
 
 def unpack_features(type_feat_dict):
@@ -192,13 +77,18 @@ def unpack_features(type_feat_dict):
     """
     inchi_key_indexed_features_df = pd.DataFrame()
     for one_type in type_feat_dict:
-        df = type_feat_dict[one_type].set_index('inchikeys')
+        # Dictionary of expworup.handlers.feature_generator.OneTypeFeatures 
+        df = type_feat_dict[one_type].featured_df.copy()
 
         # Merge the dataset into the existing index DOES NOT OVERWRITE
         inchi_key_indexed_features_df = \
-            inchi_key_indexed_features_df.combine_first(df)
-    inchi_key_indexed_features_df.drop_duplicates(subset=['smiles','smiles_standardized'],
-                                                  inplace=True, keep='first')
+            df.combine_first(inchi_key_indexed_features_df)#.combine_first(df)
+
+    inchi_key_indexed_features_df.reset_index(inplace=True)
+    duplicate_targets = ['smiles', 'smiles_standardized', 'types', 'inchikeys']
+    shared_cols = list(frozenset(inchi_key_indexed_features_df.columns).intersection(duplicate_targets))
+    inchi_key_indexed_features_df.drop_duplicates(subset=shared_cols, inplace=True, keep='first')
+    inchi_key_indexed_features_df.set_index('inchikeys', inplace=True) 
     return(inchi_key_indexed_features_df)
 
 def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
@@ -272,9 +162,7 @@ def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
     unique_types = list(set([x for l in ugh_list for x in l.split(',')]))
     unique_types.sort()
     type_feat_dict = get_features(unique_types,
-                                  expanded_unique_inchis_df,
-                                  target_name,
-                                  log_folder)
+                                  expanded_unique_inchis_df)
     
     ## Output dataframe with association between unique inchikeys and features
     inchi_key_indexed_features_df = unpack_features(type_feat_dict)

@@ -5,10 +5,6 @@ import logging
 import os
 import sys
 
-from utils import globals
-from expworkup import devconfig as config
-from utils import globals
-
 warnlog = logging.getLogger(f'warning.{__name__}')
 ingredlog = logging.getLogger(f'ilog.{__name__}')
 

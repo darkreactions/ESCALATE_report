@@ -17,6 +17,13 @@ warnlog = logging.getLogger(f'warning.{__name__}')
 
 WARNCOUNT = 0
 
+TARGET_NAMING_SCHEME = None
+TARGET_NAMING_SCHEME_SET = False
+LOG_DIRECTORY = None
+LOG_DIRECTORY_SET = False
+OFFLINE_FOLDER = None
+OFFLINE_FOLDER_SET = False
+
 _DEBUG_HEADER = None
 _DEBUG_SET = False
 
@@ -82,3 +89,46 @@ def get_debug_header():
         modlog.error('get_debug_header called before set_debug_header')
         sys.exit(1)
     return _DEBUG_HEADER
+
+def set_target_folder_name(target_name):
+    global TARGET_NAMING_SCHEME, TARGET_NAMING_SCHEME_SET
+    if TARGET_NAMING_SCHEME_SET:
+        modlog.error('dev tried to set target folder more than once')
+        sys.exit(1)
+    TARGET_NAMING_SCHEME = target_name
+    TARGET_NAMING_SCHEME_SET = True
+
+def get_target_folder():
+    if TARGET_NAMING_SCHEME is None:
+        modlog.error('get_target_folder called before set_target_folder_name')
+        sys.exit(1)
+    return TARGET_NAMING_SCHEME
+
+def set_log_folder(log_target):
+    global LOG_DIRECTORY, LOG_DIRECTORY_SET
+    if LOG_DIRECTORY_SET:
+        modlog.error('dev tried to set log folder more than once')
+        sys.exit(1)
+    LOG_DIRECTORY = log_target
+    LOG_DIRECTORY_SET = True
+
+def get_log_folder():
+    if LOG_DIRECTORY is None:
+        modlog.error('get_log_folder called before set_log_folder')
+        sys.exit(1)
+    return LOG_DIRECTORY
+
+def set_offline_folder(offline_target_folder):
+    global OFFLINE_FOLDER, OFFLINE_FOLDER_SET
+    if OFFLINE_FOLDER_SET:
+        modlog.error('dev tried to set offline folder more than once')
+        sys.exit(1)
+    OFFLINE_FOLDER = offline_target_folder
+    OFFLINE_FOLDER_SET = True
+
+def get_offline_folder():
+    if OFFLINE_FOLDER is None:
+        modlog.error('get_offline_folder called before set_offline_folder')
+        sys.exit(1)
+    return OFFLINE_FOLDER
+

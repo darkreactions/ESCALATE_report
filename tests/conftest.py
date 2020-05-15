@@ -9,6 +9,11 @@ from runme import parse_args
 from runme import get_remote_data
 from runme import report_pipeline
 from expworkup.createjson import download_experiment_directories
+from utils.globals import (
+    set_log_folder, set_target_folder_name, set_offline_folder,
+    get_target_folder, get_log_folder, get_offline_folder
+)
+
 
 global TEST_TARGET
 global ARGS_LIST
@@ -23,8 +28,11 @@ def get_devreport_df():
 
 @pytest.fixture(scope='session')
 def dev_args():
-    parser = parse_args(ARGS_LIST)
-    return parser
+    args = parse_args(ARGS_LIST)
+    set_log_folder(f'{args.local_directory}/logging')  # folder for logs
+    set_target_folder_name(args.local_directory)
+    set_offline_folder(f'./{get_target_folder()}/offline')
+    return args
 
 @pytest.fixture(scope='session')
 def chemdf_dict(dev_args):
@@ -55,8 +63,6 @@ def chemdf_dict(dev_args):
         os.mkdir(offline_folder)
 
     chemdf_dict = get_remote_data(dataset_list, 
-                                  target_naming_scheme,
-                                  offline_folder,
                                   offline_toggle)
     yield chemdf_dict
     shutil.rmtree(str(target_naming_scheme))
@@ -76,9 +82,7 @@ def get_report_df(get_devreport_df, chemdf_dict, dev_args):
     offline_toggle = 0
     report_df = report_pipeline(chemdf_dict, 
                             raw_bool,
-                            target_naming_scheme, 
                             dataset_list, 
-                            offline_folder, 
                             offline_toggle)
     # pandas does stuff during read write... so mimic..
     report_df.to_csv(f'{offline_folder}/testing.csv')

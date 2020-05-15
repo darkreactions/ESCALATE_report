@@ -22,6 +22,10 @@ from expworkup import googleio
 from versiondata import export_to_repo
 from utils import logger
 from utils import globals
+from utils.globals import (
+    set_target_folder_name, set_log_folder, set_offline_folder,
+    get_target_folder, get_log_folder, get_offline_folder
+)
 
 __version__ = 1.0 #should match latest HISTORY.md entry
 
@@ -39,7 +43,7 @@ def initialize(args):
     modlog = logging.getLogger(f'mainlog.{__name__}')
     modlog.info(args)
 
-def get_remote_data(datasets, target_naming_scheme, offline_folder, offline_toggle):
+def get_remote_data(datasets, offline_toggle):
     """ Acquires all chemical inventories, downloads google drive files locally
     
     if offline_toggle is > 1, returns chemdfs saved by the first local iteration
@@ -74,26 +78,26 @@ def get_remote_data(datasets, target_naming_scheme, offline_folder, offline_togg
         chemdf_dict = {}
         for dataset in datasets:
             # File downloaded locally in the subsequent function
-            exp_dict = download_experiment_directories(target_naming_scheme, 
+            exp_dict = download_experiment_directories(get_target_folder(), 
                                                        dataset)
             chemdf_dict = inventory_assembly(exp_dict, chemdf_dict)
         if offline_toggle == 1:
             for name, chemicaldf in chemdf_dict.items():
-                chemicaldf.to_csv(f'{offline_folder}/{name}_INVENTORY.csv')
+                chemicaldf.to_csv(f'{get_offline_folder()}/{name}_INVENTORY.csv')
     if offline_toggle == 2:
         chemdf_dict = {}
-        (_, _, offline_files) = next(os.walk(offline_folder))
+        (_, _, offline_files) = next(os.walk(get_offline_folder()))
         inventory_files = [x for x in offline_files if 'INVENTORY' in x]
         for inventory in inventory_files:
             inventory_name = inventory.rsplit('_', 1)[0] #ex MIT_PVLab_INVENTORY.csv to MIT_PVLab
             chemdf_dict[inventory_name] = \
-                            pd.read_csv(f'{offline_folder}/{inventory}',
+                            pd.read_csv(f'{get_offline_folder()}/{inventory}',
                                         low_memory=False,
                                         index_col='InChI Key (ID)')
     return chemdf_dict
 
-def report_pipeline(chemdf_dict, raw_bool, target_naming_scheme, 
-                    dataset_list, offline_folder, offline_toggle=0):
+def report_pipeline(chemdf_dict, raw_bool, 
+                    dataset_list, offline_toggle=0):
     """ Downloads and formats target folders as local JSONs, parses JSONs to simple 2d dataframe
 
     Parameters
@@ -127,19 +131,19 @@ def report_pipeline(chemdf_dict, raw_bool, target_naming_scheme,
     modlog = logging.getLogger(f'mainlog.{__name__}')
 
     if offline_toggle == 1 or offline_toggle == 0:
-        report_df = json_pipeline(target_naming_scheme,
+        report_df = json_pipeline(get_target_folder(),
                                   raw_bool,
                                   chemdf_dict,
                                   dataset_list)
         if offline_toggle == 1:
             modlog.info(f'Writing report dataframe locally')
-            report_df.to_csv(f'{offline_folder}/REPORT.csv')
+            report_df.to_csv(f'{get_offline_folder()}/REPORT.csv')
     if offline_toggle == 2:
         print('offline_toggle enabled, skipped inventory downloads, json downloads, json parsing')
-        if not os.path.exists(offline_folder):
+        if not os.path.exists(get_offline_folder()):
             modlog.error('Developer offline_toggle set before downloading files.. EXITING')
             sys.exit()
-        report_df = pd.read_csv(f'./{offline_folder}/REPORT.csv', low_memory=False)
+        report_df = pd.read_csv(f'./{get_offline_folder()}/REPORT.csv', low_memory=False)
     return report_df
 
 def main_pipeline(args):
@@ -156,21 +160,21 @@ def main_pipeline(args):
     offline_toggle = args.offline
     raw_bool = args.raw
     #Load logging information
-    log_directory = f'{args.local_directory}/logging'  # folder for logs
-    target_naming_scheme = args.local_directory
+    set_log_folder(f'{args.local_directory}/logging')  # folder for logs
+    set_target_folder_name(args.local_directory)
     if not os.path.exists(args.local_directory):
         os.mkdir(args.local_directory)
-    if not os.path.exists(log_directory):
-        os.mkdir(log_directory)
+    if not os.path.exists(get_log_folder()):
+        os.mkdir(get_log_folder())
     #Create offline folder - always required for chemaxon/rdkit...
-    offline_folder = f'./{target_naming_scheme}/offline'
-    if not os.path.exists(offline_folder):
-        os.mkdir(offline_folder)
+    set_offline_folder(f'./{get_target_folder()}/offline')
+    if not os.path.exists(get_offline_folder()):
+        os.mkdir(get_offline_folder())
 
     #Create Loggers
-    main_logger = f'{log_directory}/REPORT_LOG.txt' 
-    warning_logger = f'{log_directory}/REPORT_WARNING_LOG.txt' 
-    ingredient_logger = f'{log_directory}/REPORT_INGREDIENT_LOG.txt' 
+    main_logger = f'{get_log_folder()}/REPORT_LOG.txt' 
+    warning_logger = f'{get_log_folder()}/REPORT_WARNING_LOG.txt' 
+    ingredient_logger = f'{get_log_folder()}/REPORT_INGREDIENT_LOG.txt' 
     logger.setup_logger('mainlog', main_logger)
     logger.setup_logger('warning', warning_logger, level=logging.WARN, stream=True)
     logger.setup_logger('ilog', ingredient_logger) #ingredient log
@@ -185,36 +189,32 @@ def main_pipeline(args):
 
     # Gather data from targeted directory (google UID from devcongfig datasets)
     chemdf_dict = get_remote_data(dataset_list, 
-                                  target_naming_scheme,
-                                  offline_folder,
                                   offline_toggle)
 
     report_df = report_pipeline(chemdf_dict, 
                                 raw_bool,
-                                target_naming_scheme, 
                                 dataset_list, 
-                                offline_folder, 
                                 offline_toggle)
 
     debug_header = f"# Report version {__version__}; Created on {datetime.datetime.now()}; Dataset(s) targeted {dataset_list}\n"
     set_debug_header(debug_header)
     if args.debug:
         # Export dataframes of initial parsing and chemical inventories for ETL to ESCALATEV3
-        report_csv_filename = f'REPORT_{target_naming_scheme.upper()}.csv'
+        report_csv_filename = f'REPORT_{get_target_folder().upper()}.csv'
         write_debug_file(report_df, report_csv_filename)
         for name, chemicaldf in chemdf_dict.items():
             inventory_name = f'REPORT_{name.upper()}_INVENTORY.csv'
             write_debug_file(chemicaldf, inventory_name)
 
     if args.simple:
-        report_df.to_csv(f'{target_naming_scheme}.csv')
+        report_df.to_csv(f'{get_target_folder()}.csv')
         if args.offline == 0: 
             os.remove('./mycred.txt') #cleanup automatic authorization
         modlog.info(f'Simple Export Enabled: No dataset augmentation will occur!')
         print(f'Simple Export Enabled: No dataset augmentation will occur!')
         print(f'Simple Export Enabled: (3/3 steps were completed)')
-        modlog.info(f'Clean Exit: {target_naming_scheme}.csv was generated')
-        print(f'Clean Exit: {target_naming_scheme}.csv was generated')
+        modlog.info(f'Clean Exit: {get_target_folder()}.csv was generated')
+        print(f'Clean Exit: {get_target_folder()}.csv was generated')
         import sys
         sys.exit()
 
@@ -224,16 +224,17 @@ def main_pipeline(args):
                                                          args.debug)
 
     runUID_inchi_file,\
-        inchi_key_indexed_features_df= feat_pipeline(target_naming_scheme,
+        inchi_key_indexed_features_df= feat_pipeline(get_target_folder(),
                                                      report_df,
                                                      chemdf_dict,
                                                      args.debug,
-                                                     log_directory)
+                                                     get_log_folder())
 
     calc_out_df = calc_pipeline(report_df,
                                 compound_ingredient_objects_df,
                                 chemdf_dict,
                                 args.debug) 
+
     #calc_out_df.to_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
     #calc_out_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
 
@@ -244,7 +245,7 @@ def main_pipeline(args):
                                           args.debug,
                                           args.raw)
 
-    escalate_final_df.to_csv(f'{target_naming_scheme}.csv')
+    escalate_final_df.to_csv(f'{get_target_folder()}.csv')
 
     # Additional variations on dataframe export (for escalation / versioned data repo)
     if ('state' in vars(args)):
@@ -257,12 +258,12 @@ def main_pipeline(args):
         sys.exit()
 
     if args.verdata is not None:
-        export_to_repo.prepareexport(escalate_final_df, args.state, link, args.verdata, target_naming_scheme)
-        modlog.info(f'Exporting {args.verdata}: {args.verdata}.{target_naming_scheme}.csv was generated')
-        print(f'Exporting {args.verdata}: {args.verdata}.{target_naming_scheme}.csv was generated')
+        export_to_repo.prepareexport(escalate_final_df, args.state, link, args.verdata, get_target_folder())
+        modlog.info(f'Exporting {args.verdata}: {args.verdata}.{get_target_folder()}.csv was generated')
+        print(f'Exporting {args.verdata}: {args.verdata}.{get_target_folder()}.csv was generated')
             
-    modlog.info(f'Clean Exit: {target_naming_scheme}.csv was generated')
-    print(f'Clean Exit: {target_naming_scheme}.csv was generated')
+    modlog.info(f'Clean Exit: {get_target_folder()}.csv was generated')
+    print(f'Clean Exit: {get_target_folder()}.csv was generated')
 
     # Postrun cleanup
     if args.offline == 0: 
