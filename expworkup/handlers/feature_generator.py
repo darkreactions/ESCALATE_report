@@ -201,17 +201,6 @@ class OneTypeFeatures():
                                                    self.smiles_list,
                                                    self.one_type,
                                                    False)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-            outdf.rename(columns={"Compound": "calc_input_smiles"}, inplace=True)
->>>>>>> readability, streamline feats
-=======
->>>>>>> resolved error with combine_first function, _raw_smiles export enabled
-=======
-            outdf.rename(columns={"Compound": "calc_input_smiles"}, inplace=True)
->>>>>>> readability, streamline feats
             outdf = pd.concat([outdf,
                                type_features_df], axis=1)
 
@@ -220,19 +209,7 @@ class OneTypeFeatures():
                                                    self.smiles_list,
                                                    self.one_type,
                                                    True)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
             type_features_df.rename(columns={"Compound": "smiles_standardized"}, inplace=True)
-=======
-            outdf.rename(columns={"Compound": "smiles_standardized"}, inplace=True)
->>>>>>> readability, streamline feats
-=======
-            type_features_df.rename(columns={"Compound": "smiles_standardized"}, inplace=True)
->>>>>>> resolved error with combine_first function, _raw_smiles export enabled
-=======
-            outdf.rename(columns={"Compound": "smiles_standardized"}, inplace=True)
->>>>>>> readability, streamline feats
             outdf = pd.concat([outdf,
                                type_features_df], axis=1)
 
