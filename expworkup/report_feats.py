@@ -28,11 +28,6 @@ def get_features(unique_types, experiment_inchi_df):
         which contains all unique combinations of expUID+inchikeys 
         along with associated type list for each
 
-    target_name : name of the working data directory
-        used for report logs 
-
-    log_folder : folder location to stores logs 
-    
     Returns
     -------
     type_feat_dict : dict of pd.DataFrames containing features
