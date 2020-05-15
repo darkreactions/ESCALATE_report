@@ -6,6 +6,10 @@ from runme import parse_args
 from tests.conftest import ARGS_LIST
 from expworkup.createjson import parse_observation_interface, parse_preparation_interface, download_experiment_directories
 from utils.file_handling import get_interface_filename, get_experimental_run_lab
+from utils.globals import (
+    set_log_folder, set_target_folder_name, set_offline_folder,
+    get_target_folder, get_log_folder, get_offline_folder
+)
 
 """
 Notes on these tests
