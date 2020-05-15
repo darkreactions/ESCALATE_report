@@ -86,15 +86,7 @@ def get_remote_data(datasets, offline_toggle):
                 chemicaldf.to_csv(f'{get_offline_folder()}/{name}_INVENTORY.csv')
     if offline_toggle == 2:
         chemdf_dict = {}
-<<<<<<< HEAD
-<<<<<<< HEAD
-        (_, _, offline_files) = next(os.walk(offline_folder))
-=======
         (_, _, offline_files) = next(os.walk(get_offline_folder()))
->>>>>>> readability, streamline feats
-=======
-        (_, _, offline_files) = next(os.walk(get_offline_folder()))
->>>>>>> readability, streamline feats
         inventory_files = [x for x in offline_files if 'INVENTORY' in x]
         for inventory in inventory_files:
             inventory_name = inventory.rsplit('_', 1)[0] #ex MIT_PVLab_INVENTORY.csv to MIT_PVLab
@@ -271,7 +263,11 @@ def main_pipeline(args):
 #                                          args.raw)
 #
 #    escalate_final_df.to_csv(f'{get_target_folder()}.csv')
+<<<<<<< HEAD
 >>>>>>> readability, streamline feats
+=======
+>>>>>>> d592d6d8d501694e1e0249bd2eb33e3a58f81884
+>>>>>>> c552e3c3ebf9c673ab70ff3be11bb83200448828
 
     # Additional variations on dataframe export (for escalation / versioned data repo)
     if ('state' in vars(args)):
