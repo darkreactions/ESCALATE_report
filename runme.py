@@ -279,18 +279,18 @@ def parse_args(args):
     ---------
     Parser : argparse arguments in parsed format (namespaced, callable)
     """
+    possible_targets = [x for x in devconfig.workup_targets.keys()]
     parser = ap.ArgumentParser(description='Compile 2d version of specified dataset while saving online files to target folder')
     parser.add_argument('local_directory', type=str,
                         help='Please include target folder')
     parser.add_argument('-d',
                         type=str,
                         nargs='+',
-                        choices=[dataset for dataset in devconfig.workup_targets.keys()],
-                        help="Please specify one or more supported datasets from the options \
-                              listed. The dataset(s) require the correct credentials to access.\
-                              ||default = 4-Data-Iodides||",
-                        default='4-Data-Iodides'
-                        )
+                        choices=possible_targets,
+                        metavar='DATASET',
+                        help="Select one or more from the following datasets: %s \
+                              The dataset(s) require the correct credentials to access.\
+                              ||default = 4-Data-Iodides||" %possible_targets)
     parser.add_argument('--raw', type=bool, default=False, choices=[True, False],
                         help='final dataframe is printed with all raw values\
                         included ||default = 1||')
