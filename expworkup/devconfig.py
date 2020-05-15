@@ -1,6 +1,7 @@
 import platform
 import os
 import sys
+from pathlib import Path
 
 cwd = os.getcwd()
 #######################################
@@ -143,10 +144,12 @@ workup_targets = {
         }
 }
 
+
 #######################################
-# Wolfram Kernel Management
+######### KERNAL MANAGEMENT ###########
+#######################################
 
-
+### WOLFRAM KERNEL MANAGEMENT ###
 # first check that system is supported: do one thing at a time
 system = platform.system()
 if system not in ['Linux', 'Darwin', 'Windows']:
@@ -160,7 +163,6 @@ wolfram_kernel_path = None # ensure the value can be imported on all computers.
 if sampler == 'wolfram': 
     if system == "Linux":
         wolfram_kernel_path = None
-        from pathlib import Path
         # try first path location
         wolfram_kernel = Path('/usr/local/Wolfram/WolframEngine/12.0/Executables/WolframKernel')
         if wolfram_kernel.is_file():
@@ -176,8 +178,22 @@ if sampler == 'wolfram':
 # Mac or Windows
 elif system == "Darwin" or system == 'Windows':
     wolfram_kernel_path = None
+### END WOLFRAM ###
 
-###################################
-#Chemdescriptor management
-os.environ['CXCALC_PATH'] = '/Applications/JChemSuite/bin/'
-os.environ['STANDARDIZE_PATH'] = '/Applications/JChemSuite/bin/'
+### CHEMDESCRIPTOR KERNALS ### 
+# These should point to the JChemSuite/bin!
+CXCALC_PATH = '/Applications/JChemSuite/bin/'
+
+CALC_POSSIBLE = False
+STANDARDIZE_POSSIBLE = False
+
+cxcalc_path = Path(CXCALC_PATH)
+if cxcalc_path.joinpath('cxcalc').is_file():
+    CALC_POSSIBLE = True
+if cxcalc_path.joinpath('standardize').is_file():
+    STANDARDIZE_POSSIBLE = True
+
+os.environ['CXCALC_PATH'] = CXCALC_PATH
+os.environ['STANDARDIZE_PATH'] = CXCALC_PATH
+
+### END CHEMDESCRIPTOR ###
