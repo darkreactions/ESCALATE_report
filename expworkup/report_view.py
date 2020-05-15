@@ -150,6 +150,7 @@ def runuid_feat_merge(sumbytype_byinstance_molarity_df, inchi_key_indexed_featur
         bulk_features = bulk_features[bulk_features['types'].str.contains(pat=f'(?:^|\W){chemical_type}(?:$|\W)', regex=True)]
         #Drop anycolumns which are not full (likely due to specifying multiple types)
         bulk_features.dropna(axis=1, how='any', inplace=True)
+
         #Rename columns to fit with ESCALATE naming scheme (Brute force, not elegant)
         column_rename = {}
         drop_list = []
@@ -159,11 +160,17 @@ def runuid_feat_merge(sumbytype_byinstance_molarity_df, inchi_key_indexed_featur
                 column_rename[column] = column
                 drop_list.append(column)
             elif 'feat' in column:
-                newcolumnname = column.split('_', 2)[2]
+                newcolumnname = column.split('_', 2)[2] # _feat_asavdwp to asavdwp
                 column_rename[column] = newcolumnname
-        bulk_features.rename(columns=column_rename, inplace=True)
+        raw_features_df = bulk_features.loc[:,drop_list]
+        raw_features_df = raw_features_df.add_prefix(f'_raw_{feature_prefix}_')
+
         bulk_features.drop(drop_list, inplace=True, axis=1)
+        bulk_features.rename(columns=column_rename, inplace=True)
         bulk_features = bulk_features.add_prefix(f'_feat_{feature_prefix}_')
+
+        bulk_features = bulk_features.join(raw_features_df, on='inchikeys')
+
         chemical_type_inchi = chemical_type_inchi.join(bulk_features, on=type_inchi_col, rsuffix='DROPME_AFTER_MERGE')
     chemical_type_inchi.dropna(axis=1, how='all', inplace=True)
     final_drop_list = chemical_type_inchi.filter(regex='DROPME_AFTER_MERGE').columns
