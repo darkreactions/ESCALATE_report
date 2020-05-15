@@ -79,9 +79,9 @@ Please report any failures of the above message to the repo admins
 
 2. Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the root folder (`./`, aka. current working directory, aka. `ESCALATE_report-master/` if downloaded from git).  The correct folder for these keys is the one which contains the runme.py script.
 
-3. Stop here if you don't want to use the automated feature generation. You can specify the simple workup from google by executing: 
-
-   `python runme.py <my_local_folder> -d <google_drive_target_name> --simple 1` 
+3. Stop here if you don't want to use ChemAxon for feature generation. Rdkit and the available ESCALATE features will still be generated. 
+   
+   * Note: ESCALATE will throw warnings if chemaxon features are implemented in  `type_command.csv`, these can be ignored if that is the desired functionality
 
 #### Optional for ChemAxon Support
 4. Download and [install ChemAxon JChemSuite](https://chemaxon.com/products/jchem-engines) and obtain a [ChemAxon License Free for academic use](https://academia.chemaxon.com/)
@@ -114,10 +114,6 @@ __Definitions__
 1. You can always get runtime information by executing:
 
     `python runme.py --help`
-
-1. To execute a simple run with no data augmentation:
-   
-   `python runme.py <my_local_folder> -d <google_drive_target_name> --simple 1` 
 
 2. To execute a normal run with chemaxon, rdkit, and ESCALATE calcs (see installation instructions above for more details)
 

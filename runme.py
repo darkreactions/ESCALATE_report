@@ -206,18 +206,6 @@ def main_pipeline(args):
             inventory_name = f'REPORT_{name.upper()}_INVENTORY.csv'
             write_debug_file(chemicaldf, inventory_name)
 
-    if args.simple:
-        report_df.to_csv(f'{get_target_folder()}.csv')
-        if args.offline == 0: 
-            os.remove('./mycred.txt') #cleanup automatic authorization
-        modlog.info(f'Simple Export Enabled: No dataset augmentation will occur!')
-        print(f'Simple Export Enabled: No dataset augmentation will occur!')
-        print(f'Simple Export Enabled: (3/3 steps were completed)')
-        modlog.info(f'Clean Exit: {get_target_folder()}.csv was generated')
-        print(f'Clean Exit: {get_target_folder()}.csv was generated')
-        import sys
-        sys.exit()
-
     # Perform feature calculations / gather physicochemical descriptors
     compound_ingredient_objects_df = ingredient_pipeline(report_df,
                                                          chemdf_dict,
@@ -304,9 +292,6 @@ def parse_args(args):
     parser.add_argument('--state', type=str,
                         help='title of state set file to be used at the state set for \
                         this iteration of the challenge problem, no entry will result in no processing')
-    parser.add_argument('--simple', type=bool, default=False, choices=[True, False],
-                        help="setting to 'True' will disable reagent processing, feature augmentation,\
-                              and calculations.  The code will still export a simple report dataframe." )
     parser.add_argument('--debug', type=bool, default=False, choices=[True, False],
                         help="exports all dataframe intermediates prefixed with 'REPORT_'\
                         csvfiles with default names")
