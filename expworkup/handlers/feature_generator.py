@@ -194,7 +194,7 @@ class OneTypeFeatures():
                                   cxcalc_command_dict,
                                   cxcalcstd_command_dict,
                                   rdkit_command_dict):
-        """
+        """Handles the offloading of feature calculations 
         """
         if cxcalc_command_dict is not None:
             if CALC_POSSIBLE:
