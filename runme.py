@@ -222,9 +222,9 @@ def main_pipeline(args):
         sys.exit()
 
     # Perform feature calculations / gather physicochemical descriptors
-    compound_ingredient_objects_df = ingredient_pipeline(report_df,
-                                                         chemdf_dict,
-                                                         args.debug)
+#    compound_ingredient_objects_df = ingredient_pipeline(report_df,
+#                                                         chemdf_dict,
+#                                                         args.debug)
 
     runUID_inchi_file,\
         inchi_key_indexed_features_df= feat_pipeline(get_target_folder(),
@@ -233,6 +233,7 @@ def main_pipeline(args):
                                                      args.debug,
                                                      get_log_folder())
 
+<<<<<<< HEAD
     calc_out_df = calc_pipeline(report_df,
                                 compound_ingredient_objects_df,
                                 chemdf_dict,
@@ -249,6 +250,23 @@ def main_pipeline(args):
                                           args.raw)
 
     escalate_final_df.to_csv(f'{get_target_folder()}.csv')
+=======
+#    calc_out_df = calc_pipeline(report_df,
+#                                compound_ingredient_objects_df,
+#                                chemdf_dict,
+#                                args.debug) 
+#    #calc_out_df.to_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
+#    #calc_out_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
+#
+#    # Export dataframe
+#    escalate_final_df = construct_2d_view(report_df,
+#                                          calc_out_df,
+#                                          inchi_key_indexed_features_df, 
+#                                          args.debug,
+#                                          args.raw)
+#
+#    escalate_final_df.to_csv(f'{get_target_folder()}.csv')
+>>>>>>> d592d6d8d501694e1e0249bd2eb33e3a58f81884
 
     # Additional variations on dataframe export (for escalation / versioned data repo)
     if ('state' in vars(args)):
