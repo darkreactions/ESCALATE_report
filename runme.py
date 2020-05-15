@@ -86,27 +86,7 @@ def get_remote_data(datasets, offline_toggle):
                 chemicaldf.to_csv(f'{get_offline_folder()}/{name}_INVENTORY.csv')
     if offline_toggle == 2:
         chemdf_dict = {}
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
         (_, _, offline_files) = next(os.walk(get_offline_folder()))
-=======
-=======
->>>>>>> readability, streamline feats
-<<<<<<< HEAD
-        (_, _, offline_files) = next(os.walk(offline_folder))
-=======
-        (_, _, offline_files) = next(os.walk(get_offline_folder()))
->>>>>>> readability, streamline feats
-<<<<<<< HEAD
-=======
-=======
-        (_, _, offline_files) = next(os.walk(get_offline_folder()))
->>>>>>> readability, streamline feats
->>>>>>> readability, streamline feats
-=======
-        (_, _, offline_files) = next(os.walk(get_offline_folder()))
->>>>>>> readability, streamline feats
         inventory_files = [x for x in offline_files if 'INVENTORY' in x]
         for inventory in inventory_files:
             inventory_name = inventory.rsplit('_', 1)[0] #ex MIT_PVLab_INVENTORY.csv to MIT_PVLab
