@@ -33,9 +33,11 @@ Installation
 ### Initial Setup
 #### Pip Install
 
-1. Create new python 3.8 environment in conda: `conda create -n escalate python=3.8`
+1. Create new python 3.8 environment in conda and activate: 
 
-2. `conda activate escalate_report`
+   `conda create -n escalate_report python=3.8`
+
+   `conda activate escalate_report`
 
 3. Install the latest version of the pip package manager
 
@@ -53,6 +55,8 @@ Installation
 
 1. Execute:
 
+   `conda update conda`
+
    `conda env create -f environment.yml`
 
    The `conda env create` command will automatically create an escalate_report environment
@@ -69,19 +73,20 @@ Please report any failures of the above message to the repo admins
 
 ### Authentication Setup
    
-1. Download the [securekey files](https://www.youtube.com/watch?v=oHg5SJYRHA0) and move them into the expworkup/creds/ folder. Do not distribute these keys! (Contact a dev for access)
+1. Download the [securekey files](https://www.youtube.com/watch?v=oHg5SJYRHA0) and move them into the root folder (`./`, aka. current working directory, aka. `ESCALATE_report-master/` if downloaded from git). Do not distribute these keys! (Contact a dev for access)
 
    Note: If setting up a new lab see [here](https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:--ONBOARDING-LABS:--Capture-and-Report)
 
-2. Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the main directory (directly in ESCALATE_report)
+2. Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the root folder (`./`, aka. current working directory, aka. `ESCALATE_report-master/` if downloaded from git).  The correct folder for these keys is the one which contains the runme.py script.
 
 3. Stop here if you don't want to use the automated feature generation. You can specify the simple workup from google by executing: 
 
    `python runme.py <my_local_folder> -d <google_drive_target_name> --simple 1` 
 
+#### Optional for ChemAxon Support
 4. Download and [install ChemAxon JChemSuite](https://chemaxon.com/products/jchem-engines) and obtain a [ChemAxon License Free for academic use](https://academia.chemaxon.com/)
 
-5. You will need to specify the location of your chemaxon installation locations in `./expworkup/devconfig.py` at the bottom of the file
+5. You will need to specify the location of your chemaxon installation locations in `./expworkup/devconfig.py` at the bottom of the file. 
 
 
  
@@ -94,6 +99,13 @@ Currently supported `google_drive_target_name` (user defined folder names):
 
 ## Basic Overview
 A more detailed instruction manual including videos overviewing how to operated the code can be found in the [ESCALATE user manual](https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit?usp=sharing)
+
+__Definitions__
+
+`<my_local_folder>`: is the name of the folder where files should be created.  _This will be automatically created by ESCALATE_report if it does not exist._  The specified name will also be used as the final exported csv (i.e. if <my_local_folder> is perovskitedata, perovskitedata.csv will be generate)
+
+`<google_drive_target_name>`: one or more of the available datasets. see examples below
+
 
 1. You can always get runtime information by executing:
 
@@ -147,6 +159,17 @@ More detailed instructions can be found in the [ESCALATE user manual](https://do
 2. `python runmy.py <my_local_folder> -d <google_drive_target_name> -v <crank-number> -s <state-set_file_name.csv>`
 
 3. Follow 5-6 above
+
+Example Useage
+==============
+
+* `python runme.py 4-Data-Iodides -d 4-Data-Iodides`
+
+* `python runme.py 4-Data-Iodides -d 4-Data-Iodides 4-Data-WF3_Iodide 4-Data-WF3_Alloying`
+
+* `python runme.py dev -d dev --debug 1 --raw 1 --offline 1`
+
+* `python runme.py perovskitedata -d 4-Data-Iodides --verdata 0111 --state example.csv`
 
 FAQs, Trouble Shooting, and Tutorials
 ======================
