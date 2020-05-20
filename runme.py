@@ -15,7 +15,7 @@ from expworkup.report_view import construct_2d_view
 from expworkup.createjson import download_experiment_directories
 from expworkup.createjson import inventory_assembly
 from expworkup.ingredients.pipeline import ingredient_pipeline
-from expworkup.report_calcs import calc_pipeline
+from expworkup.report_calcs import ratio_pipeline, calc_pipeline
 from expworkup.report_feats import feat_pipeline
 from expworkup import devconfig
 from expworkup import googleio
@@ -27,7 +27,7 @@ from utils.globals import (
     get_target_folder, get_log_folder, get_offline_folder
 )
 
-__version__ = 1.0 #should match latest HISTORY.md entry
+__version__ = 1.1 #should match latest HISTORY.md entry
 
 def initialize(args):
     ''' Refreshes working environment - logs initialization
@@ -211,25 +211,33 @@ def main_pipeline(args):
                                                          chemdf_dict,
                                                          args.debug)
 
-    runUID_inchi_file,\
-        inchi_key_indexed_features_df= feat_pipeline(get_target_folder(),
-                                                     report_df,
-                                                     chemdf_dict,
-                                                     args.debug,
-                                                     get_log_folder())
+    inchi_key_indexed_features_df = feat_pipeline(report_df,
+                                                  chemdf_dict,
+                                                  args.debug)
 
-    calc_out_df = calc_pipeline(report_df,
-                                compound_ingredient_objects_df,
-                                chemdf_dict,
-                                args.debug) 
+    amounts_df,\
+        ratios_df = ratio_pipeline(report_df,
+                                   compound_ingredient_objects_df,
+                                   chemdf_dict,
+                                   args.debug) 
 
-    #calc_out_df.to_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
-    #calc_out_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
+    #calc_out_df.to_csv(f'./{get_offline_folder()}/REPORT_CALCOUT.csv')
+    #calc_out_df = pd.read_csv(f'./{get_offline_folder()}/REPORT_CALCOUT.csv')
+    if not args.disablecalcs:
+        calcs_df = calc_pipeline(report_df,
+                                 amounts_df,
+                                 ratios_df,
+                                 inchi_key_indexed_features_df,
+                                 args.debug)
+    else:
+        calcs_df = pd.DataFrame()
 
     # Export dataframe
     escalate_final_df = construct_2d_view(report_df,
-                                          calc_out_df,
+                                          amounts_df,
                                           inchi_key_indexed_features_df, 
+                                          ratios_df,
+                                          calcs_df,
                                           args.debug,
                                           args.raw)
 
@@ -283,6 +291,8 @@ def parse_args(args):
     parser.add_argument('--raw', type=bool, default=False, choices=[True, False],
                         help='final dataframe is printed with all raw values\
                         included ||default = 1||')
+    parser.add_argument('--disablecalcs', type=bool, default=False, choices=[True, False],
+                        help='if true, diasables escalate calculations (calc_command.json)')
     parser.add_argument('--verdata', type=str, 
                         help='Enter numerical value such as "0001". Generates <0001>.perovskitedata.csv output\
                         in a form ready for upload to the versioned data repo ||default = None||')

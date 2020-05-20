@@ -1,0 +1,11 @@
+{
+    "working example" : {
+        "command" : "a + b",
+        "variable_names": {
+            "a" : "_rxn_molarity_acid",
+            "b" : "_rxn_molarity_acid"
+        },
+        "description" : "example of a simple function (no commas!)", 
+        "fill_value" : 0 
+    }
+}

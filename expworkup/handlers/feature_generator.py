@@ -6,7 +6,9 @@ from chemdescriptor.generator.chemaxon import ChemAxonDescriptorGenerator as cag
 from chemdescriptor.generator.rdkit import RDKitDescriptorGenerator as rdg
 
 from utils.globals import get_offline_folder, get_target_folder, get_log_folder
+from utils.file_handling import get_command_dict
 from expworkup.devconfig import CALC_POSSIBLE, STANDARDIZE_POSSIBLE, CXCALC_PATH 
+from expworkup.external_repositories.feat_hansen import get_hansen_triples
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
@@ -24,88 +26,21 @@ class OneTypeFeatures():
                  one_type,
                  onetype_feature_identity_dict):
         self.one_type = one_type
-        self.type_command_df = pd.read_csv('./type_command.csv')
         self.smiles_list = onetype_feature_identity_dict['smiles'].values.tolist()
-        self.cxcalc_command_dict = self.get_command_dict(self.type_command_df,
-                                                         self.one_type,
-                                                         'cxcalc')
-        self.cxcalcstd_command_dict = self.get_command_dict(self.type_command_df,
-                                                            self.one_type,
-                                                            'cxcalc_std')
-        self.rdkit_command_dict = self.get_command_dict(self.type_command_df,
-                                                        one_type,
-                                                        'RDKit')
+        self.inchi_list = onetype_feature_identity_dict['inchikeys'].values.tolist()
+        self.cxcalc_command_dict = get_command_dict(self.one_type,
+                                                    'cxcalc')
+        self.cxcalcstd_command_dict = get_command_dict(self.one_type,
+                                                       'cxcalc_std')
+        self.rdkit_command_dict = get_command_dict(one_type,
+                                                   'RDKit')
+        self.escalate_command_dict = get_command_dict(one_type,
+                                                      'EscalateFeats')
         self.featured_df = self.generate_onetype_features(onetype_feature_identity_dict,
                                                           self.cxcalc_command_dict,
                                                           self.cxcalcstd_command_dict,
-                                                          self.rdkit_command_dict)
-
-    def get_command_dict(self, command_type_df, one_type, application):
-        """Converts expworkup.type_command.csv to dict for chemdescriptor
-
-        Parameters
-        ----------
-        command_type_df : pd.DataFrame generated from type_command.csv
-
-        one_type : defines which chemical type to target
-            should match an entry in command_types_df 'types' column 
-    
-        application : defines the application being targeted by caller
-            will only return rows where actor_systemtool_name matches 
-            specified application
-
-        Returns
-        -------
-        default_command_dict : structure shown below
-            default_command_dict = {
-            "descriptors": {
-                "acceptorcount": {
-                    "command": [
-                        "acceptorcount"
-                    ],
-                    "column_names": [
-                        "_feat_acceptorcount"
-                    ]
-                },...
-            ""ph_descriptors": {
-                "molsurfaceareaASAp": {
-                    "command": [
-                        "molecularsurfacearea",
-                        "-t",
-                        "ASA+"
-                    ],
-                    "column_names": [
-                        "_feat_molsurfaceareaASAp"
-                    ]
-                },...
-
-        Notes
-        -----
-         * https://github.com/darkreactions/chemdescriptor
-         * 'descriptors' must be specified fully (including flags where needed)
-         * 'ph_descriptors' are those which have -H option, can use to simplify return
-        """
-        commands_df = command_type_df[(command_type_df['input'] == one_type) &  \
-                                      (command_type_df['actor_systemtool_name'] == application)]
-        my_descriptor_dict = {}
-        for command in commands_df.itertuples():
-                column_name = f'_feat_{command.short_name}'
-                my_descriptor_dict[command.short_name] = {}
-
-                # 'space' (i.e, ' ') removal
-                templist = command.calc_definition.split(' ')
-                str_list = list(filter(None, templist))
-                my_descriptor_dict[command.short_name]["command"] = str_list
-
-                my_descriptor_dict[command.short_name]["column_names"] = [column_name]
-
-        command_dict = {}
-        command_dict['descriptors'] = my_descriptor_dict
-        command_dict['ph_descriptors'] = {} # possibly useful, see chemdescriptor for more details
-        if len(command_dict['descriptors'].keys()) == 0:
-            return None
-        else:
-            return(command_dict)
+                                                          self.rdkit_command_dict,
+                                                          self.escalate_command_dict)
 
     def cxcalc_handler(self,
                        cxcalc_command_dict,
@@ -118,10 +53,19 @@ class OneTypeFeatures():
 
         Parameters
         ----------
+        cxcalc_command_dict : dict, see structure in 'get_command_dict' func
+
+        smiles_list : list of smiles string to be used to generate features
+
+        one_type : label of the chemical type of features
+            can be any string, used to label error messages
+
+        standardize_bool : bool, standardize smiles in smiles_list?
+            standardize flag to be passed to chemdescriptor chemaxon function
 
         Returns
         -------
-
+        type_features_df : pandas.DataFrame, smiles with generated features 
         """
         try:
             calc_features = cag(smiles_list,
@@ -164,7 +108,21 @@ class OneTypeFeatures():
                       rdkit_command_dict, 
                       one_type,
                       smiles_list):
-        """
+        """ Wrap chemdescriptor rdkit_handler function for interaction with ESCALATE and type_command.csv 
+        Includes more robust error reporting for header renaming (short_name from type_command.csv)
+
+        Parameters
+        ----------
+        rdkit_command_dict : dict, see structure in 'get_command_dict' func
+
+        smiles_list : list of smiles string to be used to generate features
+
+        one_type : label of the chemical type of features
+            can be any string, used to label error message
+
+        Returns
+        -------
+        type_features_df : pandas.DataFrame, smiles with generated features
         """
         try:
             rdkit_features = rdg(smiles_list,
@@ -188,13 +146,63 @@ class OneTypeFeatures():
 
         # Drop duplicate columns on join
         return type_features_df
+    
+    def escalatefeat_handler(self,
+                             escalate_command_dict,
+                             one_type,
+                             inchi_list):
+        """One by one handling of local features
+
+        The pipelines in this function could effectively be any table of data
+        deliniated by inchikey.  Once enough examples are present in the
+        'external_repositories' this function can be generalized.  Only one for now
+
+        Parameters
+        ----------
+        
+        escalate_command_dict : dict, see structure in 'get_command_dict' func
+
+        one_type : label of the chemical type of features
+            can be any string, used to label error message
+
+        smiles_list : list of inchi strings to be used to generate features
+        
+        Returns
+        -------
+        type_features_df : pandas.DataFrame, smiles with generated features       
+        """
+        escalate_descriptors = escalate_command_dict['descriptors']
+        type_features_df = get_hansen_triples(inchi_list,
+                                              escalate_descriptors['hansentriple'])
+
+        return type_features_df
+
 
     def generate_onetype_features(self,
                                   outdf,
                                   cxcalc_command_dict,
                                   cxcalcstd_command_dict,
-                                  rdkit_command_dict):
+                                  rdkit_command_dict,
+                                  escalate_command_dict):
         """Handles the offloading of feature calculations 
+
+        Parameters
+        ----------
+        outdf : pandas.DataFrame, aka onetype_feature_identity_dict
+            input dataframe to OneTypeFeatures containing inchikey, smiles information
+
+        cxcalc_command_dict : dict, see structure in 'get_command_dict' func
+
+        cxcalcstd_command_dict : dict, see structure in 'get_command_dict' func
+
+        rdkit_command_dict : dict, see structure in 'get_command_dict' func
+
+        escalate_command_dict : dict, see structure in 'get_command_dict' func
+
+        Returns
+        -------
+        outdf : pandas.DataFrame, all features for chemicals in one_type
+            indexed on 'inchikeys', columns CANNOT be dtype=pandas.DataFrame
         """
         if cxcalc_command_dict is not None:
             if CALC_POSSIBLE:
@@ -227,6 +235,13 @@ class OneTypeFeatures():
                                                   self.smiles_list)
             type_features_df = \
                 type_features_df.loc[:,~type_features_df.columns.duplicated()]
+            outdf = pd.concat([outdf, 
+                               type_features_df], axis=1)
+        
+        if escalate_command_dict is not None:
+            type_features_df = self.escalatefeat_handler(escalate_command_dict,
+                                                        self.one_type,
+                                                        self.inchi_list)
             outdf = pd.concat([outdf, 
                                type_features_df], axis=1)
 

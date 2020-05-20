@@ -42,14 +42,15 @@ def cleaner(clean_df, raw_bool_cli):
     raw_df = clean_df.filter(like='_raw_')
     feat_df = clean_df.filter(like='_feat_') 
     out_df = clean_df.filter(like='_out_') 
+    calc_df = clean_df.filter(like='_calc_') 
     proto_df = clean_df.filter(like='_prototype_')
 
     if raw_bool_cli == 1:
         squeaky_clean_df = clean_df
     else:
-        squeaky_clean_df = pd.concat([out_df, rxn_df,
-                                      feat_df, raw_df,
-                                      proto_df],
+        squeaky_clean_df = pd.concat([out_df, rxn_df, 
+                                      calc_df, feat_df,
+                                      raw_df, proto_df],
                                       axis=1)
 
     squeaky_clean_df.columns = map(str.lower, squeaky_clean_df.columns)

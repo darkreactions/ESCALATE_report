@@ -30,4 +30,4 @@ __pycache__/
 idea/*
 !tests/devreport_20200511.csv
 *.smi
-
+!calc_command.json
