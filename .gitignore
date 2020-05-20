@@ -29,5 +29,7 @@ __pycache__/
 !conda_requirements.txt
 idea/*
 !tests/devreport_20200511.csv
+!expworkup/external_repositories/*.csv
+!expworkup/external_repositories/*.json
 *.smi
 !calc_command.json
