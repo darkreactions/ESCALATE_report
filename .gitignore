@@ -33,3 +33,4 @@ idea/*
 !expworkup/external_repositories/*.json
 *.smi
 !calc_command.json
+!tests/calc_command_testing.json
