@@ -3,7 +3,7 @@ import re
 import pandas as pd
 
 from expworkup.devconfig import valid_input_files, workup_targets, lab_vars
-from utils.globals import get_debug_header
+from utils.globals import get_debug_header, get_debug_simple
 
 def get_interface_filename(interface_type, working_directory, runID):
     """ Searches for filename match and returns instance
@@ -51,13 +51,16 @@ def get_experimental_run_lab(run_filename):
 
     raise RuntimeError(f'{run_filename} does not specify a supported lab')
 
-def write_debug_file(df, filename):
+def write_debug_file(df, filename, write_index=True):
     if os.path.isfile(filename):
         os.remove(filename)
     f = open(filename, 'a')
-    f.write(get_debug_header())
-    df.to_csv(f)
-    f.write(get_debug_header())
+    if not get_debug_simple():
+        f.write(get_debug_header())
+        df.to_csv(f, index=write_index)
+        f.write(get_debug_header())
+    else:
+        df.to_csv(f, index=write_index)
     f.close()
 
 

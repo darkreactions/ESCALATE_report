@@ -168,7 +168,12 @@ def evaluation_pipeline(all_targets, debug_bool):
                 if description == 'null':
                     modlog.info(f'For {entry_name}, "description" was set to a default of "null"')
 
-                value_column = all_targets.apply(lambda x: df_simple_eval(command, variables, x), axis=1)
+                try:
+                    value_column = all_targets.apply(lambda x: df_simple_eval(command, variables, x), axis=1)
+                except SyntaxError:
+                    modlog.warn(f'For "{entry_name}", simpleeval failed to resolve the specified command, please check specification, or debug code!')        
+                    warnlog.warn(f'For "{entry_name}", simpleeval failed to resolve the specified command, please check specification, or debug code!')        
+                    value_column = pd.Series([np.nan]*len(all_targets), index=all_targets.index)
 
                 value_column.rename(header_name, inplace=True)
                 value_column.fillna(value=fill_value, inplace=True)

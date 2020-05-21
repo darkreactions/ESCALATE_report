@@ -4,7 +4,6 @@
     "comment3" : "if no grouping exists for a specified dataset, code will target 'default'",
     "comment4" : "if a column does not have a suitable prefix it will be ommitted from the dataset",
     "comment5" : "all columns (including undefined) can be viewed by toggling 'raw' from the command line",
-    "comment6" : "THIS RENAME WILL BE APPLIED TWICE, once immediately after generatign report, and again after all other functions",
     "default" : {
         "columns" : {}
     },

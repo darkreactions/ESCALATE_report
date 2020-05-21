@@ -45,7 +45,7 @@ def cleaner(clean_df, raw_bool_cli):
     calc_df = clean_df.filter(like='_calc_') 
     proto_df = clean_df.filter(like='_prototype_')
 
-    if raw_bool_cli == 1:
+    if raw_bool_cli:
         squeaky_clean_df = clean_df
     else:
         squeaky_clean_df = pd.concat([out_df, rxn_df, 

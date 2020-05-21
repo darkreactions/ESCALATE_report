@@ -23,6 +23,8 @@ LOG_DIRECTORY = None
 LOG_DIRECTORY_SET = False
 OFFLINE_FOLDER = None
 OFFLINE_FOLDER_SET = False
+DEBUG_SIMPLE = None
+DEBUG_SIMPLE_SET = False
 
 _DEBUG_HEADER = None
 _DEBUG_SET = False
@@ -131,4 +133,18 @@ def get_offline_folder():
         modlog.error('get_offline_folder called before set_offline_folder')
         sys.exit(1)
     return OFFLINE_FOLDER
+
+def set_debug_simple(debug_simple_arg):
+    global DEBUG_SIMPLE, DEBUG_SIMPLE_SET
+    if DEBUG_SIMPLE_SET:
+        modlog.error('dev tried to set simple debug more than once!')
+        sys.exit(1)
+    DEBUG_SIMPLE = debug_simple_arg
+    DEBUG_SIMPLE_SET = True
+
+def get_debug_simple():
+    if DEBUG_SIMPLE is None:
+        modlog.error('get_debug_simple called before set_debug_simple')
+        sys.exit(1)
+    return DEBUG_SIMPLE
 

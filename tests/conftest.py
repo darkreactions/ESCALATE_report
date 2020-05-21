@@ -17,7 +17,7 @@ from utils.globals import (
 
 global TEST_TARGET
 global ARGS_LIST
-TEST_TARGET = 'tests/devreport_20200511.csv'
+TEST_TARGET = 'tests/devreport_20200521.csv'
 ARGS_LIST = ['testing', '-d', 'dev', '--raw', '1']
 
 @pytest.fixture(scope='module')
