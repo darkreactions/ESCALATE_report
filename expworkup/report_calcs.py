@@ -182,7 +182,7 @@ def molarity_ratios_pipeline(calc_ready_df,
         sumbytype_molarity_df = res.groupby(level=0).sum() 
         sumbytype_molarity_df_cleaned = sumbytype_molarity_df.add_suffix('_molarity') #ensures correct name downstream
         ratios_sumbytype_molarity_df = all_ratios(sumbytype_molarity_df_cleaned,
-                                                  fill_value)
+                                                  fill_value, '_calc_ratio_')
         outdf = pd.concat([outdf, ratios_sumbytype_molarity_df], axis=1)
 
     # Get ratios of all unique instances of each type
@@ -197,7 +197,7 @@ def molarity_ratios_pipeline(calc_ready_df,
         # Permute across columns
         ratios_sumbytype_byinstance_molarity_df = \
             all_ratios(sumbytype_byinstance_molarity_df_cleaned,
-                       fill_value)
+                       fill_value, '_calc_ratiobytype_')
         outdf = pd.concat([outdf, ratios_sumbytype_byinstance_molarity_df], axis=1)
     return outdf
 

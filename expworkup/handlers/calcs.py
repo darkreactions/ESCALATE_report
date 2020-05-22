@@ -49,7 +49,7 @@ def get_mmol_df(reagent_volumes_df,
     modlog.info("Completed: 'mmol calculations and df creation'")
     return mmol_df
 
-def all_ratios(df, fill_value):
+def all_ratios(df, fill_value, prefix):
     """will calculate the ratio for each pairing of columns in df
         AB and BA for all
 
@@ -77,7 +77,7 @@ def all_ratios(df, fill_value):
     df2.columns = df2.columns.map('_'.join)
 
     # Cleanup column headers
-    df2 = df2.add_prefix('_calc_ratio_')
+    df2 = df2.add_prefix(prefix)
 
     # Cleanup infinities and blanks
     df2 = df2.replace([np.inf, -np.inf, np.nan], fill_value)
