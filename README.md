@@ -122,6 +122,8 @@ __Definitions__
 4. __Columns that do not conform to the `_{category}_` (e.g., `_feat_`, `_rxn_`) will be omitted unless `--raw 1` is enabled!__ 
    * A list of the columns not conforming to the naming scheme will be exported to 'UNAMED_REPORT_COLUMNS.txt'.  
    * The USER can specify an appropriate name in dataset_rename.json
+   * To see all columns with naming directly from datasource use: `--raw 1`
+   * __Conflicting namespaces will be purged!__
 
 4. Significant flexibility is enabled for `_feat_` (via, type_command.csv) and `_calc_` (via, calc_command.json) specification.  [For examples, discussion, and limitations of these specifications please see the USER docs.](https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit#bookmark=id.1shd7vj8nkv8)
    * `_calc_` generation can be skipped by using the `--disablecalcs True` flag on the CLI
