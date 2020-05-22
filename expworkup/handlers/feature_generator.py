@@ -170,6 +170,12 @@ class OneTypeFeatures():
         Returns
         -------
         type_features_df : pandas.DataFrame, smiles with generated features       
+
+        Notes
+        -------
+        This should call all of the functions requested by escalate, all functions
+        should return a dataframe with named columns (these should possess the `_feat_` prefix)
+        and be indexed on the inchikeys (i.e., no repeating inchikeys). 
         """
         escalate_descriptors = escalate_command_dict['descriptors']
         type_features_df = get_hansen_triples(inchi_list,
