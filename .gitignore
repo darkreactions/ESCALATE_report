@@ -34,3 +34,4 @@ idea/*
 *.smi
 !calc_command.json
 !tests/calc_command_testing.json
+!expworkup/external_repositories/lookup-data/*

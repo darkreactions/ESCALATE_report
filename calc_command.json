@@ -1,11 +1,53 @@
 {
-    "working example" : {
-        "command" : "a + b",
+    "_raw_molfraction_acid" : {
+        "command" : "a / (a + b)",
         "variable_names": {
             "a" : "_rxn_molarity_acid",
-            "b" : "_rxn_molarity_acid"
+            "b" : "_raw_solvent_0_molarity"
         },
-        "description" : "example of a simple function (no commas!)", 
+        "description" : "mol weighted fraction of acid out of acid+solvent", 
+        "fill_value" : 0 
+    },
+    "_raw_molfraction_solvent" : {
+        "command" : "b / (a + b)",
+        "variable_names": {
+            "a" : "_rxn_molarity_acid",
+            "b" : "_raw_solvent_0_molarity"
+        },
+        "description" : "mol weighted fraction of solvent out of acid+solvent", 
+        "fill_value" : 0 
+    },
+    "_calc_weightedhansen_deltad" : {
+        "command" : "(a*b)+(c*d)",
+        "variable_names": {
+            "a" : "_feat_acid_0_hansentriple_deltad_amount",
+            "b" : "_raw_molfraction_acid",
+            "c" : "_feat_solvent_0_hansentriple_deltad_amount",
+            "d" : "_raw_molfraction_solvent"
+        },
+        "description" : "weighted hansen deltad parameter calculated from mol weighted acid and solvent (e.g. [experiment's solvent deltad = acid(deltad)+ solvent(deltad)]", 
+        "fill_value" : 0 
+    },
+    "_calc_weightedhansen_deltah" : {
+        "command" : "(a*b)+(c*d)",
+        "variable_names": {
+            "a" : "_feat_acid_0_hansentriple_deltah_amount",
+            "b" : "_raw_molfraction_acid",
+            "c" : "_feat_solvent_0_hansentriple_deltah_amount",
+            "d" : "_raw_molfraction_solvent"
+        },
+        "description" : "weighted hansen deltah parameter calculated from mol weighted acid and solvent (e.g. [experiment's solvent deltah = acid(deltah)+ solvent(deltah)]", 
+        "fill_value" : 0 
+    },
+    "_calc_weightedhansen_deltap" : {
+        "command" : "(a*b)+(c*d)",
+        "variable_names": {
+            "a" : "_feat_acid_0_hansentriple_deltap_amount",
+            "b" : "_raw_molfraction_acid",
+            "c" : "_feat_solvent_0_hansentriple_deltap_amount",
+            "d" : "_raw_molfraction_solvent"
+        },
+        "description" : "weighted hansen deltap parameter calculated from mol weighted acid and solvent (e.g. [experiment's solvent deltap = acid(deltap)+ solvent(deltap)]", 
         "fill_value" : 0 
     }
 }

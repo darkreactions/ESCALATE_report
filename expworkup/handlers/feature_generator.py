@@ -251,5 +251,9 @@ class OneTypeFeatures():
         except KeyError:
             modlog.warn(f'No features defined for {self.one_type}')
             pass
+        try:
+            outdf.drop('Compound', inplace=True, axis=1)
+        except KeyError:
+            pass
         outdf.set_index('inchikeys', inplace=True)
         return outdf

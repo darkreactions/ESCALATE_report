@@ -55,7 +55,6 @@ refractivity,refractivity ,refractivity calculation,solvent,,ChemAxon,cxcalc,19.
 avgpol,avgpol -H 3.0,average molecular polarizability calculation,solvent,,ChemAxon,cxcalc,19.27.0,
 inorganicmolecularweight,mass,molecular weight of the inorganic,inorganic,,ChemAxon,cxcalc,19.27.0,
 fr_halogen,fr_halogen,number of halogens,inorganic,,RDKit open source software,RDKit,19.03.4,
-_feat_numvalenceelectrons,NumValenceElectrons,The number of valence electrons the molecule has,inorganic,,RDKit open source software,RDKit,19.03.4,
 fr_imine,fr_Imine,number of imines,organic,,RDKit open source software,RDKit,19.03.4,
 fr_ar_nh,fr_Ar_NH,number of aromatic amines,organic,,RDKit open source software,RDKit,19.03.4,
 fr_arn,fr_ArN,number of aromatic nitrogens,organic,,RDKit open source software,RDKit,19.03.4,

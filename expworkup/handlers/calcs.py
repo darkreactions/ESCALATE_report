@@ -144,7 +144,7 @@ def evaluation_pipeline(all_targets, debug_bool):
     f.close()
 
     for entry_name in eval_dict.keys():
-        header_name = '_calc_' + entry_name
+        header_name = entry_name
 
         command = eval_dict[entry_name].get('command', None)
         variables = eval_dict[entry_name].get('variable_names', None)
