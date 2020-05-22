@@ -15,7 +15,7 @@ from expworkup.report_view import construct_2d_view
 from expworkup.createjson import download_experiment_directories
 from expworkup.createjson import inventory_assembly
 from expworkup.ingredients.pipeline import ingredient_pipeline
-from expworkup.report_calcs import calc_pipeline
+from expworkup.report_calcs import ratio_pipeline, calc_pipeline
 from expworkup.report_feats import feat_pipeline
 from expworkup import devconfig
 from expworkup import googleio
@@ -24,10 +24,10 @@ from utils import logger
 from utils import globals
 from utils.globals import (
     set_target_folder_name, set_log_folder, set_offline_folder,
-    get_target_folder, get_log_folder, get_offline_folder
+    set_debug_simple, get_target_folder, get_log_folder, get_offline_folder
 )
 
-__version__ = 1.0 #should match latest HISTORY.md entry
+__version__ = 1.1 #should match latest HISTORY.md entry
 
 def initialize(args):
     ''' Refreshes working environment - logs initialization
@@ -158,6 +158,7 @@ def main_pipeline(args):
     initialize(args)
     dataset_list = args.d
     offline_toggle = args.offline
+    set_debug_simple(args.debugsimple)
     raw_bool = args.raw
     #Load logging information
     set_log_folder(f'{args.local_directory}/logging')  # folder for logs
@@ -201,7 +202,7 @@ def main_pipeline(args):
     if args.debug:
         # Export dataframes of initial parsing and chemical inventories for ETL to ESCALATEV3
         report_csv_filename = f'REPORT_{get_target_folder().upper()}.csv'
-        write_debug_file(report_df, report_csv_filename)
+        write_debug_file(report_df, report_csv_filename, write_index=True) #turn to True to generate for testing
         for name, chemicaldf in chemdf_dict.items():
             inventory_name = f'REPORT_{name.upper()}_INVENTORY.csv'
             write_debug_file(chemicaldf, inventory_name)
@@ -211,25 +212,33 @@ def main_pipeline(args):
                                                          chemdf_dict,
                                                          args.debug)
 
-    runUID_inchi_file,\
-        inchi_key_indexed_features_df= feat_pipeline(get_target_folder(),
-                                                     report_df,
-                                                     chemdf_dict,
-                                                     args.debug,
-                                                     get_log_folder())
+    inchi_key_indexed_features_df = feat_pipeline(report_df,
+                                                  chemdf_dict,
+                                                  args.debug)
 
-    calc_out_df = calc_pipeline(report_df,
-                                compound_ingredient_objects_df,
-                                chemdf_dict,
-                                args.debug) 
+    amounts_df,\
+        ratios_df = ratio_pipeline(report_df,
+                                   compound_ingredient_objects_df,
+                                   chemdf_dict,
+                                   args.debug) 
 
-    #calc_out_df.to_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
-    #calc_out_df = pd.read_csv(f'./{args.local_directory}/offline/REPORT_CALCOUT.csv')
+    #calc_out_df.to_csv(f'./{get_offline_folder()}/REPORT_CALCOUT.csv')
+    #calc_out_df = pd.read_csv(f'./{get_offline_folder()}/REPORT_CALCOUT.csv')
+    if not args.disablecalcs:
+        calcs_df = calc_pipeline(report_df,
+                                 amounts_df,
+                                 ratios_df,
+                                 inchi_key_indexed_features_df,
+                                 args.debug)
+    else:
+        calcs_df = pd.DataFrame()
 
     # Export dataframe
     escalate_final_df = construct_2d_view(report_df,
-                                          calc_out_df,
+                                          amounts_df,
                                           inchi_key_indexed_features_df, 
+                                          ratios_df,
+                                          calcs_df,
                                           args.debug,
                                           args.raw)
 
@@ -282,7 +291,18 @@ def parse_args(args):
                               ||default = 4-Data-Iodides||" %possible_targets)
     parser.add_argument('--raw', type=bool, default=False, choices=[True, False],
                         help='final dataframe is printed with all raw values\
-                        included ||default = 1||')
+                        included ||default = False||')
+    parser.add_argument('--disablecalcs', type=bool, default=False, choices=[True, False],
+                        help='if True, diasables escalate calculations (calc_command.json) ||default = False||')
+    parser.add_argument('--debug', type=bool, default=False, choices=[True, False],
+                        help="exports all dataframe intermediates prefixed with 'REPORT_'\
+                        csvfiles with default names")
+    parser.add_argument('--debugsimple', type=bool, default=False, choices=[True, False],
+                        help="removes the header and footer from the 'REPORT_' \
+                        csvfiles exported with the --debug option.  If debug is false, this won't do anything.")
+    parser.add_argument('--offline', type=int, default=0, choices=[0,1,2],
+                        help="|| Default = 0 || First iteration, set to '1' to save files locally \
+                        second iteration, set to '2' to load local files and continue")
     parser.add_argument('--verdata', type=str, 
                         help='Enter numerical value such as "0001". Generates <0001>.perovskitedata.csv output\
                         in a form ready for upload to the versioned data repo ||default = None||')
@@ -292,12 +312,6 @@ def parse_args(args):
     parser.add_argument('--state', type=str,
                         help='title of state set file to be used at the state set for \
                         this iteration of the challenge problem, no entry will result in no processing')
-    parser.add_argument('--debug', type=bool, default=False, choices=[True, False],
-                        help="exports all dataframe intermediates prefixed with 'REPORT_'\
-                        csvfiles with default names")
-    parser.add_argument('--offline', type=int, default=0, choices=[0,1,2],
-                        help="|| Default = 0 || First iteration, set to '1' to save files locally \
-                        second iteration, set to '2' to load local files and continue")
     return parser.parse_args(args)
 
 

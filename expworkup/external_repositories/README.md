@@ -18,3 +18,4 @@
 
 Two files were downloaded on May 13, 2020 and used in the creation of Calcs.  The JSON file schema was first attempted as the structure was divisible into units and amounts.  The parsing was designed to render a more dataframe friendly version of the csv included on the website.
 
+After downloading approimately 4 inchikeys were detected as duplicates.  To progress I opted for a 'keep first instance' approach (this based on the sorting from the downloaded CSV).

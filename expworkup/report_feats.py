@@ -91,13 +91,11 @@ def unpack_features(type_feat_dict):
     inchi_key_indexed_features_df.set_index('inchikeys', inplace=True) 
     return(inchi_key_indexed_features_df)
 
-def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
+def feat_pipeline(report_df, chem_df_dict, debug_bool):
     """ Manage ingest of lab content and return feature dataframes
 
     Parameters
     ----------
-    target_name : name of the target folder (and final curated csv output)
-
     report_df : pandas.DataFrame
         dataframe returned after parsing all content from google drive
         returned from expworkup.json_pipeline
@@ -108,8 +106,6 @@ def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
 
     debug_bool : CLI argument, True=Enable debugging
         if toggled on, code will export CSV files of each dataframe
-
-    log_folder : folder location to stores logs
 
     Returns
     -------
@@ -201,5 +197,5 @@ def feat_pipeline(target_name, report_df, chem_df_dict, debug_bool, log_folder):
         write_debug_file(runUID_indexed_inchikey_df,
                          runUID_inchi_file)
 
-    return runUID_indexed_inchikey_df, inchi_key_indexed_features_df
+    return inchi_key_indexed_features_df
 

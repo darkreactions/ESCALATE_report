@@ -3,14 +3,15 @@ import logging
 import pandas as pd
 
 from utils.file_handling import write_debug_file
+from utils.file_handling import get_command_dict
 from expworkup.handlers.chemical_types import get_chemical_types
-from expworkup.handlers.chemical_types import get_unique_chemicals_types_byinstance
-from expworkup.handlers import calc_mols
+from expworkup.handlers.chemical_types import get_unique_chemicals_types_byinstance, runuid_feat_merge
+from expworkup.handlers.calcs import get_mmol_df, all_ratios, evaluation_pipeline
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
 
-def calc_pipeline(report_df, object_df, chemdf_dict, debug_bool):
+def ratio_pipeline(report_df, object_df, chemdf_dict, debug_bool):
     """ Ingest pipeline which handles offloading of _calc_ functions
 
     #TODO: update this docstring
@@ -50,10 +51,10 @@ def calc_pipeline(report_df, object_df, chemdf_dict, debug_bool):
     reagent_volumes_df = report_copy.filter(regex='reagent_._volume')
 
     #TODO: Iterate pipeline from 'default_conc' to other i.e., experimental observation 
-    default_mmol_df_nums = calc_mols.get_mmol_df(reagent_volumes_df, 
-                                                 object_df,
-                                                 chemical_count,
-                                                 conc_model='default_conc')
+    default_mmol_df_nums = get_mmol_df(reagent_volumes_df, 
+                                       object_df,
+                                       chemical_count,
+                                       conc_model='default_conc')
 
     modlog.info('generating a dataframe of combined mmol and inchi data')
     stacked_mmol_df = get_summed_mmol_series(default_mmol_df_nums, 
@@ -82,36 +83,123 @@ def calc_pipeline(report_df, object_df, chemdf_dict, debug_bool):
     molarity_df.sort_index(inplace=True) 
 
     calc_ready_df = molarity_df.copy().join(out_df) ##**
-    out_df = calc_ready_df.copy()
-    res = calc_ready_df.pivot_table(index=['name','inchikey'], 
-                                  values=['M'],
-                                  columns=['main_type'],
-                                  aggfunc='sum')
+    amounts_df = calc_ready_df.copy()
+
+    escalate_command_dict = get_command_dict('any',
+                                             'EscalateCalcs')
+    escalate_command_dict = escalate_command_dict['descriptors']
+    ## Offshoots for molarity ratio calculations
+    ratios_df = molarity_ratios_pipeline(calc_ready_df, 
+                                           escalate_command_dict)
+    return amounts_df, ratios_df
+
+def calc_pipeline(report_df,
+                  amounts_df,
+                  ratios_df,
+                  inchi_key_indexed_features_df,
+                  debug_bool):
+    ## import type_command table, look for commands 
+    """
+    report_df
+    
+    ## Create two dictionaries for each experiment, one with all of the features (non-raw)
+    ## the other should contain the specified action to apply to those
+    ## the commands can only be applied to things that are present in either the calcdf or the featdf
+
+    Notes
+    -----
+    The name of EACH calc dataframe on export should be _calc_<command>.csv
+        Columns for the command, headers, and evals (in and out quantities) should
+        go to the final debug tables.  
+        
+    Final dataframe should have _calc_ prefix on all columns
+    """
+    # import requested functions  from command type
+    # build heleper fucntions for cxcalc interfacing (and examples)
+
+    # TODO: combine the following df preps with the ones from report_view.py and report_feats.py
+    res = amounts_df.pivot_table(index=['name','inchikey'], 
+                                 values=['molarity'],
+                                 columns=['main_type'],
+                                 aggfunc='sum')
 
     res.columns = res.columns.droplevel(0) # remove Molarity top level
     sumbytype_molarity_df = res.groupby(level=0).sum()  ##*
+
     sumbytype_byinstance_molarity_df = get_unique_chemicals_types_byinstance(res) ##**
 
+    #add prefixes
+    sumbytype_molarity_df = sumbytype_molarity_df.add_prefix('_rxn_molarity_')
+    sumbytype_byinstance_molarity_df = \
+        sumbytype_byinstance_molarity_df.add_prefix('_raw_')
+    
+    feats_df = runuid_feat_merge(sumbytype_byinstance_molarity_df,
+                                 inchi_key_indexed_features_df)
+    temp_report_df = report_df.set_index('name')
+    all_targets = pd.concat([ratios_df,
+                             sumbytype_molarity_df, 
+                             sumbytype_byinstance_molarity_df,
+                             feats_df,
+                             temp_report_df], axis=1)
+
+    all_targets = all_targets.select_dtypes(include=['number'])
+    with open('POTENTIAL_CALC_COLUMNS.txt', 'w') as my_file:
+        for x in all_targets.columns:
+            print(x, file=my_file)
+
+    calc_df = evaluation_pipeline(all_targets, debug_bool)
+
+    return calc_df
+
+def molarity_ratios_pipeline(calc_ready_df,
+                             escalate_command_dict):
+    """ Pipeline for molarity ratio calculations
+
+    Uses type_command to toggel on and off options
+
+    Parameters
+    ----------
+    calc_ready_df : pd.DataFrame indexed on [runUID, inchikey]
+        columns ['molarity', '_raw_lab', 'types', 'smiles', 'main_type', 'mmol']
+    
+    Returns
+    ----------
+    out_df : pandas.DataFrame indexed on [runUID, inchikey]    
+        columns [<new calcs defined by type_command.csv>... ]
+
+    NOTE: functions should likely read from calc_command.json
     """
-    ## import type_command table, look for commands 
-    ## Export all of the dataframes  with columns "name", in, alt-in, out, command, version
-    ##  the name of the dataframe on export should be _calc_<command>.csv
-    ##  append the command, version, and header of all of the in and out columns to the command-type table
-    ##  exported at the end of this code 
-    """
-    ##### Calc functions begin here ####
-    # TODO:see below
-    #import requested functions  from command type
-    # build helper functions for ratios
-    # hanson solubility examples
-    # build heleper fucntions for cxcalc interfacing (and examples)
-    # same with rdkit
-    # Calculate concentration ratio of specified types (a:b and b:a, both needed for ML)
+    outdf = pd.DataFrame()
 
-    ## Hardcoding for now! ###
+    res = calc_ready_df.pivot_table(index=['name','inchikey'], 
+                                  values=['molarity'],
+                                  columns=['main_type'],
+                                  aggfunc='sum')
+    res.columns = res.columns.droplevel(0) # remove Molarity top level
+    if 'molarityratio' in escalate_command_dict.keys():
+    # Get ratios of all types
+        fill_value = escalate_command_dict['molarityratio']['alternative_input']
+        sumbytype_molarity_df = res.groupby(level=0).sum() 
+        sumbytype_molarity_df_cleaned = sumbytype_molarity_df.add_suffix('_molarity') #ensures correct name downstream
+        ratios_sumbytype_molarity_df = all_ratios(sumbytype_molarity_df_cleaned,
+                                                  fill_value, '_calc_ratio_')
+        outdf = pd.concat([outdf, ratios_sumbytype_molarity_df], axis=1)
 
-    return out_df
-
+    # Get ratios of all unique instances of each type
+    if 'molarityratio_bytype' in escalate_command_dict.keys():
+        fill_value = escalate_command_dict['molarityratio_bytype']['alternative_input']
+        #Gather and sum by instance and type
+        sumbytype_byinstance_molarity_df = \
+            get_unique_chemicals_types_byinstance(res) 
+        #Filter out the identity information (keep values)
+        sumbytype_byinstance_molarity_df_cleaned = \
+            sumbytype_byinstance_molarity_df.filter(like='_molarity') #remove inchikey columns
+        # Permute across columns
+        ratios_sumbytype_byinstance_molarity_df = \
+            all_ratios(sumbytype_byinstance_molarity_df_cleaned,
+                       fill_value, '_calc_ratiobytype_')
+        outdf = pd.concat([outdf, ratios_sumbytype_byinstance_molarity_df], axis=1)
+    return outdf
 
 
 def report_mmol(stacked_mmol_df, debug_bool):
@@ -167,9 +255,9 @@ def report_molarity(summed_molarity_series, debug_bool):
     -------
     molarity_df : pd.DataFrame with ['name', 'inchikey'] multiindex
         name is the runUID and inchikey is the identity of the chemical
-        values of 'M' column are the calculated molarity based on molarity series
+        values of 'molarity' column are the calculated molarity based on molarity series
     """
-    molarity_df = summed_molarity_series.to_frame(name='M')
+    molarity_df = summed_molarity_series.to_frame(name='molarity')
     if debug_bool:
         molarity_df_file = 'REPORT_MOLARITY_CALCS.csv'
         molarity_df__inchi_file = 'REPORT_MOLARITY_INCHICOLS_CALCS.csv'
@@ -183,8 +271,26 @@ def report_molarity(summed_molarity_series, debug_bool):
 def get_summed_mmol_series(default_mmol_df_nums, 
                            reagent_volumes_df,
                            inchi_df):
-    """
+    """Creates DF of the total mmol of each chemical in the final experiment
 
+    Parameters
+    ----------
+    default_mmol_df_nums : pd.DataFrame, indexed on runUID
+        columns mmol of each reagent and chemical (e.g._raw_reagent_0_chemicals_0_mmol)
+    
+    reagent_volumes_df : pd.DataFrame, indexed on runUID
+        columns are the dispense volumes of each reagent (ingredient)
+        e.g. _raw_reagent_0_volume 
+    
+    inchi_df : pd.DataFrame, index on runUID ('name')
+        columns are the inchikey of each chemical
+        e.g. _raw_reagent_0_chemicals_0_inchikey to _raw_reagent_8_chemicals_3_inchikey
+
+    Returns
+    -------
+    stacked_mmol_df : pd.DataFrame, indexed on ['runUID', <'_raw_'_reagent+chemical>]
+        index e.g. 2017-10-18T19_58_20.000000+00_00_LBL_A1, _raw_reagent_0_chemicals_0
+        columns are inchikey and mmol
     """
     #split _raw_reagent_._chemical_._inchikey to [_raw_reagent_._chemical_., inchikey] 
     idx = inchi_df.columns.str.rsplit('_', n=1, expand=True)

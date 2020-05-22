@@ -3,14 +3,16 @@ import pandas as pd
 
 from utils.file_handling import write_debug_file
 from expworkup.handlers.cleaner import cleaner
-from expworkup.handlers.chemical_types import get_unique_chemicals_types_byinstance
+from expworkup.handlers.chemical_types import get_unique_chemicals_types_byinstance, runuid_feat_merge
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
 
 def construct_2d_view(report_df, 
-                      calc_out_df,
+                      amounts_df,
                       inchi_key_indexed_features_df,
+                      ratios_df,
+                      calcs_df,
                       debug_bool,
                       raw_bool):
     """ Combines the generated dataframes into a single 2d csv for export
@@ -21,7 +23,7 @@ def construct_2d_view(report_df,
         2d dataframe returned after parsing all content from google drive
         returned from expworkup.json_pipeline
     
-    calc_df :  pandas.DataFrame of concatenated calculations
+    amounts_df :  pandas.DataFrame of concatenated calculations
         does not include the report_df. Includes, chemical types, values
         indexed on runUID
     
@@ -29,6 +31,16 @@ def construct_2d_view(report_df,
         all features selected by user in type_command.csv indexed on InchiKey
         headers will conform to the type_command.csv unless mismatched
         (mismatch occurs when the requested chemaxon features generate multiples)
+    
+    ratios_df : pandas.DataFrame 
+        calculated ratios of molarity from the _calc_ pipeline
+        indexed on runUID ('name')
+        columns are the ratio headers e.g. '_calc_ratio_acid_molarity_inorganic_molarity'
+    
+    calcs_df : pd.DataFrame
+        completed _calcs_ specified by the calc_command.json file
+        indexed on runUID ('name')
+        columns are the values return from _calcs_
 
     debug_bool : CLI argument, True=Enable debugging
         if toggled on, code will export CSV files of each dataframe
@@ -43,21 +55,22 @@ def construct_2d_view(report_df,
         default view also removes all nan columns and all '0' columns
     TODO: add additional views (likely better in v3 though...)
         
-
-    NOTE: An easy way to get a view of each of the large dataframes is to enable
-    debugging!  Each render will be cast to a simlar named csv.  Search for name
-    for associated code or vice-versa.
+    Notes
+    -----
+    NOTE: An easy way to get a view of each of the large dataframes is to add 
+    '--debug 1' to the CLI!  Each render will be cast to a simlar named csv. 
+    Search for name for associated code or vice-versa.
     """
     modlog.info("Generating 2d dataframe")
     print(f'Exporting 2d Dataframe...')
 
     # Some final exports for ETL in V3
-    res = calc_out_df.pivot_table(index=['name','inchikey'], 
-                                  values=['M'],
+    res = amounts_df.pivot_table(index=['name','inchikey'], 
+                                  values=['molarity'],
                                   columns=['main_type'],
                                   aggfunc='sum')
 
-    res.columns = res.columns.droplevel(0) # remove Molarity top level
+    res.columns = res.columns.droplevel(0) # remove molarity top level
     sumbytype_molarity_df = res.groupby(level=0).sum()  ##**
     if debug_bool:
         sumbytype_molarity_df_file = 'REPORT_MOLARITY_BYTYPE_CALCS.csv'
@@ -77,7 +90,7 @@ def construct_2d_view(report_df,
                                  inchi_key_indexed_features_df)
 
     # Generate a _raw_mmol_inchikey value for each inchikey in dataset
-    mmol_inchi_df = calc_out_df.pivot_table(index=['name'],
+    mmol_inchi_df = amounts_df.pivot_table(index=['name'],
                                            values=['mmol'],
                                            columns=['inchikey'],
                                            aggfunc='sum')
@@ -85,20 +98,22 @@ def construct_2d_view(report_df,
     mmol_inchi_df = mmol_inchi_df.add_prefix('_raw_mmol_')
     mmol_inchi_df.fillna(value=0, inplace=True, axis=1)
 
-    molarity_inchi_df = calc_out_df.pivot_table(index=['name'],
-                                           values=['M'],
+    molarity_inchi_df = amounts_df.pivot_table(index=['name'],
+                                           values=['molarity'],
                                            columns=['inchikey'],
                                            aggfunc='sum')
-    molarity_inchi_df.columns = molarity_inchi_df.columns.droplevel(0) # remove 'M' top level
+    molarity_inchi_df.columns = molarity_inchi_df.columns.droplevel(0) # remove 'molarity' top level
     molarity_inchi_df = molarity_inchi_df.add_prefix('_raw_molarity_')
     molarity_inchi_df.fillna(value=0, inplace=True, axis=1)
 
     # add new targets as validated through pipeline and prepared
-    # Should ideally have runid_vial as the index by this point...
+    # Should ideally have runid_vial ('name') as the index 
     additional_default_dfs = [mmol_inchi_df,
                               molarity_inchi_df,
                               sumbytype_molarity_df,
-                              feats_df]
+                              feats_df,
+                              ratios_df,
+                              calcs_df]
 
     escalate_final_df = report_df
     escalate_final_df.set_index('name', drop=True, inplace=True)
@@ -109,6 +124,7 @@ def construct_2d_view(report_df,
         except KeyError:
             modlog.info(f'{num} in additional dataframes already correctly indexed')
         escalate_final_df = escalate_final_df.join(dataframe)
+    escalate_final_df.drop_duplicates(keep='first', inplace=True)
     final_df = cleaner(escalate_final_df, raw_bool) 
     start_count = final_df.shape[1]
     # Remove all columns that are entirely '0' or 'null'
@@ -126,53 +142,3 @@ def construct_2d_view(report_df,
     # TODO: create final export of a 2d CSV file from the data above
     return final_df
 
-
-def runuid_feat_merge(sumbytype_byinstance_molarity_df, inchi_key_indexed_features_df):
-    """ Merge and rename function for runuid + report_feats dataframes
-
-    Parameters
-    ----------
-    sumbytype_byinstance_molarity_df : pandas.DataFrame, contents matter!
-        runUID 
-
-    Notes
-    ------
-    Currently set to rename smiles, standardized smiles, and type information
-    to _raw_ section of the dataframe.  
-
-    """
-    chemical_type_inchi = \
-        sumbytype_byinstance_molarity_df.filter(regex='_inchikey')
-    for type_inchi_col in chemical_type_inchi.columns:
-        chemical_type = type_inchi_col.split('_')[2].strip() # _raw_inorganic_0_inchikey to inorganic
-        feature_prefix = type_inchi_col.rsplit('_', 1)[0].strip().split('_',2)[2] # _raw_inorganic_0_inchikey to inorganic_0
-        bulk_features = inchi_key_indexed_features_df.copy()
-        bulk_features = bulk_features[bulk_features['types'].str.contains(pat=f'(?:^|\W){chemical_type}(?:$|\W)', regex=True)]
-        #Drop anycolumns which are not full (likely due to specifying multiple types)
-        bulk_features.dropna(axis=1, how='any', inplace=True)
-
-        #Rename columns to fit with ESCALATE naming scheme (Brute force, not elegant)
-        column_rename = {}
-        drop_list = []
-        known_drops = ['smiles_standardized', 'smiles', 'types']
-        for column in bulk_features.columns:
-            if any(column == known_drop for known_drop in known_drops):
-                column_rename[column] = column
-                drop_list.append(column)
-            elif 'feat' in column:
-                newcolumnname = column.split('_', 2)[2] # _feat_asavdwp to asavdwp
-                column_rename[column] = newcolumnname
-        raw_features_df = bulk_features.loc[:,drop_list]
-        raw_features_df = raw_features_df.add_prefix(f'_raw_{feature_prefix}_')
-
-        bulk_features.drop(drop_list, inplace=True, axis=1)
-        bulk_features.rename(columns=column_rename, inplace=True)
-        bulk_features = bulk_features.add_prefix(f'_feat_{feature_prefix}_')
-
-        bulk_features = bulk_features.join(raw_features_df, on='inchikeys')
-
-        chemical_type_inchi = chemical_type_inchi.join(bulk_features, on=type_inchi_col, rsuffix='DROPME_AFTER_MERGE')
-    chemical_type_inchi.dropna(axis=1, how='all', inplace=True)
-    final_drop_list = chemical_type_inchi.filter(regex='DROPME_AFTER_MERGE').columns
-    chemical_type_inchi.drop(final_drop_list, inplace=True, axis=1)
-    return chemical_type_inchi

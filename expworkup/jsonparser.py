@@ -20,7 +20,7 @@ from utils import globals
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
 
-def renamer(dirty_df, dataset_list):
+def renamer(dirty_df, dataset_list, raw_bool_cli):
     """Eats dirty datasets and renames them according to dataset_rename.json
 
     Imports the user level json file and uses the dictionary to
@@ -38,6 +38,10 @@ def renamer(dirty_df, dataset_list):
         dataset_rename.json is used to determine if a report_df
         qualifies for a rename set.  If all datasets in dataset_list
         are not in a dataset_rename, this process will return dirty_df.
+    
+    raw_bool_cli : cli argument, 
+        if True includes extended dataframe including superfluous columns
+        used in data handling
 
     Returns
     --------
@@ -47,21 +51,45 @@ def renamer(dirty_df, dataset_list):
     that doesn't exist in dataset_rename.json, just make that combination
     and all the selected renames.
     """
-    try:
-        with open("dataset_rename.json", "r") as read_file:
-            rename_dict = json.load(read_file)
-    except FileNotFoundError:
-        modlog.error("dataset_rename.json was not found, please redownload from ESCALATE_report")
-        import sys 
-        sys.exit()
+    if not raw_bool_cli:
+        try:
+            with open("dataset_rename.json", "r") as read_file:
+                rename_dict = json.load(read_file)
+        except FileNotFoundError:
+            modlog.error("dataset_rename.json was not found, please redownload from ESCALATE_report")
+            import sys 
+            sys.exit()
 
-    for key, name_dict in rename_dict.items():
-        if 'group' in key:
-            if all(elem in name_dict['datasets'] for elem in dataset_list):
-                for old_name, new_name in name_dict['columns'].items():
-                    dirty_df.rename(columns={old_name : new_name}, inplace=True)
+        for key, name_dict in rename_dict.items():
+            if 'group' in key:
+                if all(elem in name_dict['datasets'] for elem in dataset_list):
+                    for old_name, new_name in name_dict['columns'].items():
+                        dirty_df.rename(columns={old_name : new_name}, inplace=True)
+    else:
+        modlog.info('Renaming was turned off for this run, columns will not all follow naming scheme')
+        warnlog.info('Renaming was turned off for this run, columns will not all follow naming scheme')
+    
+    # alter the user to columns which do not fit the orderly naming scheme
+    nonconformist_columns = []
+    # runid_vial is protected for renaming downstream
+    expected_prefixes = ['_rxn_', '_out_', '_calc_', '_feat_', '_raw_', '_prototype_', 'runid_vial']
+    for x in dirty_df.columns:
+        if not any(y in x for y in expected_prefixes):
+            nonconformist_columns.append(x)
 
+    unnamed_export_file = 'UNAMED_REPORT_COLUMNS.txt'
+    # Remove what's there so it's not confusing
+    if os.path.exists(unnamed_export_file):
+        os.remove(unnamed_export_file)
+    if len(nonconformist_columns) > 0:
+        modlog.info('Columns not fitting the naming scheme were written to: UNAMED_REPORT_COLUMNS.txt')
+        print('Columns not fitting the naming scheme were written to: UNAMED_REPORT_COLUMNS.txt')
+        print('        The USER can define the column names in dataset_rename.json')
+        with open(unnamed_export_file, 'w') as my_file:
+            for x in nonconformist_columns:
+                print(x, file=my_file)
     clean_df = dirty_df
+
     return(clean_df)
 
 def unpackJSON(target_naming_scheme, chemdf_dict):
@@ -150,12 +178,13 @@ def json_pipeline(target_naming_scheme, raw_bool_cli, chemdf_dict, dataset_list)
     modlog.info('%s loaded with JSONs for parsing, starting' %target_naming_scheme)
 
     raw_df = unpackJSON(target_naming_scheme, chemdf_dict)
-    renamed_raw_df = renamer(raw_df, dataset_list)
+    renamed_raw_df = renamer(raw_df, dataset_list, raw_bool_cli)
     report_df = cleaner(renamed_raw_df, raw_bool_cli)
-    report_df['name'] = raw_df['runid_vial']
 
+    report_df['name'] = raw_df['runid_vial']
     report_df.replace('null', np.nan, inplace=True)
     report_df.replace('', np.nan, inplace=True)
     report_df.replace(' ', np.nan, inplace=True)
+
     return(report_df)
 

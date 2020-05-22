@@ -14,14 +14,12 @@ compatible with most machine learning software (e.g. SciKit learn).  Additional 
 data structures to headers which resemble the users desired configuration.  These mappings are typically trivial for computer
 scientists, but may be more challenging for non-domain experts or individuals unfamiliar with manipulating dataframes. The
 dataset is augmented with chemical calculations such as concentrations, temperatures derived from models of plate temperature,
-and other empirical observations.  In the final steps the dataset is supplemented with chemical features (currently stored in a
-CSV as part of this repository) derived from other API such as ChemAxon and RDKit.
+and other empirical observations.  In the final steps the dataset is supplemented with chemical features and calcs derived from ChemAxon, RDKit, and local datasets saved to this repository.  Additional information on how to control the generation of `_feat_` and `_calc_` columns can be found in the [user documentation here.](https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit#bookmark=id.1shd7vj8nkv8)
 
-A detailed description of the current functionality and logic for this code can be found here: https://docs.google.com/document/d/1vF4mq76mNutCdTCtKAUu91RTm3IS5LX4STxJ0t1JF5U/edit#
+[The original ESCALATE publication can be found here.](https://docs.google.com/document/d/1vF4mq76mNutCdTCtKAUu91RTm3IS5LX4STxJ0t1JF5U/edit#)
 
-User Documents are being updated and can be found here: https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit#heading=h.uzjqm9vtn09j
-
-
+[User documents, relating to a complete cycle of escalate, can be found here.](https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit#)
+ 
 Installation
 ============
   This build process has been tested on MacOS High Sierra (10.13.5), MacOS Catalina (10.15.3), Ubuntu Bionic Beaver (18.04), and Windows 10 (version 1909 OS Build 18363.418)
@@ -91,8 +89,6 @@ Please report any failures of the above message to the repo admins
    * There are also docs on license install using a graphical user interface (GUI) here: https://docs.chemaxon.com/display/docs/Licenses.html
 
 5. You will need to specify the location of your chemaxon installation locations in `./expworkup/devconfig.py` at the bottom of the file. 
-
-
  
 Running The Code
 =================
@@ -123,7 +119,17 @@ __Definitions__
 
    `python runme.py <my_local_folder> -d <google_drive_target_name> --raw 1`
 
-4. __Columns that do not conform to the `_{category}_` (e.g., `_feat_`, `_rxn_`) will be omitted unless `--raw 1` is enabled!__
+4. __Columns that do not conform to the `_{category}_` (e.g., `_feat_`, `_rxn_`) will be omitted unless `--raw 1` is enabled!__ 
+   * A list of the columns not conforming to the naming scheme will be exported to 'UNAMED_REPORT_COLUMNS.txt'.  
+   * The USER can specify an appropriate name in dataset_rename.json
+   * To see all columns with naming directly from datasource use: `--raw 1`
+   * __Conflicting namespaces will be purged!__
+
+4. Significant flexibility is enabled for `_feat_` (via, type_command.csv) and `_calc_` (via, calc_command.json) specification.  [For examples, discussion, and limitations of these specifications please see the USER docs.](https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit#bookmark=id.1shd7vj8nkv8)
+   * `_calc_` generation can be skipped by using the `--disablecalcs True` flag on the CLI
+   * To speed up calc and feature development the first portion of the code can be skipped by:
+      1. Running the code with `--offline 1` 
+      2. After the first iteration completes running future instances with `--offline 2`
   
 5. A file named `<my_local_folder>.csv` will contain the 2d CSV of the dataset using the configured headers from the data or the mapping developed for the lab.  The `data/` folder will contain the generated JSONs.
 

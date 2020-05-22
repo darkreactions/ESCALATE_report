@@ -1,0 +1,49 @@
+{
+    "working example" : {
+        "command" : "a + b",
+        "variable_names": {
+            "a" : "_rxn_molarity_acid",
+            "b" : "_rxn_molarity_acid"
+        },
+        "description" : "example of a simple function (no commas!)", 
+        "fill_value" : 0 
+    },
+    "no_command_test" : {
+        "variable_names": {
+            "a" : "_rxn_molarity_acid",
+            "b" : "_rxn_molarity_acid"
+        },
+        "description" : "Should fail and throw warning: WARNING - For no_command_test, command or variables were not correctly specified! Please check calc_command.json", 
+        "fill_value" : 0 
+    },
+    "no_variable_test" : {
+        "command" : "a + b",
+        "description" : "Should fail and throw warning: WARNING - For no_variable_test, command or variables were not correctly specified! Please check calc_command.json", 
+        "fill_value" : 0 
+    },
+    "no_description_test_should_go_to_default_and_pass" : {
+        "command" : "a + b",
+        "variable_names": {
+            "a" : "_rxn_molarity_acid",
+            "b" : "_rxn_molarity_acid"
+        },
+        "fill_value" : 0 
+    },
+    "no_fill_value_test" : {
+        "command" : "a + b",
+        "variable_names": {
+            "a" : "_rxn_molarity_acid",
+            "b" : "_rxn_molarity_acid"
+        },
+        "description" : "Should pass and log should display: 'For no_fill_value_test, 'fill_value' was set to a default of 'null'"
+    },
+    "no_column_test" : {
+        "command" : "a + b",
+        "variable_names": {
+            "a" : "_rxn_molty_acid",
+            "b" : "_rxn_molarity_acid"
+        },
+        "description" : "Should fail and throw warning: WARNING - For no_column_test, columns specified were not found! Please correct!", 
+        "fill_value" : 0 
+    }
+}

@@ -4,7 +4,6 @@
     "comment3" : "if no grouping exists for a specified dataset, code will target 'default'",
     "comment4" : "if a column does not have a suitable prefix it will be ommitted from the dataset",
     "comment5" : "all columns (including undefined) can be viewed by toggling 'raw' from the command line",
-    "comment6" : "THIS RENAME WILL BE APPLIED TWICE, once immediately after generatign report, and again after all other functions",
     "default" : {
         "columns" : {}
     },
@@ -18,8 +17,15 @@
             "modelname" : "_raw_modelname",
             "participantname" : "_raw_participantname",
             "notes" : "_raw_notes",
+            "detailed_observations" : "_raw_detailed_observations",
+            "identifier" : "_raw_identifier",
+            "class_probability" : "_raw_modelpredictedprobability",
+            "Robot Number" : "_raw_batch_count",
             "_raw_datecompleted" : "EXCLUDEME_ECLONLY_datecompleted",
-            "_raw_timecompleted_utc" : "EXCLUDEME_ECLONLY_timecompleted_utc"
+            "_raw_timecompleted_utc" : "EXCLUDEME_ECLONLY_timecompleted_utc",
+            "Vial Site (1)" : "EXCLUDEME_Garbage_1",
+            "Vial Site (2)" : "EXCLUDEME_Garbage_2",
+            "Experiment Name" : "_raw_user_generated_experimentname"
         }
     },
     "group_2": {
@@ -32,7 +38,7 @@
             "participantname" : "_raw_participantname",
             "notes" : "_raw_notes",
             "Experiment Number" : "_raw_experimentNumber",
-            "Experiment Name" : "_raw_experimentName",
+            "Experiment Name" : "_raw_user_generated_experimentname",
             "User defined tag" : "_raw_userdefinedtag",
             "Robot Number" : "_raw_robotnumber",
             "Vial Site (1)" : "_raw_microplate_row",
