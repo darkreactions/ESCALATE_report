@@ -38,7 +38,7 @@ def construct_2d_view(report_df,
         columns are the ratio headers e.g. '_calc_ratio_acid_molarity_inorganic_molarity'
     
     calcs_df : pd.DataFrame
-        completed _calcs_ specified by the calc_command.json file
+        completed _calcs_ specified by the ./utils/calc_command.py file
         indexed on runUID ('name')
         columns are the values return from _calcs_
 

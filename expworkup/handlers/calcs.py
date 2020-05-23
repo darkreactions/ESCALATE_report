@@ -9,12 +9,10 @@ from collections import OrderedDict
 
 from utils.globals import compound_ingredient_chemical_return
 from utils.file_handling import write_debug_file
+from utils.calc_command import CALC_COMMAND_DICT
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
-
-global CALC_COMMAND_JSON
-CALC_COMMAND_JSON = './calc_command.json'
 
 def get_mmol_df(reagent_volumes_df, 
                 object_df, 
@@ -83,7 +81,7 @@ def all_ratios(df, fill_value, prefix):
     df2 = df2.replace([np.inf, -np.inf, np.nan], fill_value)
     return(df2)
 
-def df_simple_eval(command, variables, x):
+def df_simple_eval(command, variables, x, command_function=None):
     """ Performs safe evals on dataframe
 
     Uses specified command with variable mapping onto x to generate numerical 
@@ -115,7 +113,7 @@ def df_simple_eval(command, variables, x):
     df_referenced_dict = {}
     for variable_name in variables.keys():
         df_referenced_dict[variable_name] = x[variables[variable_name]]
-    out_value = simple_eval(command, names=df_referenced_dict)
+    out_value = simple_eval(command, names=df_referenced_dict, functions=command_function)
     return out_value
 
 def evaluation_pipeline(all_targets, debug_bool):
@@ -137,11 +135,7 @@ def evaluation_pipeline(all_targets, debug_bool):
     calc_df = pd.DataFrame()
     calc_df['name'] = all_targets.index
     calc_df.set_index('name', inplace=True)
-
-    # ORDER MATTERS, we might want to build as we go..
-    with open(CALC_COMMAND_JSON, 'r') as f:
-        eval_dict = json.load(f, object_pairs_hook=OrderedDict)
-    f.close()
+    eval_dict = CALC_COMMAND_DICT
 
     for entry_name in eval_dict.keys():
         header_name = entry_name
@@ -157,19 +151,30 @@ def evaluation_pipeline(all_targets, debug_bool):
         else:
             # We don't want the code to bomb out due to 
             # all_targets not containing the specified headers, 
-            if not set(variables.values()).issubset(all_targets.columns):
-                modlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
-                warnlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
-            else:
+            run_function = True
+            for x in variables.values():
+                if isinstance(x, str):
+                    if not set(variables.values()).issubset(all_targets.columns):
+                        modlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
+                        warnlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
+                        run_function = False
+                # Handle nested lists
+                elif isinstance(x, list):
+                    if not set(x).issubset(all_targets.columns):
+                        modlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
+                        warnlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
+                        run_function = False
+            if run_function:
                 fill_value = eval_dict[entry_name].get('fill_value', 'null')
                 description = eval_dict[entry_name].get('description', 'null')
+                specified_command = eval_dict[entry_name].get('functions', None)
                 if fill_value == 'null':
                     modlog.info(f'For {entry_name}, "fill_value" was set to a default of "null"')
                 if description == 'null':
                     modlog.info(f'For {entry_name}, "description" was set to a default of "null"')
 
                 try:
-                    value_column = all_targets.apply(lambda x: df_simple_eval(command, variables, x), axis=1)
+                    value_column = all_targets.apply(lambda x: df_simple_eval(command, variables, x, command_function=specified_command), axis=1)
                 except SyntaxError:
                     modlog.warn(f'For "{entry_name}", simpleeval failed to resolve the specified command, please check specification, or debug code!')        
                     warnlog.warn(f'For "{entry_name}", simpleeval failed to resolve the specified command, please check specification, or debug code!')        
@@ -181,11 +186,17 @@ def evaluation_pipeline(all_targets, debug_bool):
                 if debug_bool:
                     debug_df = value_column.copy().to_frame()
                     for key, value in variables.items():
-                        debug_df[key] = all_targets[[value]]
+                        try:
+                            debug_df[key] = all_targets[[value]]
+                        except KeyError:
+                            warnstring = f'Nested function used in calcs, will not export all columns'
+                            modlog.warn(warnstring)
+                            debug_df['warn'] = warnstring
+                            pass
                     debug_df['variables'] = str(variables)
                     debug_df['command'] = command
                     debug_df['description'] = description
-                    calc_file = f'CALC_{entry_name.upper()}.csv'
+                    calc_file = f'{entry_name.upper()}.csv'
                     write_debug_file(debug_df, calc_file)
 
                 calc_df = calc_df.join(value_column)

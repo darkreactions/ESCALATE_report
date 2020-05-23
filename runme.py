@@ -27,7 +27,7 @@ from utils.globals import (
     set_debug_simple, get_target_folder, get_log_folder, get_offline_folder
 )
 
-__version__ = 1.1 #should match latest HISTORY.md entry
+__version__ = 1.11 #should match latest HISTORY.md entry
 
 def initialize(args):
     ''' Refreshes working environment - logs initialization
@@ -293,7 +293,7 @@ def parse_args(args):
                         help='final dataframe is printed with all raw values\
                         included ||default = False||')
     parser.add_argument('--disablecalcs', type=bool, default=False, choices=[True, False],
-                        help='if True, diasables escalate calculations (calc_command.json) ||default = False||')
+                        help='if True, diasables escalate calculations specified in ./utils/calc_command.json ||default = False||')
     parser.add_argument('--debug', type=bool, default=False, choices=[True, False],
                         help="exports all dataframe intermediates prefixed with 'REPORT_'\
                         csvfiles with default names")

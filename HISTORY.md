@@ -1,8 +1,15 @@
 RELEASE HISTORY
 ===============
 ### Be sure to update the version number in 'runme.py'!
+1.11 (2020-05-22)
+----------------
+  * Updated `_calc_` docstrings and user docs
+  * calc_command.json shifted to ./utils/calc_command.py
+  * `_calc_` can now evaluate simple functions, imports are handled through calc_command.py
+  * Shifting all USER level information to [google user doc](https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit#)
+  * Shifting [DEV level information to wiki](https://github.com/darkreactions/ESCALATE_Capture/wiki)
 
-1.1 (2020-05-20)
+1.10 (2020-05-20)
 -----------------
   * Added calc_command.json support
   * Streamlined feature specification
