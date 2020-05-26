@@ -4,6 +4,7 @@ import pandas as pd
 from utils.file_handling import write_debug_file
 from expworkup.handlers.cleaner import cleaner
 from expworkup.handlers.chemical_types import get_unique_chemicals_types_byinstance, runuid_feat_merge
+from utils.globals import get_debug_simple
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
@@ -38,7 +39,7 @@ def construct_2d_view(report_df,
         columns are the ratio headers e.g. '_calc_ratio_acid_molarity_inorganic_molarity'
     
     calcs_df : pd.DataFrame
-        completed _calcs_ specified by the calc_command.json file
+        completed _calcs_ specified by the ./utils/calc_command.py file
         indexed on runUID ('name')
         columns are the values return from _calcs_
 
@@ -127,16 +128,20 @@ def construct_2d_view(report_df,
     escalate_final_df.drop_duplicates(keep='first', inplace=True)
     final_df = cleaner(escalate_final_df, raw_bool) 
     start_count = final_df.shape[1]
-    # Remove all columns that are entirely '0' or 'null'
-    # Even if all the values are ACTUALLY 0, there is no variance, wgaf?
-    condition_1 = (final_df == 0).all()
-    condition_2 = (final_df.astype(str) == 'null').all()
-    final_df = final_df.loc[:, ~condition_1]
-    final_df = final_df.loc[:, ~condition_2]
-    end_count = final_df.shape[1]
+    if get_debug_simple():
+        # Remove all columns that are entirely '0' or 'null'
+        # Even if all the values are ACTUALLY 0, there is no variance, wgaf?
+        modlog.info(f'ETL was enabled through the CLI "--etl" option, no columns were removed from final dataframe')
+        print(f'ETL was enabled through the CLI "--etl" option, no columns were removed from final dataframe')
+    else:
+        condition_1 = (final_df == 0).all()
+        condition_2 = (final_df.astype(str) == 'null').all()
+        final_df = final_df.loc[:, ~condition_1]
+        final_df = final_df.loc[:, ~condition_2]
+        end_count = final_df.shape[1]
+        modlog.info(f'Removed {start_count-end_count} of an original {start_count} columns which contained only "0" or "null"')
+        print(f'Removed {start_count-end_count} of an original {start_count} columns which contained only "0" or "null"')
 
-    modlog.info(f'Removed {start_count-end_count} of an original {start_count} columns which contained only "0" or "null"')
-    print(f'Removed {start_count-end_count} of an original {start_count} columns which contained only "0" or "null"')
     modlog.info('successfully generated mmol and molarity dataframes for calcs')
     # TODO: cleanup documentation and export pipeline for statesets
     # TODO: create final export of a 2d CSV file from the data above

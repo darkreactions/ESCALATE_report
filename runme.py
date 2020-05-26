@@ -27,7 +27,7 @@ from utils.globals import (
     set_debug_simple, get_target_folder, get_log_folder, get_offline_folder
 )
 
-__version__ = 1.1 #should match latest HISTORY.md entry
+__version__ = 1.11 #should match latest HISTORY.md entry
 
 def initialize(args):
     ''' Refreshes working environment - logs initialization
@@ -158,7 +158,7 @@ def main_pipeline(args):
     initialize(args)
     dataset_list = args.d
     offline_toggle = args.offline
-    set_debug_simple(args.debugsimple)
+    set_debug_simple(args.etl)
     raw_bool = args.raw
     #Load logging information
     set_log_folder(f'{args.local_directory}/logging')  # folder for logs
@@ -293,11 +293,11 @@ def parse_args(args):
                         help='final dataframe is printed with all raw values\
                         included ||default = False||')
     parser.add_argument('--disablecalcs', type=bool, default=False, choices=[True, False],
-                        help='if True, diasables escalate calculations (calc_command.json) ||default = False||')
+                        help='if True, diasables escalate calculations specified in ./utils/calc_command.json ||default = False||')
     parser.add_argument('--debug', type=bool, default=False, choices=[True, False],
                         help="exports all dataframe intermediates prefixed with 'REPORT_'\
                         csvfiles with default names")
-    parser.add_argument('--debugsimple', type=bool, default=False, choices=[True, False],
+    parser.add_argument('--etl', type=bool, default=False, choices=[True, False],
                         help="removes the header and footer from the 'REPORT_' \
                         csvfiles exported with the --debug option.  If debug is false, this won't do anything.")
     parser.add_argument('--offline', type=int, default=0, choices=[0,1,2],

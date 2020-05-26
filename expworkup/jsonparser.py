@@ -6,6 +6,7 @@ import os
 from operator import itemgetter
 import json
 import logging
+from pathlib import Path
 
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
@@ -15,7 +16,7 @@ from expworkup.handlers.cleaner import cleaner
 from expworkup import googleio
 from expworkup.handlers import parser
 from utils.file_handling import get_experimental_run_lab
-from utils import globals
+from utils.globals import get_log_folder
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
@@ -77,14 +78,14 @@ def renamer(dirty_df, dataset_list, raw_bool_cli):
         if not any(y in x for y in expected_prefixes):
             nonconformist_columns.append(x)
 
-    unnamed_export_file = 'UNAMED_REPORT_COLUMNS.txt'
+    unnamed_export_file = Path(f'{get_log_folder()}/UNREPORTED_REPORT_COLUMNS.log')
     # Remove what's there so it's not confusing
     if os.path.exists(unnamed_export_file):
         os.remove(unnamed_export_file)
     if len(nonconformist_columns) > 0:
-        modlog.info('Columns not fitting the naming scheme were written to: UNAMED_REPORT_COLUMNS.txt')
-        print('Columns not fitting the naming scheme were written to: UNAMED_REPORT_COLUMNS.txt')
-        print('        The USER can define the column names in dataset_rename.json')
+        modlog.info(f'Columns not fitting the naming scheme were written to: {get_log_folder()}/UNAMED_REPORT_COLUMNS.log')
+        print(f'Columns not fitting the naming scheme were written to: {get_log_folder()}/UNAMED_REPORT_COLUMNS.log')
+        print('        The USER can define new column names in dataset_rename.json')
         with open(unnamed_export_file, 'w') as my_file:
             for x in nonconformist_columns:
                 print(x, file=my_file)
