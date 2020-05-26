@@ -131,14 +131,17 @@ def construct_2d_view(report_df,
     if get_debug_simple():
         # Remove all columns that are entirely '0' or 'null'
         # Even if all the values are ACTUALLY 0, there is no variance, wgaf?
+        modlog.info(f'ETL was enabled through the CLI "--etl" option, no columns were removed from final dataframe')
+        print(f'ETL was enabled through the CLI "--etl" option, no columns were removed from final dataframe')
+    else:
         condition_1 = (final_df == 0).all()
         condition_2 = (final_df.astype(str) == 'null').all()
         final_df = final_df.loc[:, ~condition_1]
         final_df = final_df.loc[:, ~condition_2]
-    end_count = final_df.shape[1]
+        end_count = final_df.shape[1]
+        modlog.info(f'Removed {start_count-end_count} of an original {start_count} columns which contained only "0" or "null"')
+        print(f'Removed {start_count-end_count} of an original {start_count} columns which contained only "0" or "null"')
 
-    modlog.info(f'Removed {start_count-end_count} of an original {start_count} columns which contained only "0" or "null"')
-    print(f'Removed {start_count-end_count} of an original {start_count} columns which contained only "0" or "null"')
     modlog.info('successfully generated mmol and molarity dataframes for calcs')
     # TODO: cleanup documentation and export pipeline for statesets
     # TODO: create final export of a 2d CSV file from the data above
