@@ -4,6 +4,7 @@ import pandas as pd
 from utils.file_handling import write_debug_file
 from expworkup.handlers.cleaner import cleaner
 from expworkup.handlers.chemical_types import get_unique_chemicals_types_byinstance, runuid_feat_merge
+from utils.globals import get_debug_simple
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
@@ -127,12 +128,13 @@ def construct_2d_view(report_df,
     escalate_final_df.drop_duplicates(keep='first', inplace=True)
     final_df = cleaner(escalate_final_df, raw_bool) 
     start_count = final_df.shape[1]
-    # Remove all columns that are entirely '0' or 'null'
-    # Even if all the values are ACTUALLY 0, there is no variance, wgaf?
-    condition_1 = (final_df == 0).all()
-    condition_2 = (final_df.astype(str) == 'null').all()
-    final_df = final_df.loc[:, ~condition_1]
-    final_df = final_df.loc[:, ~condition_2]
+    if get_debug_simple():
+        # Remove all columns that are entirely '0' or 'null'
+        # Even if all the values are ACTUALLY 0, there is no variance, wgaf?
+        condition_1 = (final_df == 0).all()
+        condition_2 = (final_df.astype(str) == 'null').all()
+        final_df = final_df.loc[:, ~condition_1]
+        final_df = final_df.loc[:, ~condition_2]
     end_count = final_df.shape[1]
 
     modlog.info(f'Removed {start_count-end_count} of an original {start_count} columns which contained only "0" or "null"')

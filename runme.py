@@ -158,7 +158,7 @@ def main_pipeline(args):
     initialize(args)
     dataset_list = args.d
     offline_toggle = args.offline
-    set_debug_simple(args.debugsimple)
+    set_debug_simple(args.etl)
     raw_bool = args.raw
     #Load logging information
     set_log_folder(f'{args.local_directory}/logging')  # folder for logs
@@ -297,7 +297,7 @@ def parse_args(args):
     parser.add_argument('--debug', type=bool, default=False, choices=[True, False],
                         help="exports all dataframe intermediates prefixed with 'REPORT_'\
                         csvfiles with default names")
-    parser.add_argument('--debugsimple', type=bool, default=False, choices=[True, False],
+    parser.add_argument('--etl', type=bool, default=False, choices=[True, False],
                         help="removes the header and footer from the 'REPORT_' \
                         csvfiles exported with the --debug option.  If debug is false, this won't do anything.")
     parser.add_argument('--offline', type=int, default=0, choices=[0,1,2],
