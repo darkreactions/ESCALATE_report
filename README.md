@@ -73,7 +73,7 @@ Please report any failures of the above message to the repo admins
    
 1. Download the [securekey files](https://www.youtube.com/watch?v=oHg5SJYRHA0) and move them into the root folder (`./`, aka. current working directory, aka. `ESCALATE_report-master/` if downloaded from git). Do not distribute these keys! (Contact a dev for access)
 
-   Note: [Navigate to the wiki for more information on setting up a new lab or generating additional authentication keys](https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:--ONBOARDING-LABS:--Capture-and-Report)
+   Note: [Navigate to the wiki for more information on setting up a new lab or generating additional authentication keys](https://github.com/darkreactions/ESCALATE_report/wiki/ONBOARDING-LABS)
 
 2. Ensure that the files 'client_secrets.json' and 'creds.json' are both present in the root folder (`./`, aka. current working directory, aka. `ESCALATE_report-master/` if downloaded from git).  The correct folder for these keys is the one which contains the runme.py script.
 
@@ -120,7 +120,7 @@ __Definitions__
    `python runme.py <my_local_folder> -d <google_drive_target_name> --raw 1`
 
 4. __Columns that do not conform to the `_{category}_` (e.g., `_feat_`, `_rxn_`) will be omitted unless `--raw 1` is enabled!__ 
-   * A list of the columns not conforming to the naming scheme will be exported to 'UNAMED_REPORT_COLUMNS.txt'.  
+   * A list of the columns not conforming to the naming scheme will be exported to './<my_local_folder>/logging/UNNAMED_REPORT_COLUMNS.txt'.  
    * The USER can specify an appropriate name in dataset_rename.json
    * To see all columns with naming directly from datasource use: `--raw 1`
    * __Conflicting namespaces will be purged!__
@@ -137,7 +137,7 @@ __Definitions__
 
    `python runme.py <my_local_folder> -d <google_drive_target_name> --debug 1`
 
-To add additional target directories please see the how-to guide [here](https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:--ONBOARDING-LABS:--Capture-and-Report).  If you would like to add these to the existing datasets, please issue a git merge request after you add the necessary information.
+To add additional target directories please see the how-to guide [here](https://github.com/darkreactions/ESCALATE_report/wiki/ONBOARDING-LABS).  If you would like to add these to the existing datasets, please issue a git merge request after you add the necessary information.
 
 ## Report to Versioned Data to ESCALATion
 More detailed instructions can be found in the [ESCALATE user manual](https://docs.google.com/document/d/1RQJvAlDVIfu19Tea23dLUSymLabGfwJtDnZwANtU05s/edit?usp=sharing).

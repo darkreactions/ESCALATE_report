@@ -135,8 +135,8 @@ def construct_2d_view(report_df,
         print(f'ETL was enabled through the CLI "--etl" option, no columns were removed from final dataframe')
     else:
         condition_1 = (final_df == 0).all()
-        condition_2 = (final_df.astype(str) == 'null').all()
         final_df = final_df.loc[:, ~condition_1]
+        condition_2 = (final_df.astype(str) == 'null').all()
         final_df = final_df.loc[:, ~condition_2]
         end_count = final_df.shape[1]
         modlog.info(f'Removed {start_count-end_count} of an original {start_count} columns which contained only "0" or "null"')

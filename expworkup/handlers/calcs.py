@@ -81,7 +81,7 @@ def all_ratios(df, fill_value, prefix):
     df2 = df2.replace([np.inf, -np.inf, np.nan], fill_value)
     return(df2)
 
-def df_simple_eval(command, variables, x, command_function=None):
+def df_simple_eval(command, variables, x, command_function=None, my_filter=False):
     """ Performs safe evals on dataframe
 
     Uses specified command with variable mapping onto x to generate numerical 
@@ -111,8 +111,12 @@ def df_simple_eval(command, variables, x, command_function=None):
         on supported evaluations
     """
     df_referenced_dict = {}
-    for variable_name in variables.keys():
-        df_referenced_dict[variable_name] = x[variables[variable_name]]
+    if my_filter:
+        for variable_name in variables.keys():
+            df_referenced_dict[variable_name] = x.filter(regex=variables[variable_name])
+    else:           
+        for variable_name in variables.keys():
+            df_referenced_dict[variable_name] = x[variables[variable_name]]
     out_value = simple_eval(command, names=df_referenced_dict, functions=command_function)
     return out_value
 
@@ -142,6 +146,7 @@ def evaluation_pipeline(all_targets, debug_bool):
 
         command = eval_dict[entry_name].get('command', None)
         variables = eval_dict[entry_name].get('variable_names', None)
+        column_infer = eval_dict[entry_name].get('gen_cols_from_filter', False)
 
         # We don't want the code to bomb out due to 
         # the calc_command.json not being properly constructed
@@ -153,17 +158,20 @@ def evaluation_pipeline(all_targets, debug_bool):
             # all_targets not containing the specified headers, 
             run_function = True
             for x in variables.values():
-                if isinstance(x, str):
-                    if not set(variables.values()).issubset(all_targets.columns):
-                        modlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
-                        warnlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
-                        run_function = False
-                # Handle nested lists
-                elif isinstance(x, list):
-                    if not set(x).issubset(all_targets.columns):
-                        modlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
-                        warnlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
-                        run_function = False
+                if column_infer:
+                    run_function = True
+                else:
+                    if isinstance(x, str):
+                        if not set(variables.values()).issubset(all_targets.columns):
+                            modlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
+                            warnlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
+                            run_function = False
+                    # Handle nested lists
+                    elif isinstance(x, list):
+                        if not set(x).issubset(all_targets.columns):
+                            modlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
+                            warnlog.warn(f"For {entry_name}, columns specified were not found! Please correct!")
+                            run_function = False
             if run_function:
                 fill_value = eval_dict[entry_name].get('fill_value', 'null')
                 description = eval_dict[entry_name].get('description', 'null')
@@ -174,7 +182,7 @@ def evaluation_pipeline(all_targets, debug_bool):
                     modlog.info(f'For {entry_name}, "description" was set to a default of "null"')
 
                 try:
-                    value_column = all_targets.apply(lambda x: df_simple_eval(command, variables, x, command_function=specified_command), axis=1)
+                    value_column = all_targets.apply(lambda x: df_simple_eval(command, variables, x, command_function=specified_command, my_filter=column_infer), axis=1)
                 except SyntaxError:
                     modlog.warn(f'For "{entry_name}", simpleeval failed to resolve the specified command, please check specification, or debug code!')        
                     warnlog.warn(f'For "{entry_name}", simpleeval failed to resolve the specified command, please check specification, or debug code!')        

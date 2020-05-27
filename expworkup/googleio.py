@@ -28,7 +28,7 @@ def get_gdrive_auth():
     '''returns instance of the gdrive authentication
 
     Requires client_secrets.json to generate see:
-    https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:--ONBOARDING-LABS:--Capture-and-Report
+    https://github.com/darkreactions/ESCALATE_report/wiki/ONBOARDING-LABS
     '''
     gauth = GoogleAuth(settings_file='./expworkup/settings.yaml')
 
@@ -55,7 +55,7 @@ def get_gdrive_client():
     different scope than googlio.py in ESCALATE_Capture
 
     requires creds.json to generate see:
-    https://github.com/darkreactions/ESCALATE_Capture/wiki/Developers:--ONBOARDING-LABS:--Capture-and-Report
+    https://github.com/darkreactions/ESCALATE_report/wiki/ONBOARDING-LABS
     '''
     scope = ['https://www.googleapis.com/auth/spreadsheets.readonly']
     #scope = ['https://spreadsheets.google.com/feeds']

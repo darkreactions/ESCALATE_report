@@ -3,7 +3,7 @@
     "_raw_molfraction_acid" : {
         "command" : "a / (a + b)", # each variable should be defined in variable names
         "variable_names": {
-            "a" : "_rxn_molarity_acid", # column names should come from, "POTENTIAL_CALC_COLUMNS.txt"
+            "a" : "_rxn_molarity_acid", # column names should come from, "./<my_local_folder>/logging/POTENTIAL_CALC_COLUMNS.txt"
             "b" : "_raw_solvent_0_molarity"
         },
         "description" : "mol weighted fraction of acid out of acid+solvent", 
@@ -76,7 +76,7 @@ CALC_COMMAND_DICT = {
         "description" : "weighted hansen deltap parameter calculated from mol weighted acid and solvent (e.g. [experiment's solvent deltap = acid(deltap)+ solvent(deltap)]", 
         "fill_value" : 0 
     },
-        "_calc_acid_solvent_average_hansen_deltad" : {
+    "_calc_acid_solvent_average_hansen_deltad" : {
         "command" : "mean(a)",
         "variable_names": {
             "a" : ["_feat_acid_0_hansentriple_deltad_amount",
@@ -86,7 +86,7 @@ CALC_COMMAND_DICT = {
         "description" : "weighted hansen deltap parameter calculated from mol weighted acid and solvent (e.g. [experiment's solvent deltap = acid(deltap)+ solvent(deltap)]", 
         "fill_value" : 0 
     },
-            "_calc_acid_solvent_average_hansen_deltah" : {
+    "_calc_acid_solvent_average_hansen_deltah" : {
         "command" : "mean(a)",
         "variable_names": {
             "a" : ["_feat_acid_0_hansentriple_deltah_amount",
@@ -96,7 +96,7 @@ CALC_COMMAND_DICT = {
         "description" : "weighted hansen deltap parameter calculated from mol weighted acid and solvent (e.g. [experiment's solvent deltap = acid(deltap)+ solvent(deltap)]", 
         "fill_value" : 0 
     },
-            "_calc_acid_solvent_average_hansen_deltap" : {
+    "_calc_acid_solvent_average_hansen_deltap" : {
         "command" : "mean(a)",
         "variable_names": {
             "a" : ["_feat_acid_0_hansentriple_deltap_amount",
@@ -105,5 +105,15 @@ CALC_COMMAND_DICT = {
         "functions" : {"mean": lambda x: x.mean()}, # .mean() is a pandas function which takes the average of the specified columns
         "description" : "weighted hansen deltap parameter calculated from mol weighted acid and solvent (e.g. [experiment's solvent deltap = acid(deltap)+ solvent(deltap)]", 
         "fill_value" : 0 
+    },
+    "_feat_halide_electronegativity" : {
+        "command" : "mean(a)",
+        "variable_names": {
+            "a" : "inorganic_._atomic_electronegativity_(?!pb)"
+        },
+        "functions" : {"mean": lambda x: x.mean()}, # .mean() is a pandas function which takes the average of the specified columns
+        "description" : "averages all columns which contain the string in 'a' but not Pb (i.e., get the halides!)", 
+        "fill_value" : 0,
+        "gen_cols_from_filter": True #  only tested with a single list linked to one variable, parses based on pd.DataFrame.filter(regex='<yourstring>', axis=1) module
     }
 }
