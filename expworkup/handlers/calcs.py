@@ -146,7 +146,7 @@ def evaluation_pipeline(all_targets, debug_bool):
 
         command = eval_dict[entry_name].get('command', None)
         variables = eval_dict[entry_name].get('variable_names', None)
-        column_infer = eval_dict[entry_name].get('gen_cols_from_filter', False)
+        column_infer = eval_dict[entry_name].get('use_regex', False)
 
         # We don't want the code to bomb out due to 
         # the calc_command.json not being properly constructed

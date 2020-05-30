@@ -111,9 +111,9 @@ CALC_COMMAND_DICT = {
         "variable_names": {
             "a" : "inorganic_._atomic_electronegativity_(?!pb)"
         },
-        "functions" : {"mean": lambda x: x.mean()}, # .mean() is a pandas function which takes the average of the specified columns
-        "description" : "averages all columns which contain the string in 'a' but not Pb (i.e., get the halides!)", 
+        "functions" : {"mean": lambda x: x.mean()}, # takes the average
+        "description" : "averages the halides!)", 
         "fill_value" : 0,
-        "gen_cols_from_filter": True #  only tested with a single list linked to one variable, parses based on pd.DataFrame.filter(regex='<yourstring>', axis=1) module
+        "use_regex": True # Interpret variable_names as regex filter
     }
 }

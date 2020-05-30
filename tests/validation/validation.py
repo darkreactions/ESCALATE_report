@@ -6,6 +6,7 @@ import cerberus
 
 from tests.validation import schemas
 from utils.globals import WARNCOUNT
+from utils.globals import get_log_folder
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
@@ -20,7 +21,7 @@ def validate_observation_interface(crys_df):
     if not is_valid:
         modlog.info(V.errors)
         if WARNCOUNT == 0:
-            warnlog.warn('Files failed to validate. Please check log.')
+            warnlog.warn(f'Files failed to validate. Please check: {get_log_folder()}/REPORT_LOG.txt')
             WARNCOUNT += 1
     return is_valid
 
@@ -31,7 +32,7 @@ def validate_experimental_volumes(experiment_volumes):
     if not is_valid:
         modlog.info(V.errors)
         if WARNCOUNT == 0:
-            warnlog.warn('Files failed to validate. Please check log.')
+            warnlog.warn(f'Files failed to validate. Please check: {get_log_folder()}/REPORT_LOG.txt')
             WARNCOUNT += 1
     return is_valid
 
@@ -42,7 +43,7 @@ def validate_reaction_parameters(reaction_parameters):
     if not is_valid:
         modlog.info(V.errors)
         if WARNCOUNT == 0:
-            warnlog.warn('Files failed to validate. Please check log.')
+            warnlog.warn(f'Files failed to validate. Please check: {get_log_folder()}/REPORT_LOG.txt')
             WARNCOUNT += 1
     return is_valid
 
@@ -53,7 +54,7 @@ def validate_reagent_info(reagent_info):
     if not is_valid:
         modlog.info(V.errors)
         if WARNCOUNT == 0:
-            warnlog.warn('Files failed to validate. Please check log.')
+            warnlog.warn(f'Files failed to validate. Please check: {get_log_folder()}/REPORT_LOG.txt')
             WARNCOUNT += 1
     return is_valid
 
@@ -67,7 +68,7 @@ def validate_ingredient_data(ingredient_data):
     if not is_valid:
         modlog.info(V.errors)
         if WARNCOUNT == 0:
-            warnlog.warn('Files failed to validate. Please check log.')
+            warnlog.warn(f'Files failed to validate. Please check: {get_log_folder()}/REPORT_LOG.txt')
             WARNCOUNT += 1
     return is_valid
 

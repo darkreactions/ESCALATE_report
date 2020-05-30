@@ -27,7 +27,7 @@ from utils.globals import (
     set_debug_simple, get_target_folder, get_log_folder, get_offline_folder
 )
 
-__version__ = 1.11 #should match latest HISTORY.md entry
+__version__ = 1.12 #should match latest HISTORY.md entry
 
 def initialize(args):
     ''' Refreshes working environment - logs initialization
