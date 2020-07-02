@@ -1,6 +1,14 @@
 RELEASE HISTORY
 ===============
 ### Be sure to update the version number in 'runme.py'!
+
+1.12 (2020-05-27)
+-----------------
+  * Added support for chemical element lookup-data
+  * Added general regex parsing for command_calc.py
+  * Updated user documentation
+  * Updated developer documentation
+
 1.11 (2020-05-22)
 ----------------
   * Updated `_calc_` docstrings and user docs

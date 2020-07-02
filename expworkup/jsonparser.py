@@ -83,8 +83,8 @@ def renamer(dirty_df, dataset_list, raw_bool_cli):
     if os.path.exists(unnamed_export_file):
         os.remove(unnamed_export_file)
     if len(nonconformist_columns) > 0:
-        modlog.info(f'Columns not fitting the naming scheme were written to: {get_log_folder()}/UNAMED_REPORT_COLUMNS.log')
-        print(f'Columns not fitting the naming scheme were written to: {get_log_folder()}/UNAMED_REPORT_COLUMNS.log')
+        modlog.info(f'Columns not fitting the naming scheme were written to: {get_log_folder()}/UNNAMED_REPORT_COLUMNS.log')
+        print(f'Columns not fitting the naming scheme were written to: {get_log_folder()}/UNNAMED_REPORT_COLUMNS.log')
         print('        The USER can define new column names in dataset_rename.json')
         with open(unnamed_export_file, 'w') as my_file:
             for x in nonconformist_columns:

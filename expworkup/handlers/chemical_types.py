@@ -153,6 +153,7 @@ def runuid_feat_merge(sumbytype_byinstance_molarity_df, inchi_key_indexed_featur
     """
     chemical_type_inchi = \
         sumbytype_byinstance_molarity_df.filter(regex='_inchikey')
+    chemical_type_inchi.fillna('null', inplace=True)
     for type_inchi_col in chemical_type_inchi.columns:
         chemical_type = type_inchi_col.split('_')[2].strip() # _raw_inorganic_0_inchikey to inorganic
         feature_prefix = type_inchi_col.rsplit('_', 1)[0].strip().split('_',2)[2] # _raw_inorganic_0_inchikey to inorganic_0
@@ -169,15 +170,22 @@ def runuid_feat_merge(sumbytype_byinstance_molarity_df, inchi_key_indexed_featur
             if any(column == known_drop for known_drop in known_drops):
                 column_rename[column] = column
                 drop_list.append(column)
+            elif 'XXPASSTHROUGHXX' in column:
+                column_rename[column] = column.split('_', 1)[1] # XXPASSTHROUGHXX_<name> to <name>
+                drop_list.append(column)
             elif 'feat' in column:
                 newcolumnname = column.split('_', 2)[2] # _feat_asavdwp to asavdwp
                 column_rename[column] = newcolumnname
+
         raw_features_df = bulk_features.loc[:,drop_list]
+        raw_features_df.rename(columns=column_rename, inplace=True)
         raw_features_df = raw_features_df.add_prefix(f'_raw_{feature_prefix}_')
 
         bulk_features.drop(drop_list, inplace=True, axis=1)
         bulk_features.rename(columns=column_rename, inplace=True)
+
         bulk_features = bulk_features.add_prefix(f'_feat_{feature_prefix}_')
+        #TODO: rename based on the pass through filter '_feat_XXPASSTHROUGHXX_' to '_raw_<featname>'
 
         bulk_features = bulk_features.join(raw_features_df, on='inchikeys')
 
@@ -185,4 +193,5 @@ def runuid_feat_merge(sumbytype_byinstance_molarity_df, inchi_key_indexed_featur
     chemical_type_inchi.dropna(axis=1, how='all', inplace=True)
     final_drop_list = chemical_type_inchi.filter(regex='DROPME_AFTER_MERGE').columns
     chemical_type_inchi.drop(final_drop_list, inplace=True, axis=1)
+    chemical_type_inchi.fillna(0, inplace=True)
     return chemical_type_inchi

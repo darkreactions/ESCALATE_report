@@ -4,6 +4,7 @@ import pandas as pd
 
 from utils.file_handling import write_debug_file
 from utils.file_handling import get_command_dict
+from utils.globals import get_log_folder
 from expworkup.handlers.chemical_types import get_chemical_types
 from expworkup.handlers.chemical_types import get_unique_chemicals_types_byinstance, runuid_feat_merge
 from expworkup.handlers.calcs import get_mmol_df, all_ratios, evaluation_pipeline
@@ -143,7 +144,9 @@ def calc_pipeline(report_df,
                              temp_report_df], axis=1)
 
     all_targets = all_targets.select_dtypes(include=['number'])
-    with open('POTENTIAL_CALC_COLUMNS.txt', 'w') as my_file:
+    with open(f'{get_log_folder()}/POTENTIAL_CALC_COLUMNS.txt', 'w') as my_file:
+        modlog.info(f"Possible columns for target by ./utils/calc_command.py can be found in: {get_log_folder()}/POTENTIAL_CALC_COLUMNS.txt")
+        print(f"Possible columns for target by ./utils/calc_command.py can be found in: {get_log_folder()}/POTENTIAL_CALC_COLUMNS.txt")
         for x in all_targets.columns:
             print(x, file=my_file)
 

@@ -9,6 +9,7 @@ from utils.globals import get_offline_folder, get_target_folder, get_log_folder
 from utils.file_handling import get_command_dict
 from expworkup.devconfig import CALC_POSSIBLE, STANDARDIZE_POSSIBLE, CXCALC_PATH 
 from expworkup.external_repositories.feat_hansen import get_hansen_triples
+from expworkup.external_repositories.feat_atoms import grab_atomic_property
 
 modlog = logging.getLogger(f'mainlog.{__name__}')
 warnlog = logging.getLogger(f'warning.{__name__}')
@@ -26,6 +27,7 @@ class OneTypeFeatures():
                  one_type,
                  onetype_feature_identity_dict):
         self.one_type = one_type
+        self.onetype_feature_identity_df = onetype_feature_identity_dict
         self.smiles_list = onetype_feature_identity_dict['smiles'].values.tolist()
         self.inchi_list = onetype_feature_identity_dict['inchikeys'].values.tolist()
         self.cxcalc_command_dict = get_command_dict(self.one_type,
@@ -149,8 +151,7 @@ class OneTypeFeatures():
     
     def escalatefeat_handler(self,
                              escalate_command_dict,
-                             one_type,
-                             inchi_list):
+                             one_type):
         """One by one handling of local features
 
         The pipelines in this function could effectively be any table of data
@@ -177,11 +178,21 @@ class OneTypeFeatures():
         should return a dataframe with named columns (these should possess the `_feat_` prefix)
         and be indexed on the inchikeys (i.e., no repeating inchikeys). 
         """
+        feature_df = pd.DataFrame(self.inchi_list, columns=['InChIKey'])
+        feature_df = feature_df.reset_index(drop=True).rename(columns={'InChIKey':'inchikeys'})
+        feature_df.set_index('inchikeys', inplace=True)
         escalate_descriptors = escalate_command_dict['descriptors']
-        type_features_df = get_hansen_triples(inchi_list,
-                                              escalate_descriptors['hansentriple'])
-
-        return type_features_df
+        for key in escalate_descriptors.keys():
+            if key == 'hansentriple':
+                type_features_df = get_hansen_triples(self.inchi_list,
+                                                      escalate_descriptors[key])
+                feature_df = type_features_df.join(feature_df, on='inchikeys')
+            else:
+                type_features_df = grab_atomic_property(self.onetype_feature_identity_df,
+                                                        escalate_descriptors[key]) 
+                feature_df = type_features_df.join(feature_df, on='inchikeys')
+        feature_df.reset_index(inplace=True)
+        return feature_df
 
 
     def generate_onetype_features(self,
@@ -246,8 +257,7 @@ class OneTypeFeatures():
         
         if escalate_command_dict is not None:
             type_features_df = self.escalatefeat_handler(escalate_command_dict,
-                                                        self.one_type,
-                                                        self.inchi_list)
+                                                        self.one_type)
             outdf = pd.concat([outdf, 
                                type_features_df], axis=1)
 
