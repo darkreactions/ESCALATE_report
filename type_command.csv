@@ -5,6 +5,7 @@ asa+_std,molecularsurfacearea -t asa+ -H 3.0,Molecular Surface Area calculation 
 asap_std,molecularsurfacearea -t asa_p -H 3.0,Molecular Surface Area calculation (3D). asa_p (std: considering the largest fragment component - if applicable),organic,,ChemAxon,cxcalc_std,19.27.0,
 asah_std,molecularsurfacearea -t asa_h -H 3.0,Molecular Surface Area calculation (3D). asa_h (std: considering the largest fragment component - if applicable),organic,,ChemAxon,cxcalc_std,19.27.0,
 asa-_std,molecularsurfacearea -t asa- -H 3.0,Molecular Surface Area calculation (3D). asa-(std: considering the largest fragment component - if applicable),organic,,ChemAxon,cxcalc_std,19.27.0,
+asa_std,molecularsurfacearea -t ASA -H 3.0,Molecular Surface Area calculation (3D). asa(std: considering the largest fragment component - if applicable),organic,,ChemAxon,cxcalc_std,19.27.0,
 asavdwp_std,molecularsurfacearea -t vanderwaals -H 3.0,Molecular Surface Area calculation (3D). Vanderwaals(std: considering the largest fragment component - if applicable),organic,,ChemAxon,cxcalc_std,19.27.0,
 hdonorcount_std,donorcount -H 3.0,hydrogen bond donor atom count in molecule (std: considering the largest fragment component - if applicable),organic,,ChemAxon,cxcalc_std,19.27.0,
 hacceptorcount_std,acceptorcount -H 3.0,hydrogen bond acceptor atom count in molecule (std: considering the largest fragment component - if applicable),organic,,ChemAxon,cxcalc_std,19.27.0,
